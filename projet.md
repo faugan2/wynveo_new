@@ -25,13 +25,17 @@ Plateforme de jeux et de paris sportifs avec **un seul compte et un seul solde**
 - **Connexion** (écran 02) : numéro + mot de passe. Techniquement, l'e-mail sert d'identifiant Firebase Auth. Une Cloud Function retrouve l'e-mail à partir du numéro à la connexion. L'utilisateur ne voit pas cette étape.
 - **Mot de passe oublié** : lien de réinitialisation envoyé à l'e-mail du compte.
 - **Compte non vérifié** : une bannière légère en haut de l'application indique que le compte n'est pas encore vérifié.
-- **Vérification du numéro** : elle se fait par le **premier dépôt Mobile Money fait depuis ce numéro**, confirmé avec le code secret de l'opérateur. Une fois le premier dépôt effectué, le compte est vérifié et la bannière disparaît. Cette vérification débloque les retraits et le bonus.
+- **Vérification du compte** : elle se fait par le **premier dépôt, Mobile Money ou crypto**. Une fois le premier dépôt effectué, le compte est vérifié et la bannière disparaît. Cette vérification débloque les retraits et le bonus.
 - L'écran « Code SMS » de la maquette (écran 04) n'est **pas** une étape de l'inscription. À retirer de la maquette.
+- Note : la vérification du compte se fait par le premier dépôt, Mobile Money ou crypto, sans SMS.
 
 ### Portefeuille
 
-- **Dépôt** : T-Money / Flooz. Actuellement **paiement simulé**. Bonus de bienvenue de 100 % jusqu'à 10 000 FCFA sur le 1er dépôt depuis le numéro du compte.
-- **Retrait** : numéro vérifié obligatoire, envoi uniquement vers le numéro du compte, plafond de 50 000 FCFA/jour sans vérification d'identité, validation automatique ou manuelle.
+- **Dépôt** : les moyens de dépôt **dépendent du pays**. Ils sont de deux types :
+  - **Mobile Money** propres à chaque pays (au Togo : T-Money et Flooz). Actuellement **paiement simulé**.
+  - **Crypto**. Les montants sont convertis automatiquement en dollars ou en monnaie locale selon la configuration.
+- Bonus de bienvenue de 100 % jusqu'à 10 000 FCFA sur le 1er dépôt depuis le numéro du compte.
+- **Retrait** : compte vérifié obligatoire. Le retrait se fait **en Mobile Money ou en crypto**. Pour le Mobile Money, envoi uniquement vers le numéro du compte. Plafond de 50 000 FCFA/jour sans vérification d'identité, validation automatique ou manuelle.
 - **Historique** : filtres Tout / Dépôts / Retraits / Jeux / Sport.
 - **Règle du bonus** : une fois les conditions de mise remplies, le bonus devient retirable. Les mises sont payées d'abord par l'argent réel, puis par le bonus. Les gains reviennent au prorata.
 
@@ -69,7 +73,9 @@ Plateforme de jeux et de paris sportifs avec **un seul compte et un seul solde**
 
 ## Exigences à venir
 
-- **Paiement en crypto** pour les dépôts. Les montants sont convertis automatiquement en dollars ou en monnaie locale selon la configuration.
+- **Paiements par pays** : les opérateurs Mobile Money dépendent du pays, et la crypto est aussi proposée. La liste des moyens de paiement se configure par pays, dans le code (comme la liste des pays).
+- **Fournisseur de paiement : Chariow**. Son API gère les paiements (Mobile Money et crypto), dépôts comme retraits. Les intégrations passent par les Cloud Functions, jamais depuis le navigateur.
+- **Paiement en crypto** pour les dépôts (conversion automatique, voir Portefeuille).
 - Administration des utilisateurs et des transactions.
 - KYC, jeu responsable, notifications.
 - Vrai paiement Mobile Money (T-Money / Flooz) et mise en ligne.
@@ -102,5 +108,7 @@ Fichiers suivants de la maquette : **B, C…** (à fournir).
 
 - Règles et maquette du **crash game** (5e jeu, à fournir par image).
 - Détail du fonctionnement du paiement crypto (réseaux, fournisseur, conversion).
-- Fournisseur réel de paiement Mobile Money à intégrer en étape 6.
+- Intégration de l'API Chariow (étape 6) : documentation et clés à obtenir.
+- **Moyens de paiement par pays** : liste exacte des opérateurs Mobile Money et des cryptos acceptés pour chaque pays (au-delà du Togo).
+- **Texte de l'écran 01** : la maquette dit « Déposez une fois avec T-Money ou Flooz ». À remplacer par une formulation générale ?
 - **Code parrain** : présent dans la maquette (facultatif), mais son fonctionnement (récompense, règles) n'est pas encore défini.
