@@ -28,11 +28,7 @@ export const COUNTRIES = [
   { code: 'DZ', name: 'Algérie', dialCode: '+213', phoneLength: 9, enabled: true },
   { code: 'MA', name: 'Maroc', dialCode: '+212', phoneLength: 9, enabled: true },
   { code: 'TN', name: 'Tunisie', dialCode: '+216', phoneLength: 8, enabled: true },
-].map((country) => ({
-  ...country,
-  // Drapeau emoji à partir du code pays (ex. TG -> 🇹🇬).
-  flag: String.fromCodePoint(...[...country.code].map((c) => 127397 + c.charCodeAt(0))),
-}));
+];
 
 export const ENABLED_COUNTRIES = COUNTRIES.filter((c) => c.enabled);
 

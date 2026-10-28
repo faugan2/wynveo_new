@@ -1,64 +1,67 @@
 import { useState } from 'react';
 import { DEFAULT_COUNTRY, ENABLED_COUNTRIES } from '../config/countries.js';
 
-// Champ numéro avec sélecteur de pays. Renvoie la saisie brute au parent.
+// Drapeau SVG local (bibliothèque flag-icons), affiché aussi sous Windows.
+function Flag({ code }) {
+  return <span className={`fi fi-${code.toLowerCase()} country-flag`} aria-hidden="true" />;
+}
+
+// Champ numéro avec sélecteur de pays : drapeau, indicatif, puis liste avec drapeaux et noms.
 export default function PhoneInput({ country, onCountryChange, value, onChange, autoFocus }) {
   const [open, setOpen] = useState(false);
   const selected = country || DEFAULT_COUNTRY;
 
   return (
-    <div className="field" style={{ position: 'relative' }}>
-      <button
-        type="button"
-        onClick={() => setOpen((o) => !o)}
-        className="field-action"
-        style={{ color: 'var(--text)', whiteSpace: 'nowrap' }}
-        aria-label="Choisir le pays"
-      >
-        {selected.flag} {selected.dialCode} ▾
-      </button>
-      {open && ENABLED_COUNTRIES.length > 1 && (
-        <ul
-          style={{
-            position: 'absolute',
-            top: '100%',
-            left: 0,
-            zIndex: 10,
-            background: 'var(--surface)',
-            border: '1px solid var(--border)',
-            borderRadius: 12,
-            listStyle: 'none',
-            margin: 4,
-            padding: 4,
-          }}
+    <div className="phone-field">
+      <div className="field">
+        <button
+          type="button"
+          className="country-trigger"
+          onClick={() => setOpen((o) => !o)}
+          aria-haspopup="listbox"
+          aria-expanded={open}
+          aria-label={`Pays : ${selected.name}, ${selected.dialCode}. Changer de pays`}
         >
-          {ENABLED_COUNTRIES.map((c) => (
-            <li key={c.code}>
-              <button
-                type="button"
-                className="field-action"
-                style={{ color: 'var(--text)', padding: '8px 12px' }}
-                onClick={() => {
-                  onCountryChange(c);
-                  setOpen(false);
-                }}
-              >
-                {c.flag} {c.name} {c.dialCode}
-              </button>
-            </li>
-          ))}
-        </ul>
+          <Flag code={selected.code} />
+          <span>{selected.dialCode}</span>
+          <span className="country-caret" aria-hidden="true">▾</span>
+        </button>
+        <span className="field-divider" aria-hidden="true" />
+        <input
+          type="tel"
+          inputMode="numeric"
+          autoComplete="tel-national"
+          placeholder={'• '.repeat(selected.phoneLength).trim()}
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          autoFocus={autoFocus}
+        />
+      </div>
+
+      {open && (
+        <>
+          {/* Zone invisible qui ferme la liste lorsqu'on touche ailleurs. */}
+          <div className="country-backdrop" onClick={() => setOpen(false)} />
+          <ul className="country-menu" role="listbox" aria-label="Choisir un pays">
+            {ENABLED_COUNTRIES.map((c) => (
+              <li key={c.code} role="option" aria-selected={c.code === selected.code}>
+                <button
+                  type="button"
+                  className={`country-option${c.code === selected.code ? ' is-selected' : ''}`}
+                  onClick={() => {
+                    onCountryChange(c);
+                    setOpen(false);
+                  }}
+                >
+                  <Flag code={c.code} />
+                  <span className="country-name">{c.name}</span>
+                  <span className="country-dial">{c.dialCode}</span>
+                </button>
+              </li>
+            ))}
+          </ul>
+        </>
       )}
-      <span style={{ color: 'var(--border)' }}>|</span>
-      <input
-        type="tel"
-        inputMode="numeric"
-        autoComplete="tel-national"
-        placeholder={'0'.repeat(selected.phoneLength).replace(/0/g, '• ').trim()}
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        autoFocus={autoFocus}
-      />
     </div>
   );
 }

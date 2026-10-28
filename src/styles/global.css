@@ -320,6 +320,100 @@ input {
   margin-top: 8px;
 }
 
+/* Sélecteur de pays : drapeau + indicatif, puis liste déroulante. */
+.phone-field {
+  position: relative;
+}
+
+.country-trigger {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: none;
+  border: 0;
+  padding: 0;
+  color: var(--text);
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.country-flag {
+  width: 24px;
+  height: 17px;
+  border-radius: 3px;
+  box-shadow: 0 0 0 1px var(--border);
+  background-size: cover;
+  flex-shrink: 0;
+}
+
+.country-caret {
+  color: var(--text-muted);
+  font-size: 12px;
+}
+
+.field-divider {
+  width: 1px;
+  height: 22px;
+  background: var(--border);
+}
+
+.country-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 9;
+}
+
+.country-menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  z-index: 10;
+  list-style: none;
+  margin: 0;
+  padding: 6px;
+  max-height: 280px;
+  overflow-y: auto;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45);
+}
+
+.country-option {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 12px;
+  background: none;
+  border: 0;
+  border-radius: 10px;
+  color: var(--text);
+  text-align: left;
+  cursor: pointer;
+}
+
+.country-option:hover,
+.country-option:focus-visible {
+  background: var(--field);
+  outline: none;
+}
+
+.country-option.is-selected {
+  background: rgba(34, 165, 91, 0.15);
+}
+
+.country-name {
+  flex: 1;
+}
+
+.country-dial {
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
 .legal-check {
   display: flex;
   gap: 12px;
