@@ -58,7 +58,7 @@ export default function Welcome() {
           un seul compte
         </h1>
         <p style={{ color: 'var(--text-muted)', fontSize: 15, margin: '12px auto 0', maxWidth: 340 }}>
-          Déposez une fois avec T-Money ou Flooz, jouez partout, retirez vos gains en quelques minutes.
+          Déposez avec Mobile Money ou crypto, jouez partout, retirez vos gains en quelques minutes.
         </p>
       </section>
 
