@@ -1,0 +1,238 @@
+:root {
+  --bg: #0b0a1f;
+  --bg-top: #1a1140;
+  --surface: #14122b;
+  --field: #0e0c24;
+  --border: #2d2a57;
+  --border-focus: #5b8cff;
+  --text: #ffffff;
+  --text-muted: #a7a6c4;
+  --text-link: #6d9bff;
+  --purple: #7c3aed;
+  --teal: #0f9e8a;
+  --green: #22a55b;
+  --green-dark: #178a4a;
+  --yellow: #f5c518;
+  --danger: #ff5c6c;
+  --warning-bg: #3a2b0a;
+  --warning-text: #ffd26b;
+  --font-title: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+  --font-body: 'Barlow', system-ui, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  margin: 0;
+  min-height: 100%;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  overflow-x: hidden;
+}
+
+button,
+input {
+  font: inherit;
+}
+
+.app-shell {
+  min-height: 100vh;
+  background: linear-gradient(180deg, var(--bg-top) 0%, var(--bg) 45%);
+  display: flex;
+  flex-direction: column;
+  padding: 0 16px;
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+.title-font {
+  font-family: var(--font-title);
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.btn {
+  display: block;
+  width: 100%;
+  padding: 16px;
+  border: 0;
+  border-radius: 14px;
+  font-family: var(--font-title);
+  font-weight: 800;
+  font-size: 18px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: var(--text);
+  cursor: pointer;
+  text-align: center;
+  text-decoration: none;
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-primary {
+  background: linear-gradient(180deg, var(--green) 0%, var(--green-dark) 100%);
+  box-shadow: 0 6px 18px rgba(34, 165, 91, 0.35);
+}
+
+.btn-outline {
+  background: transparent;
+  border: 1.5px solid var(--border);
+}
+
+.field-label {
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+  margin: 16px 0 8px;
+}
+
+.field {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--field);
+  border: 1.5px solid var(--border);
+  border-radius: 12px;
+  padding: 0 14px;
+  min-height: 52px;
+}
+
+.field:focus-within {
+  border-color: var(--border-focus);
+}
+
+.field input {
+  flex: 1;
+  min-width: 0;
+  background: transparent;
+  border: 0;
+  outline: none;
+  color: var(--text);
+  font-size: 16px;
+  padding: 14px 0;
+}
+
+.field input::placeholder {
+  color: #5f5d82;
+}
+
+.field-action {
+  background: none;
+  border: 0;
+  color: var(--text-muted);
+  font-size: 14px;
+  cursor: pointer;
+  padding: 0;
+}
+
+.hint {
+  font-size: 13px;
+  margin-top: 6px;
+  color: var(--text-muted);
+}
+
+.hint-ok {
+  color: var(--green);
+}
+
+.error {
+  color: var(--danger);
+  font-size: 14px;
+  margin: 12px 0 0;
+}
+
+.link {
+  color: var(--text-link);
+  font-weight: 600;
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  text-decoration: none;
+  font-size: 14px;
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 20px 0 16px;
+}
+
+.back-button {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1.5px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  cursor: pointer;
+  font-size: 18px;
+  display: grid;
+  place-items: center;
+}
+
+.step-progress {
+  height: 4px;
+  background: var(--border);
+  border-radius: 4px;
+  overflow: hidden;
+  margin-top: 12px;
+}
+
+.step-progress > span {
+  display: block;
+  height: 100%;
+  background: var(--green);
+}
+
+.banner-warning {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--warning-bg);
+  color: var(--warning-text);
+  border-radius: 12px;
+  padding: 10px 14px;
+  font-size: 14px;
+  margin-top: 8px;
+}
+
+.legal-check {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  margin-top: 20px;
+  font-size: 14px;
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
+.legal-check input {
+  width: 20px;
+  height: 20px;
+  margin-top: 2px;
+  accent-color: var(--green);
+  flex-shrink: 0;
+}
+
+.footer-note {
+  text-align: center;
+  font-size: 12px;
+  color: var(--text-muted);
+  margin: 12px 0 20px;
+}
