@@ -19,8 +19,11 @@ Plateforme de jeux et de paris sportifs avec **un seul compte et un seul solde**
 
 ### Compte et vérification
 
-- Inscription et connexion par **numéro togolais + mot de passe**, **sans SMS** (gratuit). Un numéro = un compte.
-- **Inscription** (écran 03) : nom complet, numéro, mot de passe (8 caractères minimum), code parrain facultatif, case « J'ai 18 ans ou plus et j'accepte les conditions d'utilisation ». Le compte est créé immédiatement, sans code à saisir.
+- Inscription et connexion par **numéro de téléphone + mot de passe**, **sans SMS** (gratuit). Un numéro = un compte.
+- **Pays** : sélecteur de pays (drapeau et indicatif) à côté du numéro. Le format et le nombre de chiffres dépendent du pays. **Au lancement, seul le Togo est disponible** (+228, 8 chiffres). La liste des pays se configure dans le code.
+- **Inscription** (écran 03) : nom complet, numéro, **e-mail (obligatoire, unique)**, mot de passe (8 caractères minimum, bouton « Afficher »), code parrain facultatif, case « J'ai 18 ans ou plus et j'accepte les conditions d'utilisation ». Le compte est créé immédiatement, sans code à saisir.
+- **Connexion** (écran 02) : numéro + mot de passe. Techniquement, l'e-mail sert d'identifiant Firebase Auth. Une Cloud Function retrouve l'e-mail à partir du numéro à la connexion. L'utilisateur ne voit pas cette étape.
+- **Mot de passe oublié** : lien de réinitialisation envoyé à l'e-mail du compte.
 - **Compte non vérifié** : une bannière légère en haut de l'application indique que le compte n'est pas encore vérifié.
 - **Vérification du numéro** : elle se fait par le **premier dépôt Mobile Money fait depuis ce numéro**, confirmé avec le code secret de l'opérateur. Une fois le premier dépôt effectué, le compte est vérifié et la bannière disparaît. Cette vérification débloque les retraits et le bonus.
 - L'écran « Code SMS » de la maquette (écran 04) n'est **pas** une étape de l'inscription. À retirer de la maquette.
@@ -78,8 +81,8 @@ Plateforme de jeux et de paris sportifs avec **un seul compte et un seul solde**
 | Écran | Contenu |
 |---|---|
 | 01 Bienvenue | Logo, cartes Jeux et Sport, boutons « Créer un compte » et « Se connecter », mention 18+ |
-| 02 Connexion | Numéro (+228), mot de passe avec « Afficher », lien « Mot de passe oublié » |
-| 03 Inscription (étape 1 sur 2) | Nom complet, numéro, mot de passe, code parrain (facultatif), case 18 ans et conditions |
+| 02 Connexion | Numéro (sélecteur de pays, +228 au lancement), mot de passe avec « Afficher », lien « Mot de passe oublié » (récupération par e-mail) |
+| 03 Inscription (étape 1 sur 2) | Nom complet, numéro, **e-mail (ajouté, absent de la maquette)**, mot de passe, code parrain (facultatif), case 18 ans et conditions |
 | 04 Code SMS (étape 2 sur 2) | **À retirer** : pas de vérification par SMS (voir Compte et vérification) |
 
 Fichiers suivants de la maquette : **B, C…** (à fournir).
