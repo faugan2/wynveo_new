@@ -1,6 +1,7 @@
 const { onCall, HttpsError } = require('firebase-functions/v2/https');
 const admin = require('firebase-admin');
 const { getAuth } = require('firebase-admin/auth');
+const { isValidPhone } = require('./countries');
 
 admin.initializeApp();
 const db = admin.firestore();
@@ -9,10 +10,6 @@ const REGION = 'europe-west1';
 const MIN_PASSWORD_LENGTH = 8;
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-// Numéro au format international : indicatif + chiffres (ex : +22890123456).
-// Le Togo est le seul pays actif pour l'instant ; voir src/config/countries.js.
-const PHONE_PATTERN = /^\+228\d{8}$/;
-
 // Clé de document : le numéro lui-même, pour garantir un numéro = un compte.
 const phoneKey = (phone) => phone.replace(/\D/g, '');
 
@@ -20,7 +17,7 @@ const phoneKey = (phone) => phone.replace(/\D/g, '');
 // Réponse neutre si le numéro est inconnu, pour ne pas révéler les comptes existants.
 exports.getLoginEmail = onCall({ region: REGION }, async (request) => {
   const phone = request.data?.phone;
-  if (typeof phone !== 'string' || !PHONE_PATTERN.test(phone)) {
+  if (typeof phone !== 'string' || !isValidPhone(phone)) {
     throw new HttpsError('invalid-argument', 'Numéro invalide.');
   }
 
@@ -38,7 +35,7 @@ exports.registerAccount = onCall({ region: REGION }, async (request) => {
   if (typeof fullName !== 'string' || fullName.trim().length < 2) {
     throw new HttpsError('invalid-argument', 'Le nom complet est obligatoire.');
   }
-  if (typeof phone !== 'string' || !PHONE_PATTERN.test(phone)) {
+  if (typeof phone !== 'string' || !isValidPhone(phone)) {
     throw new HttpsError('invalid-argument', 'Numéro invalide.');
   }
   if (typeof email !== 'string' || !EMAIL_PATTERN.test(email.trim())) {
