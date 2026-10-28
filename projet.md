@@ -9,6 +9,7 @@ Plateforme de jeux et de paris sportifs avec **un seul compte et un seul solde**
 
 ## Principes
 
+0. **Majorité** : seules les personnes de **18 ans ou plus** peuvent créer un compte. La case de confirmation est obligatoire à l'inscription.
 1. **Tout l'argent passe par les Cloud Functions** : tirages, mises, gains, retraits et règlements sont calculés côté serveur, dans des transactions Firestore. Le client n'écrit jamais de solde.
 2. **Tirages aléatoires sécurisés** : `crypto.randomInt` côté serveur.
 3. **Un portefeuille partagé** entre Jeux et Sport (solde réel, bonus, solde retirable), mis à jour en direct.
@@ -19,7 +20,10 @@ Plateforme de jeux et de paris sportifs avec **un seul compte et un seul solde**
 ### Compte et vérification
 
 - Inscription et connexion par **numéro togolais + mot de passe**, **sans SMS** (gratuit). Un numéro = un compte.
-- **Vérification du numéro** : via le **premier dépôt Mobile Money fait depuis ce numéro**, confirmé avec le code secret de l'opérateur. Cette vérification débloque les retraits et le bonus.
+- **Inscription** (écran 03) : nom complet, numéro, mot de passe (8 caractères minimum), code parrain facultatif, case « J'ai 18 ans ou plus et j'accepte les conditions d'utilisation ». Le compte est créé immédiatement, sans code à saisir.
+- **Compte non vérifié** : une bannière légère en haut de l'application indique que le compte n'est pas encore vérifié.
+- **Vérification du numéro** : elle se fait par le **premier dépôt Mobile Money fait depuis ce numéro**, confirmé avec le code secret de l'opérateur. Une fois le premier dépôt effectué, le compte est vérifié et la bannière disparaît. Cette vérification débloque les retraits et le bonus.
+- L'écran « Code SMS » de la maquette (écran 04) n'est **pas** une étape de l'inscription. À retirer de la maquette.
 
 ### Portefeuille
 
@@ -67,6 +71,19 @@ Plateforme de jeux et de paris sportifs avec **un seul compte et un seul solde**
 - KYC, jeu responsable, notifications.
 - Vrai paiement Mobile Money (T-Money / Flooz) et mise en ligne.
 
+## Maquettes
+
+### Maquette A : Accès au compte (écrans 01 à 04)
+
+| Écran | Contenu |
+|---|---|
+| 01 Bienvenue | Logo, cartes Jeux et Sport, boutons « Créer un compte » et « Se connecter », mention 18+ |
+| 02 Connexion | Numéro (+228), mot de passe avec « Afficher », lien « Mot de passe oublié » |
+| 03 Inscription (étape 1 sur 2) | Nom complet, numéro, mot de passe, code parrain (facultatif), case 18 ans et conditions |
+| 04 Code SMS (étape 2 sur 2) | **À retirer** : pas de vérification par SMS (voir Compte et vérification) |
+
+Fichiers suivants de la maquette : **B, C…** (à fournir).
+
 ## Feuille de route
 
 | Étape | Contenu | Statut |
@@ -83,3 +100,4 @@ Plateforme de jeux et de paris sportifs avec **un seul compte et un seul solde**
 - Règles et maquette du **crash game** (5e jeu, à fournir par image).
 - Détail du fonctionnement du paiement crypto (réseaux, fournisseur, conversion).
 - Fournisseur réel de paiement Mobile Money à intégrer en étape 6.
+- **Code parrain** : présent dans la maquette (facultatif), mais son fonctionnement (récompense, règles) n'est pas encore défini.
