@@ -43,14 +43,122 @@ input {
   font: inherit;
 }
 
+/* Colonne principale : pleine largeur sur téléphone, centrée sur tablette et bureau. */
 .app-shell {
   min-height: 100vh;
+  min-height: 100dvh;
   background: linear-gradient(180deg, var(--bg-top) 0%, var(--bg) 45%);
   display: flex;
   flex-direction: column;
-  padding: 0 16px;
+  width: 100%;
   max-width: 480px;
   margin: 0 auto;
+  padding: env(safe-area-inset-top) max(16px, env(safe-area-inset-right)) env(safe-area-inset-bottom)
+    max(16px, env(safe-area-inset-left));
+}
+
+/* Tablette et bureau : la colonne reste étroite et centrée, avec un léger encadrement. */
+@media (min-width: 768px) {
+  body {
+    background: #07061a;
+  }
+
+  .app-shell {
+    min-height: 100vh;
+    max-width: 480px;
+    margin: 32px auto;
+    border-radius: 28px;
+    border: 1px solid var(--border);
+    padding-left: 24px;
+    padding-right: 24px;
+    overflow: hidden;
+  }
+}
+
+/* Très petits téléphones (ex. 320 px) : on réduit les marges et les tailles de titre. */
+@media (max-width: 359px) {
+  .app-shell {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+
+  .title-font {
+    font-size: 0.9em;
+  }
+
+  .universe-card {
+    min-height: 150px;
+  }
+}
+
+/* Écran d'accueil du site : titre fluide selon la largeur. */
+.hero-title {
+  font-size: clamp(26px, 8vw, 36px);
+  margin: 0;
+  line-height: 1.05;
+}
+
+.brand {
+  font-family: var(--font-title);
+  font-weight: 800;
+  font-size: clamp(30px, 9vw, 40px);
+  letter-spacing: 0.5px;
+}
+
+.brand span {
+  color: var(--yellow);
+}
+
+/* Cartes Jeux et Sport : deux colonnes, qui gardent une taille lisible. */
+.universe-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.universe-card {
+  border: 0;
+  border-radius: 18px;
+  padding: 16px;
+  text-align: left;
+  color: var(--text);
+  cursor: pointer;
+  min-height: 170px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+
+.universe-card--jeux {
+  background: linear-gradient(160deg, #8b5cf6 0%, var(--purple) 100%);
+}
+
+.universe-card--sport {
+  background: linear-gradient(160deg, #14b8a6 0%, var(--teal) 100%);
+}
+
+.universe-card .icon {
+  font-size: clamp(36px, 11vw, 48px);
+  line-height: 1;
+}
+
+.universe-card .name {
+  font-size: clamp(20px, 6vw, 26px);
+  margin-top: 8px;
+}
+
+.universe-card .desc {
+  font-size: 13px;
+  opacity: 0.85;
+}
+
+/* Boutons d'action en bas d'écran : collés au bas quand la page est courte. */
+.screen-footer {
+  margin-top: auto;
+  padding-top: 32px;
+  padding-bottom: 24px;
+  display: grid;
+  gap: 12px;
 }
 
 .title-font {

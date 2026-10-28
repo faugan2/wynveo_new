@@ -27,14 +27,14 @@ export default function Universe() {
       </div>
       <p style={{ color: 'var(--text-muted)' }}>{universe.text}</p>
       <p style={{ color: 'var(--text-muted)', fontSize: 13 }}>Présentation complète à venir.</p>
-      <div style={{ marginTop: 'auto', paddingBottom: 24, display: 'grid', gap: 12 }}>
+      <section className="screen-footer">
         <button type="button" className="btn btn-primary" onClick={() => navigate('/register')}>
           Créer un compte
         </button>
         <button type="button" className="btn btn-outline" onClick={() => navigate('/login')}>
           Se connecter
         </button>
-      </div>
+      </section>
     </main>
   );
 }

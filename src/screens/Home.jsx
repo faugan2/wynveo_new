@@ -10,8 +10,8 @@ export default function Home() {
   return (
     <main className="app-shell">
       <header className="topbar" style={{ justifyContent: 'space-between' }}>
-        <div className="title-font" style={{ fontSize: 24 }}>
-          WYN<span style={{ color: 'var(--yellow)' }}>VEO</span>
+        <div className="brand" style={{ fontSize: 24 }}>
+          WYN<span>VEO</span>
         </div>
         <button type="button" className="link" onClick={() => signOut().then(() => navigate('/', { replace: true }))}>
           Se déconnecter
@@ -24,40 +24,14 @@ export default function Home() {
         Bonjour{profile?.fullName ? ` ${profile.fullName}` : ''}, que voulez-vous faire ?
       </p>
 
-      <section style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginTop: 12 }}>
-        <button
-          type="button"
-          onClick={() => navigate('/univers/jeux')}
-          style={{
-            background: 'linear-gradient(160deg, #8b5cf6 0%, var(--purple) 100%)',
-            border: 0,
-            borderRadius: 18,
-            padding: 16,
-            textAlign: 'left',
-            color: 'var(--text)',
-            cursor: 'pointer',
-            minHeight: 170,
-          }}
-        >
-          <div style={{ fontSize: 44 }} aria-hidden="true">🎰</div>
-          <div className="title-font" style={{ fontSize: 24, marginTop: 8 }}>Jeux</div>
+      <section className="universe-grid" style={{ marginTop: 12 }}>
+        <button type="button" className="universe-card universe-card--jeux" onClick={() => navigate('/univers/jeux')}>
+          <span className="icon" aria-hidden="true">🎰</span>
+          <span className="name title-font">Jeux</span>
         </button>
-        <button
-          type="button"
-          onClick={() => navigate('/univers/sport')}
-          style={{
-            background: 'linear-gradient(160deg, #14b8a6 0%, var(--teal) 100%)',
-            border: 0,
-            borderRadius: 18,
-            padding: 16,
-            textAlign: 'left',
-            color: 'var(--text)',
-            cursor: 'pointer',
-            minHeight: 170,
-          }}
-        >
-          <div style={{ fontSize: 44 }} aria-hidden="true">⚽</div>
-          <div className="title-font" style={{ fontSize: 24, marginTop: 8 }}>Sport</div>
+        <button type="button" className="universe-card universe-card--sport" onClick={() => navigate('/univers/sport')}>
+          <span className="icon" aria-hidden="true">⚽</span>
+          <span className="name title-font">Sport</span>
         </button>
       </section>
     </main>
