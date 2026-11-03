@@ -4,3 +4,5 @@ dist
 .env.local
 functions/node_modules
 .firebase
+
+functions/.secret.local
