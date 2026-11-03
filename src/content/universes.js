@@ -41,9 +41,34 @@ export const UNIVERSES = {
   },
   sport: {
     title: 'Sport',
-    tagline: 'Football, basket et tennis, avec des cotes en direct.',
-    games: [],
-    steps: [],
-    footerNote: 'Présentation complète à venir.',
+    tagline: 'Football, basket et tennis, avec des cotes mises à jour régulièrement.',
+    games: [
+      {
+        name: 'Football',
+        icon: '⚽',
+        text: 'Pariez sur le résultat (1 N 2) ou sur le nombre de buts (plus ou moins).',
+      },
+      {
+        name: 'Basket',
+        icon: '🏀',
+        text: 'Pariez sur le vainqueur du match ou sur le total de points (plus ou moins).',
+      },
+      {
+        name: 'Tennis',
+        icon: '🎾',
+        text: 'Pariez sur le vainqueur du match, avant le coup d\'envoi.',
+      },
+      {
+        name: 'Coupon combiné',
+        icon: '🧩',
+        text: 'Regroupez de 2 à 10 choix sur des matchs différents. Les cotes se multiplient.',
+      },
+    ],
+    steps: [
+      'Déposez avec Mobile Money ou en crypto.',
+      'Choisissez vos matchs et vos cotes avant le coup d\'envoi.',
+      'Les paris se règlent automatiquement dès que le résultat est connu.',
+    ],
+    footerNote: 'Les paris sportifs comportent des risques. Ne pariez que l\'argent que vous pouvez vous permettre de perdre.',
   },
 };
