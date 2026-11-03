@@ -9,6 +9,7 @@ import './styles/global.css';
 import './styles/mobile.css';
 import './styles/tablet.css';
 import './styles/desktop.css';
+import './styles/connected.css';
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
