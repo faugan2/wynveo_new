@@ -24,7 +24,8 @@ export const functions = firebase.app().functions('europe-west1');
 // VITE_EMULATOR_HOST : adresse des émulateurs. 127.0.0.1 sur ce PC ; l'IP du PC pour un autre appareil du réseau.
 if (import.meta.env.VITE_USE_EMULATORS === 'true') {
   const host = import.meta.env.VITE_EMULATOR_HOST || '127.0.0.1';
-  auth.useEmulator(`http://${host}:9099`);
+  // disableWarnings : masque le message « Running in emulator mode » du SDK (le mode reste actif).
+  auth.useEmulator(`http://${host}:9099`, { disableWarnings: true });
   db.useEmulator(host, 8080);
   functions.useEmulator(host, 5001);
 }
