@@ -21,7 +21,10 @@ Plateforme de jeux et de paris sportifs avec **un seul compte et un seul solde**
 
 - Inscription et connexion par **numéro de téléphone + mot de passe**, **sans SMS** (gratuit). Un numéro = un compte.
 - **Pays** : sélecteur de pays (drapeau et indicatif) à côté du numéro. Le format et le nombre de chiffres dépendent du pays. **Au lancement, seul le Togo est disponible** (+228, 8 chiffres). La liste des pays se configure dans le code.
-- **Inscription** (écran 03) : nom complet, numéro, **e-mail (obligatoire, unique)**, mot de passe (8 caractères minimum, bouton « Afficher »), code parrain facultatif, case « J'ai 18 ans ou plus et j'accepte les conditions d'utilisation ». Le compte est créé immédiatement, sans code à saisir.
+- **Inscription** (écran 03), en deux étapes :
+  - **Étape 1 sur 2, Identité** : nom complet, pays et numéro, **e-mail (obligatoire, unique)**.
+  - **Étape 2 sur 2, Sécurité** : mot de passe (8 caractères minimum, bouton « Afficher »), code parrain facultatif, case « J'ai 18 ans ou plus et j'accepte les conditions d'utilisation ».
+  - Le compte est créé à la fin de l'étape 2, sans code à saisir. On peut revenir à l'étape 1 sans perdre les saisies.
 - **Connexion** (écran 02) : numéro + mot de passe. Techniquement, l'e-mail sert d'identifiant Firebase Auth. Une Cloud Function retrouve l'e-mail à partir du numéro à la connexion. L'utilisateur ne voit pas cette étape.
 - **Mot de passe oublié** : lien de réinitialisation envoyé à l'e-mail du compte.
 - **Compte non vérifié** : une bannière légère en haut de l'application indique que le compte n'est pas encore vérifié.
@@ -88,7 +91,8 @@ Plateforme de jeux et de paris sportifs avec **un seul compte et un seul solde**
 |---|---|
 | 01 Bienvenue | Logo, cartes Jeux et Sport, boutons « Créer un compte » et « Se connecter », mention 18+ |
 | 02 Connexion | Numéro (sélecteur de pays, +228 au lancement), mot de passe avec « Afficher », lien « Mot de passe oublié » (récupération par e-mail) |
-| 03 Inscription (étape 1 sur 2) | Nom complet, numéro, **e-mail (ajouté, absent de la maquette)**, mot de passe, code parrain (facultatif), case 18 ans et conditions |
+| 03 Inscription (étape 1 sur 2) | Identité : nom complet, numéro, **e-mail (ajouté, absent de la maquette)** |
+| 03 Inscription (étape 2 sur 2) | Sécurité : mot de passe, code parrain (facultatif), case 18 ans et conditions. **Découpage en deux étapes validé par le client, la maquette montrait tous les champs sur une seule page.** |
 | 04 Code SMS (étape 2 sur 2) | **À retirer** : pas de vérification par SMS (voir Compte et vérification) |
 
 Fichiers suivants de la maquette : **B, C…** (à fournir).
