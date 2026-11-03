@@ -1,34 +1,12 @@
+import countriesData from '../../shared/countries.json';
+
 // Pays acceptés à l'inscription et à la connexion.
-// Pays francophones d'Afrique. Pour désactiver un pays, passez `enabled` à false.
-// Le format du numéro suit `phoneLength` (chiffres après l'indicatif).
-// À vérifier avec les opérateurs avant la mise en ligne : longueurs de numéro et moyens de paiement.
-//
-// Important : functions/countries.js doit rester identique (il contrôle les numéros côté serveur).
-export const COUNTRIES = [
-  { code: 'TG', name: 'Togo', dialCode: '+228', phoneLength: 8, enabled: true },
-  { code: 'BJ', name: 'Bénin', dialCode: '+229', phoneLength: 8, enabled: true },
-  { code: 'BF', name: 'Burkina Faso', dialCode: '+226', phoneLength: 8, enabled: true },
-  { code: 'BI', name: 'Burundi', dialCode: '+257', phoneLength: 8, enabled: true },
-  { code: 'CM', name: 'Cameroun', dialCode: '+237', phoneLength: 9, enabled: true },
-  { code: 'CF', name: 'Centrafrique', dialCode: '+236', phoneLength: 8, enabled: true },
-  { code: 'KM', name: 'Comores', dialCode: '+269', phoneLength: 7, enabled: true },
-  { code: 'CG', name: 'Congo', dialCode: '+242', phoneLength: 9, enabled: true },
-  { code: 'CD', name: 'RD Congo', dialCode: '+243', phoneLength: 9, enabled: true },
-  { code: 'CI', name: "Côte d'Ivoire", dialCode: '+225', phoneLength: 10, enabled: true },
-  { code: 'DJ', name: 'Djibouti', dialCode: '+253', phoneLength: 8, enabled: true },
-  { code: 'GA', name: 'Gabon', dialCode: '+241', phoneLength: 8, enabled: true },
-  { code: 'GN', name: 'Guinée', dialCode: '+224', phoneLength: 9, enabled: true },
-  { code: 'MG', name: 'Madagascar', dialCode: '+261', phoneLength: 9, enabled: true },
-  { code: 'ML', name: 'Mali', dialCode: '+223', phoneLength: 8, enabled: true },
-  { code: 'MR', name: 'Mauritanie', dialCode: '+222', phoneLength: 8, enabled: true },
-  { code: 'NE', name: 'Niger', dialCode: '+227', phoneLength: 8, enabled: true },
-  { code: 'RW', name: 'Rwanda', dialCode: '+250', phoneLength: 9, enabled: true },
-  { code: 'SN', name: 'Sénégal', dialCode: '+221', phoneLength: 9, enabled: true },
-  { code: 'TD', name: 'Tchad', dialCode: '+235', phoneLength: 8, enabled: true },
-  { code: 'DZ', name: 'Algérie', dialCode: '+213', phoneLength: 9, enabled: true },
-  { code: 'MA', name: 'Maroc', dialCode: '+212', phoneLength: 9, enabled: true },
-  { code: 'TN', name: 'Tunisie', dialCode: '+216', phoneLength: 8, enabled: true },
-];
+// La liste vient de shared/countries.json (source unique, partagée avec les Cloud Functions).
+// Pour désactiver un pays, passez `enabled` à false dans ce fichier, puis lancez `npm run sync:countries`.
+export const COUNTRIES = countriesData.map((country) => ({
+  ...country,
+  // Le drapeau SVG est affiché par la classe `fi fi-<code>` (bibliothèque flag-icons).
+}));
 
 export const ENABLED_COUNTRIES = COUNTRIES.filter((c) => c.enabled);
 

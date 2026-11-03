@@ -6,7 +6,10 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "sync:countries": "node scripts/sync-countries.mjs",
+    "prebuild": "npm run sync:countries",
+    "predev": "npm run sync:countries"
   },
   "dependencies": {
     "firebase": "10.14.1",
