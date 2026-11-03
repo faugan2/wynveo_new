@@ -1,0 +1,263 @@
+/* Crash game : historique, courbe, bouton d'action, paramètres et joueurs de la manche. */
+
+.crash-layout {
+  display: grid;
+  gap: 16px;
+}
+
+.crash-history {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.crash-chips {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.crash-chip {
+  padding: 4px 10px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  background: #2a2140;
+  color: #f5f3ff;
+}
+
+.crash-chip.is-low {
+  background: #7f1d1d;
+}
+
+.crash-chip.is-mid {
+  background: #14532d;
+}
+
+.crash-chip.is-high {
+  background: #6d28d9;
+}
+
+.crash-stage {
+  display: grid;
+  gap: 12px;
+}
+
+.crash-chart-wrap {
+  position: relative;
+  border-radius: 16px;
+  background: #0f0b1f;
+  padding: 8px;
+  overflow: hidden;
+}
+
+.crash-chart {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.crash-grid {
+  stroke: #2a2140;
+  stroke-width: 1;
+}
+
+.crash-axis {
+  fill: #8b82a8;
+  font-size: 12px;
+}
+
+.crash-curve {
+  fill: none;
+  stroke: #a855f7;
+  stroke-width: 3;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+
+.crash-tip {
+  fill: #f5f3ff;
+  stroke: #a855f7;
+  stroke-width: 3;
+}
+
+.crash-value {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  color: #ffffff;
+}
+
+.crash-value > span {
+  font-size: clamp(40px, 9vw, 64px);
+  font-weight: 800;
+  text-shadow: 0 0 24px rgba(168, 85, 247, 0.6);
+}
+
+.crash-value small {
+  color: #c4b5fd;
+  font-size: 13px;
+}
+
+.crash-value.is-crashed > span {
+  color: #f87171;
+  text-shadow: 0 0 24px rgba(248, 113, 113, 0.6);
+}
+
+.crash-countdown {
+  font-size: clamp(40px, 9vw, 64px);
+  font-weight: 800;
+}
+
+.crash-banner {
+  position: absolute;
+  top: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 6px 12px;
+  border-radius: 8px;
+  background: #7f1d1d;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.crash-action {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  font-size: 18px;
+  font-weight: 800;
+  padding: 16px;
+  border: 0;
+  border-radius: 14px;
+  color: #ffffff;
+}
+
+.crash-action small {
+  font-size: 12px;
+  font-weight: 500;
+  opacity: 0.9;
+}
+
+.crash-action.btn-cashout {
+  background: linear-gradient(180deg, #22c55e, #15803d);
+}
+
+.crash-action.btn-bet {
+  background: linear-gradient(180deg, #a855f7, #6d28d9);
+}
+
+.crash-action:disabled {
+  opacity: 0.6;
+}
+
+.crash-controls,
+.crash-players {
+  display: grid;
+  gap: 12px;
+  align-content: start;
+}
+
+.crash-auto .switch {
+  position: relative;
+  display: inline-block;
+  width: 44px;
+  height: 24px;
+}
+
+.crash-auto .switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.crash-auto .switch span {
+  position: absolute;
+  inset: 0;
+  border-radius: 999px;
+  background: #3b3352;
+  transition: background 0.15s;
+}
+
+.crash-auto .switch span::after {
+  content: '';
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #ffffff;
+  transition: transform 0.15s;
+}
+
+.crash-auto .switch input:checked + span {
+  background: #a855f7;
+}
+
+.crash-auto .switch input:checked + span::after {
+  transform: translateX(20px);
+}
+
+.crash-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.crash-table th,
+.crash-table td {
+  padding: 6px 4px;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.crash-table th {
+  color: #8b82a8;
+  font-weight: 600;
+}
+
+.crash-table td:nth-child(n + 2),
+.crash-table th:nth-child(n + 2) {
+  text-align: right;
+}
+
+.crash-table tr.is-me td {
+  color: #c4b5fd;
+  font-weight: 700;
+}
+
+@media (min-width: 1024px) {
+  .crash-layout {
+    grid-template-columns: 280px minmax(0, 1fr) 300px;
+    grid-template-areas:
+      'history history history'
+      'controls stage players';
+    align-items: start;
+  }
+
+  .crash-history {
+    grid-area: history;
+  }
+
+  .crash-controls {
+    grid-area: controls;
+  }
+
+  .crash-stage {
+    grid-area: stage;
+  }
+
+  .crash-players {
+    grid-area: players;
+  }
+}
