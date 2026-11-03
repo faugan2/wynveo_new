@@ -1,0 +1,652 @@
+/* Sport : liste des matchs, cotes, détail d'un match, coupon et pari confirmé. */
+
+.match-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 12px;
+}
+
+.match-card {
+  border-radius: 16px;
+  padding: 14px;
+  background: #15102a;
+  border: 1px solid #2a2140;
+  color: #f5f3ff;
+  display: grid;
+  gap: 10px;
+}
+
+.match-card-head {
+  display: flex;
+  justify-content: space-between;
+  color: #8b82a8;
+  font-size: 12px;
+}
+
+.match-teams {
+  display: grid;
+  gap: 4px;
+  text-align: left;
+  background: none;
+  border: 0;
+  padding: 0;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+
+.odds-row {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.odds-row:has(> :only-child),
+.odds-row:has(> :nth-child(2):last-child) {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.odds-button {
+  display: grid;
+  gap: 2px;
+  justify-items: center;
+  padding: 8px 4px;
+  border-radius: 10px;
+  border: 1px solid #3b3352;
+  background: #1d1733;
+  color: #f5f3ff;
+  font: inherit;
+  cursor: pointer;
+  min-width: 0;
+}
+
+.odds-button small {
+  color: #8b82a8;
+  font-size: 11px;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.odds-button strong {
+  font-size: 15px;
+}
+
+.odds-button.is-selected {
+  background: #f5b82e;
+  border-color: #f5b82e;
+  color: #1a1330;
+}
+
+.odds-button.is-selected small {
+  color: #1a1330;
+}
+
+.odds-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.match-hero {
+  display: grid;
+  gap: 8px;
+  padding: 16px;
+  border-radius: 16px;
+  background: #15102a;
+  color: #f5f3ff;
+  text-align: center;
+}
+
+.match-hero small {
+  color: #8b82a8;
+}
+
+.match-hero-teams {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 8px;
+}
+
+.market-card {
+  display: grid;
+  gap: 10px;
+  padding: 14px;
+  border-radius: 16px;
+  background: #15102a;
+  border: 1px solid #2a2140;
+}
+
+.market-title {
+  display: flex;
+  justify-content: space-between;
+  font-size: 15px;
+  margin: 0;
+  color: #f5f3ff;
+}
+
+.market-title span {
+  color: #8b82a8;
+  font-weight: 500;
+}
+
+.coupon-bar {
+  position: sticky;
+  bottom: 84px;
+  margin-top: 16px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border: 0;
+  border-radius: 14px;
+  background: #0f9b8e;
+  color: #ffffff;
+  font: inherit;
+  cursor: pointer;
+}
+
+.coupon-count {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: #ffffff;
+  color: #0f9b8e;
+  font-weight: 800;
+}
+
+.coupon-bar-text {
+  flex: 1;
+  display: grid;
+  text-align: left;
+}
+
+.coupon-bar-text small {
+  opacity: 0.9;
+}
+
+.coupon-bar-go {
+  font-weight: 800;
+}
+
+.coupon-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.link-button {
+  background: none;
+  border: 0;
+  color: #ff6b6b;
+  font: inherit;
+  cursor: pointer;
+}
+
+.segmented {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  padding: 4px;
+  border-radius: 12px;
+  background: #15102a;
+  gap: 4px;
+}
+
+.segmented button {
+  padding: 10px;
+  border: 0;
+  border-radius: 9px;
+  background: transparent;
+  color: #8b82a8;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.segmented button.is-active {
+  background: #0f9b8e;
+  color: #ffffff;
+}
+
+.coupon-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 8px;
+}
+
+.coupon-item {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 10px;
+  padding: 12px;
+  border-radius: 12px;
+  background: #15102a;
+  border: 1px solid #2a2140;
+}
+
+.coupon-remove {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: 0;
+  background: #2a2140;
+  color: #f5f3ff;
+  cursor: pointer;
+}
+
+.coupon-item-body {
+  display: grid;
+  min-width: 0;
+}
+
+.coupon-item-body small {
+  color: #8b82a8;
+}
+
+.coupon-price {
+  color: #f5b82e;
+  font-size: 16px;
+}
+
+.coupon-total {
+  display: flex;
+  justify-content: space-between;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: #15102a;
+  color: #f5f3ff;
+}
+
+.coupon-total strong {
+  color: #f5b82e;
+  font-size: 18px;
+}
+
+.toggle-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 4px 2px;
+}
+
+.coupon-submit {
+  width: 100%;
+}
+
+.ticket-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 12px;
+  display: grid;
+  gap: 10px;
+}
+
+.ticket {
+  display: grid;
+  gap: 6px;
+  padding: 14px;
+  border-radius: 14px;
+  border: 1px dashed #0f9b8e;
+  background: #0f1a1f;
+  color: #f5f3ff;
+}
+
+.ticket small {
+  color: #8b82a8;
+}
+
+.bet-list {
+  list-style: none;
+  padding: 0;
+  margin: 12px 0 0;
+  display: grid;
+  gap: 12px;
+}
+
+.bet-card {
+  display: grid;
+  gap: 10px;
+  padding: 14px;
+  border-radius: 14px;
+  background: #15102a;
+  border: 1px solid #2a2140;
+  color: #f5f3ff;
+}
+
+.bet-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.bet-head small {
+  color: #8b82a8;
+}
+
+.bet-status {
+  padding: 3px 8px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.bet-status.is-open {
+  background: #1e3a5f;
+  color: #93c5fd;
+}
+
+.bet-status.is-won {
+  background: #14532d;
+  color: #86efac;
+}
+
+.bet-status.is-lost {
+  background: #7f1d1d;
+  color: #fca5a5;
+}
+
+.bet-status.is-void {
+  background: #3b3352;
+  color: #c4b5fd;
+}
+
+.bet-selections {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 8px;
+}
+
+.bet-selections li {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.bet-selections li > span {
+  display: grid;
+  min-width: 0;
+}
+
+.bet-selections small {
+  color: #8b82a8;
+}
+
+@media (min-width: 1024px) {
+  .match-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* Accueil Sport : filtres de sport, bandeau « En direct », onglets de jour. */
+.sport-filters {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  margin: 12px 0;
+}
+
+.sport-chip {
+  flex: 0 0 auto;
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: 1px solid #3b3352;
+  background: #15102a;
+  color: #f5f3ff;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.sport-chip.is-active {
+  background: #0f9b8e;
+  border-color: #0f9b8e;
+  color: #ffffff;
+}
+
+.section-label-sport {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 12px 0 8px;
+  font-size: 14px;
+  color: #f5f3ff;
+}
+
+.live-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #ef4444;
+  box-shadow: 0 0 8px #ef4444;
+}
+
+.live-strip {
+  list-style: none;
+  padding: 0 0 4px;
+  margin: 0 0 12px;
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+}
+
+.live-card {
+  display: grid;
+  gap: 4px;
+  min-width: 200px;
+  padding: 12px;
+  border-radius: 14px;
+  border: 1px solid #ef4444;
+  background: #1f0f14;
+  color: #f5f3ff;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.live-card small {
+  color: #fca5a5;
+}
+
+.day-tabs {
+  margin-bottom: 12px;
+}
+
+.day-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin: 16px 0 10px;
+}
+
+.day-title {
+  margin: 0;
+  font-size: 18px;
+  color: #f5f3ff;
+}
+
+.day-switch {
+  background: none;
+  border: 0;
+  color: #60a5fa;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* Section En direct, selon la maquette : titre en capitales rouges, cartes larges. */
+.live-title {
+  color: #ef4444;
+  text-transform: uppercase;
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  font-weight: 700;
+}
+
+.live-strip li {
+  flex: 0 0 66%;
+  min-width: 200px;
+  max-width: 280px;
+}
+
+.live-card {
+  width: 100%;
+  background: linear-gradient(180deg, #2a1230, #15102a);
+  border-color: #3b3352;
+  border-radius: 16px;
+  padding: 14px;
+}
+
+.live-card small {
+  color: #c4b5fd;
+}
+
+.live-strip {
+  scrollbar-color: #3b3352 transparent;
+}
+
+/* Carte En direct : ligne compétition, lignes d'équipes avec score, ligne de cotes (maquette). */
+.live-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.live-all {
+  color: #60a5fa;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.live-meta {
+  color: #c4b5fd;
+  font-size: 12px;
+}
+
+.live-team {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.live-team strong {
+  flex: 1;
+  font-size: 15px;
+}
+
+.live-badge-dot {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #3b3352;
+}
+
+.live-score {
+  color: #f5b82e;
+  font-size: 16px;
+}
+
+.live-odds {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.live-odd {
+  display: grid;
+  justify-items: center;
+  padding: 8px 4px;
+  border-radius: 10px;
+  border: 1px solid #3b3352;
+  background: #1d1733;
+}
+
+.live-odd small {
+  color: #8b82a8;
+  font-size: 11px;
+}
+
+/* Boutons de cote plus compacts. */
+.odds-row {
+  gap: 6px;
+}
+
+.odds-button {
+  padding: 5px 4px;
+  border-radius: 8px;
+}
+
+.odds-button strong {
+  font-size: 13px;
+}
+
+.odds-button small {
+  font-size: 10px;
+}
+
+.live-odds {
+  gap: 4px;
+  margin-top: 2px;
+}
+
+.live-odd {
+  padding: 5px 3px;
+  border-radius: 8px;
+}
+
+.live-odd strong {
+  font-size: 13px;
+}
+
+.live-odd small {
+  font-size: 10px;
+}
+
+.live-card {
+  padding: 10px;
+  gap: 3px;
+}
+
+.match-card {
+  padding: 10px;
+  gap: 8px;
+}
+
+/* Sports à venir : affichés mais désactivés. */
+.sport-chip:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* Défilement horizontal sans barre visible (filtres de sport et bandeau En direct). */
+.sport-filters,
+.live-strip {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.sport-filters::-webkit-scrollbar,
+.live-strip::-webkit-scrollbar {
+  display: none;
+}
+
+/* Titres de date des matchs : turquoise, comme le bouton Mon coupon. */
+.match-day .section-label-sport {
+  color: #2dd4bf;
+  text-transform: capitalize;
+  font-size: 14px;
+  font-weight: 700;
+  margin: 14px 0 8px;
+}
