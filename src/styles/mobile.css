@@ -1,0 +1,91 @@
+/* Mise en page mobile (base, sans media query). Ne contient que le téléphone. */
+
+/* Colonne principale : pleine largeur sur téléphone, centrée sur tablette et bureau. */
+.app-shell {
+  min-height: 100vh;
+  min-height: 100dvh;
+  background: linear-gradient(180deg, var(--bg-top) 0%, var(--bg) 45%);
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+  padding: env(safe-area-inset-top) max(16px, env(safe-area-inset-right)) env(safe-area-inset-bottom)
+    max(16px, env(safe-area-inset-left));
+}
+/* Très petits téléphones (ex. 320 px) : on réduit les marges et les tailles de titre. */
+@media (max-width: 359px) {
+  .app-shell {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+
+  .title-font {
+    font-size: 0.9em;
+  }
+
+  .universe-card {
+    min-height: 150px;
+  }
+}
+/* Cartes Jeux et Sport : deux colonnes, qui gardent une taille lisible. */
+.universe-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.universe-card {
+  border: 0;
+  border-radius: 18px;
+  padding: 16px;
+  text-align: left;
+  color: var(--text);
+  cursor: pointer;
+  min-height: 170px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+
+.universe-card--jeux {
+  background: linear-gradient(160deg, #8b5cf6 0%, var(--purple) 100%);
+}
+
+.universe-card--sport {
+  background: linear-gradient(160deg, #14b8a6 0%, var(--teal) 100%);
+}
+
+.universe-card .icon {
+  font-size: clamp(36px, 11vw, 48px);
+  line-height: 1;
+}
+
+.universe-card .name {
+  font-size: clamp(20px, 6vw, 26px);
+  margin-top: 8px;
+}
+
+.universe-card .desc {
+  font-size: 13px;
+  opacity: 0.85;
+}
+/* Accueil (mobile d'abord) : même présentation que la maquette, centrée. */
+.welcome-brand {
+  text-align: center;
+  padding-top: 36px;
+}
+
+.welcome-cards {
+  margin-top: 28px;
+}
+
+.welcome-hero {
+  text-align: center;
+  margin-top: 32px;
+}
+
+.welcome-footer {
+  margin-top: auto;
+  padding-top: 32px;
+}

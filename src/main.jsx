@@ -4,7 +4,11 @@ import { BrowserRouter } from 'react-router-dom';
 import App from './App.jsx';
 import { AuthProvider } from './context/AuthContext.jsx';
 import 'flag-icons/css/flag-icons.min.css';
+// Ordre important : chaque feuille complète la précédente (global, mobile, tablette, bureau).
 import './styles/global.css';
+import './styles/mobile.css';
+import './styles/tablet.css';
+import './styles/desktop.css';
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>

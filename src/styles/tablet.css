@@ -1,0 +1,25 @@
+/* Tablette (768 px et plus) : colonne centrée avec cadre. */
+
+/* Tablette et bureau : la colonne reste étroite et centrée, avec un léger encadrement. */
+@media (min-width: 768px) {
+  body {
+    background: #07061a;
+  }
+
+  .app-shell {
+    min-height: 100vh;
+    max-width: 480px;
+    margin: 32px auto;
+    border-radius: 28px;
+    border: 1px solid var(--border);
+    padding-left: 24px;
+    padding-right: 24px;
+    overflow: hidden;
+  }
+}
+@media (min-width: 768px) {
+  .bottom-sheet {
+    border-radius: 22px;
+    margin-bottom: 24px;
+  }
+}
