@@ -73,7 +73,7 @@ export default function Register() {
   }
 
   return (
-    <main className="app-shell">
+    <main className="app-shell app-shell--narrow">
       <div className="topbar">
         <button type="button" className="back-button" onClick={handleBack} aria-label="Retour">
           ‹

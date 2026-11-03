@@ -24,7 +24,7 @@ export default function Universe() {
       <p style={{ color: 'var(--text-muted)', marginTop: 4 }}>{universe.tagline}</p>
 
       {universe.games.length > 0 && (
-        <section style={{ display: 'grid', gap: 10, marginTop: 16 }}>
+        <section className="game-list" style={{ display: 'grid', gap: 10, marginTop: 16 }}>
           {universe.games.map((game) => (
             <article
               key={game.name}
