@@ -4,6 +4,8 @@ import { auth, functions } from '../lib/firebase.js';
 import { DEFAULT_COUNTRY, buildPhone } from '../config/countries.js';
 import PhoneInput from '../components/PhoneInput.jsx';
 import PasswordInput from '../components/PasswordInput.jsx';
+import BottomSheet from '../components/BottomSheet.jsx';
+import { TERMS } from '../content/terms.js';
 
 const MIN_PASSWORD_LENGTH = 8;
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -21,6 +23,7 @@ export default function Register() {
   const [password, setPassword] = useState('');
   const [referralCode, setReferralCode] = useState('');
   const [acceptedTerms, setAcceptedTerms] = useState(false);
+  const [termsOpen, setTermsOpen] = useState(false);
   const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
@@ -147,7 +150,11 @@ export default function Register() {
           <label className="legal-check">
             <input type="checkbox" checked={acceptedTerms} onChange={(e) => setAcceptedTerms(e.target.checked)} />
             <span>
-              J'ai 18 ans ou plus et j'accepte les <span style={{ color: 'var(--text-link)' }}>conditions d'utilisation</span>.
+              J'ai 18 ans ou plus et j'accepte les{' '}
+              <button type="button" className="link" onClick={() => setTermsOpen(true)}>
+                conditions d'utilisation
+              </button>
+              .
             </span>
           </label>
 
@@ -158,6 +165,39 @@ export default function Register() {
           </button>
         </form>
       )}
+
+      <BottomSheet
+        open={termsOpen}
+        title={TERMS.title}
+        onClose={() => setTermsOpen(false)}
+        footer={
+          <>
+            <button
+              type="button"
+              className="btn btn-primary"
+              onClick={() => {
+                setAcceptedTerms(true);
+                setTermsOpen(false);
+              }}
+            >
+              J'ai lu et j'accepte
+            </button>
+            <button type="button" className="btn btn-outline" onClick={() => setTermsOpen(false)}>
+              Fermer
+            </button>
+          </>
+        }
+      >
+        <p className="sheet-notice">{TERMS.draftNotice}</p>
+        {TERMS.sections.map((section) => (
+          <div key={section.heading}>
+            <h3>{section.heading}</h3>
+            {section.paragraphs.map((text) => (
+              <p key={text}>{text}</p>
+            ))}
+          </div>
+        ))}
+      </BottomSheet>
 
       <p style={{ textAlign: 'center', paddingBottom: 24, fontSize: 14, color: 'var(--text-muted)', marginTop: 'auto' }}>
         Déjà un compte ? <Link to="/login" className="link">Se connecter</Link>

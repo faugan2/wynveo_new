@@ -320,6 +320,109 @@ input {
   margin-top: 8px;
 }
 
+/* Feuille du bas (bottom sheet) : conditions d'utilisation. */
+.sheet-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.sheet-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(3, 2, 12, 0.7);
+  animation: sheet-fade 0.2s ease-out;
+}
+
+.bottom-sheet {
+  position: relative;
+  width: 100%;
+  max-width: 480px;
+  max-height: 85vh;
+  max-height: 85dvh;
+  display: flex;
+  flex-direction: column;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 22px 22px 0 0;
+  padding: 8px 20px max(20px, env(safe-area-inset-bottom));
+  animation: sheet-up 0.25s ease-out;
+}
+
+@media (min-width: 768px) {
+  .bottom-sheet {
+    border-radius: 22px;
+    margin-bottom: 24px;
+  }
+}
+
+.sheet-handle {
+  width: 40px;
+  height: 4px;
+  border-radius: 4px;
+  background: var(--border);
+  margin: 6px auto 12px;
+}
+
+.sheet-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.sheet-header h2 {
+  margin: 0;
+  font-size: 22px;
+}
+
+.sheet-body {
+  overflow-y: auto;
+  padding-right: 4px;
+  color: var(--text-muted);
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+.sheet-body h3 {
+  color: var(--text);
+  font-size: 15px;
+  margin: 16px 0 6px;
+}
+
+.sheet-body p {
+  margin: 0 0 8px;
+}
+
+.sheet-notice {
+  background: var(--warning-bg);
+  color: var(--warning-text);
+  border-radius: 10px;
+  padding: 8px 12px;
+  font-size: 13px;
+  margin: 0 0 8px;
+}
+
+.sheet-footer {
+  padding-top: 16px;
+  display: grid;
+  gap: 10px;
+}
+
+@keyframes sheet-up {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+
+@keyframes sheet-fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
 /* Sélecteur de pays : drapeau + indicatif, puis liste déroulante. */
 .phone-field {
   position: relative;

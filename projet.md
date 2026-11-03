@@ -25,6 +25,7 @@ Plateforme de jeux et de paris sportifs avec **un seul compte et un seul solde**
   - **Étape 1 sur 2, Identité** : nom complet, pays et numéro, **e-mail (obligatoire, unique)**.
   - **Étape 2 sur 2, Sécurité** : mot de passe (8 caractères minimum, bouton « Afficher »), code parrain facultatif, case « J'ai 18 ans ou plus et j'accepte les conditions d'utilisation ».
   - Le compte est créé à la fin de l'étape 2, sans code à saisir. On peut revenir à l'étape 1 sans perdre les saisies.
+  - Un clic sur « conditions d'utilisation » ouvre une feuille du bas (bottom sheet) avec le texte. Le bouton « J'ai lu et j'accepte » coche la case. Le texte est **provisoire** (`src/content/terms.js`) et doit être remplacé par la version validée avant la mise en ligne.
 - **Connexion** (écran 02) : numéro + mot de passe. Techniquement, l'e-mail sert d'identifiant Firebase Auth. Une Cloud Function retrouve l'e-mail à partir du numéro à la connexion. L'utilisateur ne voit pas cette étape.
 - **Mot de passe oublié** : lien de réinitialisation envoyé à l'e-mail du compte.
 - **Compte non vérifié** : une bannière légère en haut de l'application indique que le compte n'est pas encore vérifié.
