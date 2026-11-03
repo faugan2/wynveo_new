@@ -120,89 +120,79 @@
   }
 }
 
-/* Pages connectées sur bureau : barre latérale à gauche, contenu centré, pas de barre du bas. */
+/* Pages connectées sur bureau : barre de navigation en haut, contenu centré. */
 @media (min-width: 1024px) {
-  .connected-shell {
-    display: grid;
-    grid-template-columns: 248px minmax(0, 1fr);
-    min-height: 100vh;
-  }
-
-  .side-nav {
-    display: flex;
-    flex-direction: column;
-    gap: 28px;
+  .connected-header {
     position: sticky;
     top: 0;
-    height: 100vh;
-    padding: 28px 16px;
-    background: #0a0920;
-    border-right: 1px solid var(--border);
+    z-index: 30;
+    display: flex;
+    align-items: center;
+    gap: 32px;
+    height: 72px;
+    padding: 0 48px;
+    background: rgba(11, 10, 31, 0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
   }
 
-  .side-nav .brand {
-    padding-left: 12px;
+  .connected-header .brand {
     font-size: 28px;
   }
 
-  .side-tabs {
-    display: grid;
-    gap: 6px;
+  .top-nav {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex: 1;
   }
 
-  .side-tabs .nav-link {
+  .top-nav .nav-link {
     flex-direction: row;
-    gap: 14px;
-    padding: 12px 14px;
-    border-radius: 14px;
+    gap: 8px;
+    padding: 10px 14px;
+    border-radius: 12px;
     font-size: 15px;
+    color: var(--text-muted);
+    transition: background 0.2s, color 0.2s;
   }
 
-  .side-tabs .nav-icon {
-    width: 32px;
-    height: 32px;
-    background: transparent;
+  .top-nav .nav-icon {
+    width: auto;
+    height: auto;
+    background: transparent !important;
+    box-shadow: none !important;
     font-size: 18px;
   }
 
-  .side-tabs .nav-link:hover {
+  .top-nav .nav-link:hover {
     background: var(--surface);
     color: var(--text);
   }
 
-  .side-tabs .nav-link.is-active {
+  .top-nav .nav-link.is-active {
     background: rgba(245, 197, 24, 0.12);
-    color: var(--text);
-    box-shadow: inset 3px 0 0 var(--yellow);
+    color: var(--yellow);
   }
 
-  .side-tabs .nav-link.is-active .nav-icon {
-    box-shadow: none;
+  .connected-header .balance-pill {
+    font-size: 14px;
+    padding: 8px 14px;
   }
 
-  .side-balance {
-    margin-top: auto;
-  }
-
-  .side-balance .balance-pill {
-    display: block;
-    text-align: center;
-    padding: 10px 12px;
-  }
-
-  .bottom-nav,
-  .connected-header {
+  .bottom-nav {
     display: none;
   }
 
   .app-shell.connected {
     max-width: none;
-    min-height: 100vh;
-    padding: 40px 48px;
+    min-height: auto;
+    padding: 0;
   }
 
   .connected-body {
-    max-width: 760px;
-    padding-bottom: 32px;
+    max-width: 1040px;
+    margin: 0 auto;
+    padding: 32px 48px 48px;
   }
 }

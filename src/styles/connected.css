@@ -96,8 +96,8 @@
   box-shadow: inset 0 0 0 1px var(--yellow);
 }
 
-/* Sur téléphone, la barre latérale n'existe pas et l'en-tête reste simple. */
-.side-nav {
+/* Sur téléphone, la navigation est dans la barre du bas ; la barre du haut (bureau) est cachée. */
+.top-nav {
   display: none;
 }
 
