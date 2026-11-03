@@ -320,6 +320,26 @@ input {
   margin-top: 8px;
 }
 
+/* Accueil (mobile d'abord) : même présentation que la maquette, centrée. */
+.welcome-brand {
+  text-align: center;
+  padding-top: 36px;
+}
+
+.welcome-cards {
+  margin-top: 28px;
+}
+
+.welcome-hero {
+  text-align: center;
+  margin-top: 32px;
+}
+
+.welcome-footer {
+  margin-top: auto;
+  padding-top: 32px;
+}
+
 /* Bureau (à partir de 1024 px) : vraie mise en page large, sans cadre de téléphone. */
 .app-shell--narrow {
   max-width: 480px;
