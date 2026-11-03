@@ -13,6 +13,35 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
+    // Lucky Number : tirage en cours et derniers numéros tirés, lisibles par tout utilisateur connecté.
+    // Écriture réservée aux Cloud Functions. Aucune donnée personnelle.
+    match /wy_lucky_draws/{drawId} {
+      allow read: if request.auth != null;
+      allow write: if false;
+    }
+
+    match /wy_settings/lucky-number {
+      allow read: if request.auth != null;
+      allow write: if false;
+    }
+
+    // Jackpot : tours et gagnants récents, lisibles par tout utilisateur connecté. Écriture réservée aux fonctions.
+    match /wy_jackpot_rounds/{roundId} {
+      allow read: if request.auth != null;
+      allow write: if false;
+    }
+
+    match /wy_settings/jackpot {
+      allow read: if request.auth != null;
+      allow write: if false;
+    }
+
+    // Sport : matchs et cotes, lisibles par tout utilisateur connecté. Écriture réservée aux fonctions (import, règlement).
+    match /wy_sport_events/{eventId} {
+      allow read: if request.auth != null;
+      allow write: if false;
+    }
+
     // Tout le reste est fermé par défaut.
     match /{document=**} {
       allow read, write: if false;

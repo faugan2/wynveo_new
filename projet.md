@@ -66,7 +66,7 @@ Plateforme de jeux et de paris sportifs avec **un seul compte et un seul solde**
 - **Règlement** : automatique dès que le résultat est connu. Match annulé = choix compté à 1 (pari simple remboursé).
 - **Import des cotes** : The Odds API, toutes les 3 h (moyenne des bookmakers + marge Wynveo de 6 %). Les scores sont relevés toutes les 20 min, seulement s'il y a un match en cours.
 - Les cotes modifiées à la main ne sont plus écrasées par l'import.
-- Collection : `sportEvents` (lecture seule pour les joueurs).
+- Collection : `wy_sport_events` (lecture seule pour les joueurs).
 - **Mode démo** : matchs générés autour de l'heure actuelle, avec des boutons « Démo : terminer le match » et « Faire baisser la cote ».
 
 ### Administration
@@ -99,6 +99,53 @@ Plateforme de jeux et de paris sportifs avec **un seul compte et un seul solde**
 | 04 Code SMS (étape 2 sur 2) | **À retirer** : pas de vérification par SMS (voir Compte et vérification) |
 
 Fichiers suivants de la maquette : **B, C…** (à fournir).
+
+## Parrainage (bonus)
+
+Les bonus viennent du parrainage. Le bonus de bienvenue sur le premier dépôt n'existe plus.
+
+- Chaque utilisateur a **son propre code parrain**, généré à l'inscription.
+- Un nouvel inscrit peut saisir le code d'un parrain. Le lien parrain/filleul est créé **côté serveur**, à l'inscription, pour éviter les abus.
+- **Chaîne sur 5 niveaux** : si A parraine B, et B parraine C, quand C dépose, B reçoit le pourcentage du niveau 1 et A celui du niveau 2.
+- **Pourcentages de départ** : niveau 1 à 5 = 10 %, 5 %, 3 %, 2 %, 1 % du dépôt. Ils sont définis par l'admin.
+- **À chaque dépôt** du filleul, et non seulement au premier.
+- Le bonus est crédité dans le champ `bonus` du parrain, et chaque versement est tracé dans `wy_referral_bonuses`.
+- Les anciennes valeurs de bonus de test (accordées par l'ancien bonus de bienvenue) sont remises à zéro.
+
+**Points encore à trancher** : bonus retirable ou non, plafond éventuel par parrain.
+
+## Paramètres à configurer dans l'admin (plus tard)
+
+Chaque valeur ci-dessous a une valeur par défaut dans le code. Le serveur lit le document `wy_settings/{nom}` à chaque appel : une clé absente garde sa valeur par défaut, donc l'admin peut ne renseigner que ce qu'il veut changer. Les modifications prennent effet dès le prochain appel, sans republier les fonctions.
+
+| Document | Clé | Défaut | Rôle |
+|---|---|---|---|
+| `referral` | `rates` | `[10, 5, 3, 2, 1]` | Pourcentage du dépôt reçu par chaque niveau de parrainage (5 niveaux max) |
+| `deposit` | `minDeposit` | `1000` | Dépôt minimum (FCFA) |
+| `lucky-spin` | `minStake`, `maxStake` | `100`, `10000` | Mise minimum et maximum |
+| `lucky-spin` | `segments` | 8 cases `{multiplier, weight}` | Multiplicateurs et poids. Garder 8 cases, dans l'ordre de la roue |
+| `mystery-box` | `minStake`, `maxStake` | `100`, `10000` | Mise minimum et maximum |
+| `mystery-box` | `outcomes`, `boxCount` | 6 issues ; 9 coffres | Multiplicateurs et poids, nombre de coffres |
+| `lucky-number` | `minStake`, `maxStake` | `100`, `1000` | Mise minimum et maximum |
+| `lucky-number` | `multipliers`, `jackpotAmount` | `{2: 2, 3: 10, 4: 100}`, `1000000` | Gains selon le nombre de bons numéros ; gros lot à 5 bons |
+| `jackpot` | `ticketPrice`, `potShare` | `1000`, `0.8` | Prix du ticket et part vers la cagnotte |
+| `crash` | `enabled` | `true` | Ouvre ou ferme le jeu |
+| `crash` | `minStake`, `maxStake`, `stakeChips` | `100`, `10000`, 6 montants | Mises |
+| `crash` | `bettingSeconds` | `10` | Durée de la phase de mise |
+| `crash` | `growthRate` | `0.06` | Vitesse de montée de la courbe (e^(growthRate × s)) |
+| `crash` | `houseRtp` | `0.9` | Retour théorique au joueur (la marge de la maison est 1 − RTP) |
+| `crash` | `maxMultiplier` | `100` | Point de crash plafonné, et retrait automatique maximum |
+| `crash` | `minAutoCashout` | `1.01` | Retrait automatique minimum |
+| `crash` | `maxExposurePerRound` | `5000000` | Total des gains possibles acceptés sur une manche (plafond de solvabilité) |
+
+Les clés `currentRoundId`, `roundCounter`, `lastCrashAt`, `recentCrashes`, `drawCounter`, `recentDraws`, `lastDrawAt` et `recentWinners` sont écrites par le serveur : l'admin ne doit pas les modifier.
+
+**Restent dans le code, à brancher avec l'écran admin :**
+- Les montants de mise affichés côté écran (chips, mise minimum et maximum) de Lucky Spin, Mystery Box et Lucky Number. Le serveur valide avec les clés ci-dessus, mais l'écran garde ses propres valeurs.
+- Les cases de la roue Lucky Spin (`src/content/luckySpin.js`) : les libellés suivent la configuration seulement si les multiplicateurs restent identiques.
+- L'heure du tirage Jackpot (20 h UTC) et la fréquence des tirages Lucky Number (15 min), car elles sont fixées par la planification au déploiement. La manche Crash n'a pas d'horaire fixe : elle s'enchaîne à la suite de la précédente.
+- Les pays actifs (`shared/countries.json`), les moyens de paiement par pays (Chariow), la règle du compte vérifié (premier dépôt), le plafond de retrait sans vérification (50 000 FCFA), le délai de retrait et le montant minimum de retrait.
+- Le **bonus** : pourcentages de parrainage (ci-dessus), avec un historique des modifications (à créer avec l'écran admin).
 
 ## Feuille de route
 
