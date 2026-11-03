@@ -1,6 +1,7 @@
 const { onCall, HttpsError } = require('firebase-functions/v2/https');
 const admin = require('firebase-admin');
 const { getAuth } = require('firebase-admin/auth');
+const { FieldValue } = require('firebase-admin/firestore');
 const { isValidPhone } = require('./countries');
 
 admin.initializeApp();
@@ -85,8 +86,8 @@ exports.registerAccount = onCall({ region: REGION }, async (request) => {
         referralCode: referralCode.trim().toUpperCase(),
         verified: false,
         balance: { real: 0, bonus: 0, withdrawable: 0 },
-        acceptedTermsAt: admin.firestore.FieldValue.serverTimestamp(),
-        createdAt: admin.firestore.FieldValue.serverTimestamp(),
+        acceptedTermsAt: FieldValue.serverTimestamp(),
+        createdAt: FieldValue.serverTimestamp(),
       });
     });
   } catch (err) {
