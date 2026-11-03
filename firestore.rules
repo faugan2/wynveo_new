@@ -3,13 +3,13 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     // Profil : lecture par son propriétaire uniquement. Aucune écriture côté client.
-    match /users/{uid} {
+    match /wy_users/{uid} {
       allow read: if request.auth != null && request.auth.uid == uid;
       allow write: if false;
     }
 
     // Index numéro -> compte : réservé aux Cloud Functions.
-    match /phones/{phoneKey} {
+    match /wy_phones/{phoneKey} {
       allow read, write: if false;
     }
 

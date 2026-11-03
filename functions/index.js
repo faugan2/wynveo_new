@@ -22,14 +22,14 @@ exports.getLoginEmail = onCall({ region: REGION }, async (request) => {
     throw new HttpsError('invalid-argument', 'Numéro invalide.');
   }
 
-  const snapshot = await db.collection('phones').doc(phoneKey(phone)).get();
+  const snapshot = await db.collection('wy_phones').doc(phoneKey(phone)).get();
   if (!snapshot.exists) {
     throw new HttpsError('not-found', 'Numéro ou mot de passe incorrect.');
   }
   return { email: snapshot.get('email') };
 });
 
-// Crée le compte : Firebase Auth + profil users/{uid} + index phones/{numéro}, dans une transaction.
+// Crée le compte : Firebase Auth + profil wy_users/{uid} + index wy_phones/{numéro}, dans une transaction.
 exports.registerAccount = onCall({ region: REGION }, async (request) => {
   const { fullName, phone, email, password, referralCode = '', acceptedTerms } = request.data || {};
 
@@ -51,7 +51,7 @@ exports.registerAccount = onCall({ region: REGION }, async (request) => {
 
   const cleanEmail = email.trim().toLowerCase();
   const key = phoneKey(phone);
-  const phoneRef = db.collection('phones').doc(key);
+  const phoneRef = db.collection('wy_phones').doc(key);
 
   if ((await phoneRef.get()).exists) {
     throw new HttpsError('already-exists', 'Ce numéro est déjà utilisé.');
@@ -79,7 +79,7 @@ exports.registerAccount = onCall({ region: REGION }, async (request) => {
         throw new HttpsError('already-exists', 'Ce numéro est déjà utilisé.');
       }
       tx.set(phoneRef, { uid: userRecord.uid, email: cleanEmail });
-      tx.set(db.collection('users').doc(userRecord.uid), {
+      tx.set(db.collection('wy_users').doc(userRecord.uid), {
         fullName: fullName.trim(),
         phone,
         email: cleanEmail,

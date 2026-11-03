@@ -24,7 +24,7 @@ export function AuthProvider({ children }) {
       }
 
       unsubscribeProfile = db
-        .collection('users')
+        .collection('wy_users')
         .doc(firebaseUser.uid)
         .onSnapshot(
           (snapshot) => {

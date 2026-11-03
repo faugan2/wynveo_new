@@ -9,6 +9,8 @@ Plateforme de jeux et de paris sportifs avec **un seul compte et un seul solde**
 
 ## Principes
 
+- **Collections Firestore préfixées `wy_`** (ex. `wy_users`, `wy_phones`, `wy_bets`). Toute nouvelle collection doit suivre cette règle, dans le code comme dans `firestore.rules`.
+
 0. **Majorité** : seules les personnes de **18 ans ou plus** peuvent créer un compte. La case de confirmation est obligatoire à l'inscription.
 1. **Tout l'argent passe par les Cloud Functions** : tirages, mises, gains, retraits et règlements sont calculés côté serveur, dans des transactions Firestore. Le client n'écrit jamais de solde.
 2. **Tirages aléatoires sécurisés** : `crypto.randomInt` côté serveur.
