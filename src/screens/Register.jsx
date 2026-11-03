@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { auth, functions } from '../lib/firebase.js';
 import { DEFAULT_COUNTRY, buildPhone } from '../config/countries.js';
 import PhoneInput from '../components/PhoneInput.jsx';
@@ -16,13 +16,15 @@ const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 // Le compte est créé tout de suite à la fin, sans code à saisir.
 export default function Register() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [step, setStep] = useState(1);
   const [country, setCountry] = useState(DEFAULT_COUNTRY);
   const [fullName, setFullName] = useState('');
   const [localPhone, setLocalPhone] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [referralCode, setReferralCode] = useState('');
+  // Lien de parrainage (?ref=CODE) : le code est pré-rempli à l'étape 2.
+  const [referralCode, setReferralCode] = useState((searchParams.get('ref') ?? '').toUpperCase());
   const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [termsOpen, setTermsOpen] = useState(false);
   const [error, setError] = useState('');

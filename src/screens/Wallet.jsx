@@ -1,24 +1,42 @@
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ConnectedLayout from '../components/ConnectedLayout.jsx';
-import { MOCK_WALLET, PAYMENT_METHODS, OPERATIONS } from '../mock/wallet.js';
+import { useAuth } from '../context/AuthContext.jsx';
+import { functions } from '../lib/firebase.js';
 import { formatFcfa } from '../lib/format.js';
+import { walletFromProfile } from '../lib/wallet.js';
 
-// Écran 06 : Portefeuille (solde, bonus, moyens de paiement, dernières opérations).
+// Écran 06 : Portefeuille (solde des dépôts, retirable, dernières opérations).
+// Les soldes et les opérations viennent de la base.
 export default function Wallet() {
   const navigate = useNavigate();
-  const progress = Math.min(100, Math.round((MOCK_WALLET.bonus / MOCK_WALLET.bonusTarget) * 100));
+  const { profile } = useAuth();
+  const wallet = walletFromProfile(profile);
+
+  const [operations, setOperations] = useState(null);
+  const [operationsError, setOperationsError] = useState('');
+
+  useEffect(() => {
+    let active = true;
+    functions
+      .httpsCallable('getMyOperations')({})
+      .then(({ data }) => active && setOperations(data.operations))
+      .catch((err) => active && setOperationsError(err?.message || 'Opérations indisponibles.'));
+    return () => {
+      active = false;
+    };
+  }, []);
 
   return (
     <ConnectedLayout>
       <section className="wallet-card">
-        <small>Solde disponible · Jeux & Sport</small>
+        <small>Solde des dépôts</small>
         <div className="balance-amount big">
-          {formatFcfa(MOCK_WALLET.balance, { unit: false })} <span>FCFA</span>
+          {formatFcfa(wallet.deposit, { unit: false })} <span>FCFA</span>
         </div>
-        <small>
-          Retirable : <b className="gold">{formatFcfa(MOCK_WALLET.withdrawable, { unit: false })}</b> · Bonus :{' '}
-          <b className="gold">{formatFcfa(MOCK_WALLET.bonus, { unit: false })}</b>
-        </small>
+        <span className="wallet-chip">
+          Retirable <b>{formatFcfa(wallet.withdrawable, { unit: false })}</b>
+        </span>
         <div className="wallet-actions">
           <button type="button" className="btn btn-primary btn-small" onClick={() => navigate('/depot')}>
             + Déposer
@@ -29,55 +47,35 @@ export default function Wallet() {
         </div>
       </section>
 
-      <section className="bonus-box">
-        <div className="bonus-head">
-          <span>Bonus de bienvenue</span>
-          <b>
-            {formatFcfa(MOCK_WALLET.bonus, { unit: false })} / {formatFcfa(MOCK_WALLET.bonusTarget, { unit: false })}
-          </b>
-        </div>
-        <div className="progress" aria-hidden="true">
-          <span style={{ width: `${progress}%` }} />
-        </div>
-        <p>
-          Misez encore {formatFcfa(MOCK_WALLET.bonusRemainingBets)} (jeux ou sport) pour débloquer le bonus.
-        </p>
-      </section>
-
-      <div className="section-head">
-        <h2>Mes moyens de paiement</h2>
-        <button type="button" className="link">+ Ajouter</button>
-      </div>
-      <ul className="method-list">
-        {PAYMENT_METHODS.filter((m) => m.phone).map((method) => (
-          <li key={method.id} className="method-item">
-            <span className="method-badge" style={{ background: method.color }}>{method.short}</span>
-            <div>
-              <strong>{method.label}</strong>
-              <small>{method.phone}{method.id === 'tmoney' ? ' · Par défaut' : ''}</small>
-            </div>
-          </li>
-        ))}
-      </ul>
-
       <div className="section-head">
         <h2>Dernières opérations</h2>
-        <button type="button" className="link">Historique</button>
       </div>
-      <ul className="op-list">
-        {OPERATIONS.map((op) => (
-          <li key={op.id} className="op-item">
-            <div>
-              <strong>{op.label}</strong>
-              <small>{op.date}</small>
-            </div>
-            <b className={op.amount > 0 ? 'positive' : 'negative'}>
-              {op.amount > 0 ? '+' : '−'}
-              {formatFcfa(Math.abs(op.amount), { unit: false })}
-            </b>
-          </li>
-        ))}
-      </ul>
+
+      {operationsError && <p className="error" role="alert">{operationsError}</p>}
+      {!operations && !operationsError && <p className="hint">Chargement…</p>}
+      {operations && operations.length === 0 && (
+        <p className="note">Aucune opération pour le moment.</p>
+      )}
+      {operations && operations.length > 0 && (
+        <ul className="op-list">
+          {operations.map((op) => (
+            <li key={op.id} className="op-item">
+              <div>
+                <strong>{op.label}</strong>
+                <small>
+                  {op.createdAt
+                    ? new Date(op.createdAt).toLocaleString('fr-FR', { dateStyle: 'short', timeStyle: 'short' })
+                    : 'En cours'}
+                </small>
+              </div>
+              <b className={op.amount >= 0 ? 'positive' : 'negative'}>
+                {op.amount >= 0 ? '+' : '−'}
+                {formatFcfa(Math.abs(op.amount), { unit: false })}
+              </b>
+            </li>
+          ))}
+        </ul>
+      )}
     </ConnectedLayout>
   );
 }

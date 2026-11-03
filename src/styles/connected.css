@@ -1,12 +1,101 @@
 /* Pages connectées : accueil, portefeuille, dépôt, retrait (maquette B). Style de téléphone.
-   La barre latérale (bureau) est dans desktop.css. */
+   La barre du haut (bureau) est dans desktop.css. */
 
 .connected-header {
+  position: sticky;
+  top: 0;
+  z-index: 35;
+  background: #0b0a1f;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 12px;
   padding: 18px 16px 12px;
+}
+
+/* Logo de l'en-tête : cliquable, renvoie à l'accueil. */
+.header-brand {
+  text-decoration: none;
+  color: inherit;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Menu « Plus... » : bureau seulement, donc caché sur téléphone. */
+.more-menu {
+  display: none;
+}
+
+/* Bouton hamburger : visible sur téléphone seulement. */
+.menu-button {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+}
+
+/* Contenu du menu hamburger. */
+.menu-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 6px;
+}
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  padding: 14px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: var(--surface);
+  color: var(--text);
+  font-size: 15px;
+  font-weight: 600;
+  text-decoration: none;
+  text-align: left;
+  cursor: pointer;
+}
+
+.menu-item-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: var(--field);
+  display: grid;
+  place-items: center;
+  color: var(--yellow);
+  flex-shrink: 0;
+}
+
+.menu-item-label {
+  flex: 1;
+}
+
+.menu-item-arrow {
+  color: var(--text-muted);
+  display: grid;
+}
+
+.menu-item--danger {
+  color: var(--danger);
+  margin-top: 10px;
+}
+
+.menu-item--danger .menu-item-icon {
+  color: var(--danger);
 }
 
 .balance-pill {
@@ -113,10 +202,20 @@
   margin-bottom: 14px;
 }
 
-.greeting small {
-  display: block;
+/* Salutation sur une seule ligne : « Bonjour fogan 👋 ». */
+.greeting-line {
+  margin: 0;
+  font-size: 16px;
   color: var(--text-muted);
-  font-size: 13px;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.greeting-hand {
+  color: var(--yellow);
+  flex-shrink: 0;
 }
 
 .greeting strong {
@@ -177,6 +276,20 @@
 
 .balance-amount.big {
   font-size: 40px;
+}
+
+/* Dépôts et bonus côte à côte sur la carte de l'accueil. */
+.balance-split {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+/* « FCFA » passe sous le montant, sur sa propre ligne. */
+.balance-split .balance-amount span {
+  display: block;
+  font-size: 14px;
+  margin-top: 2px;
 }
 
 .balance-actions,
@@ -716,4 +829,1220 @@
 .page-title {
   font-size: 30px;
   margin: 12px 0 6px;
+}
+
+/* Carte « Solde des dépôts » (portefeuille) : plus marquée, avec une pastille pour le retirable. */
+.wallet-card {
+  position: relative;
+  overflow: hidden;
+  padding: 22px 20px 20px;
+  background: linear-gradient(150deg, #3d2c96 0%, #1d1748 100%);
+  border: 1px solid #5b4bc4;
+  border-radius: 20px;
+  box-shadow: 0 14px 34px rgba(70, 50, 200, 0.35);
+}
+
+.wallet-card::after {
+  content: '';
+  position: absolute;
+  right: -50px;
+  top: -50px;
+  width: 170px;
+  height: 170px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(245, 197, 24, 0.22), transparent 70%);
+  pointer-events: none;
+}
+
+.wallet-card .balance-amount.big {
+  font-size: 46px;
+  margin: 6px 0 2px;
+}
+
+.wallet-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 8px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text-muted);
+  font-size: 13px;
+}
+
+.wallet-chip b {
+  color: var(--yellow);
+  font-weight: 700;
+}
+
+.wallet-card .wallet-actions {
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+/* Boutons compacts (ex. copier et partager sur la page Profil). */
+.btn-compact {
+  padding: 10px 12px;
+  font-size: 14px;
+  border-radius: 12px;
+}
+
+/* Page Profil : identité, cartes d'information, réseau. */
+.profile-hero {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 8px 0 4px;
+}
+
+.profile-hero h1 {
+  font-size: 26px;
+  margin: 0;
+  line-height: 1.1;
+}
+
+.profile-hero small {
+  color: var(--text-muted);
+  font-size: 14px;
+}
+
+.profile-avatar {
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  background: linear-gradient(150deg, #8b5cf6, var(--purple));
+  display: grid;
+  place-items: center;
+  font-family: var(--font-title);
+  font-size: 26px;
+  font-weight: 800;
+  flex-shrink: 0;
+  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.25);
+}
+
+.info-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 4px 16px;
+  margin-top: 16px;
+}
+
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 14px;
+}
+
+.info-row:last-child {
+  border-bottom: 0;
+}
+
+.info-row span {
+  color: var(--text-muted);
+}
+
+.info-row b {
+  text-align: right;
+  overflow-wrap: anywhere;
+}
+
+.section-title {
+  font-family: var(--font-title);
+  font-size: 18px;
+  letter-spacing: 0.3px;
+  margin: 22px 0 10px;
+}
+
+.referral-help {
+  color: var(--text-muted);
+  font-size: 13px;
+  margin: 12px 0 0;
+  line-height: 1.5;
+}
+
+.referral-link {
+  margin-top: 14px;
+}
+
+/* Boutons sous le lien : un écart net avec le champ. */
+.referral-card .split-buttons {
+  margin-top: 16px;
+}
+
+.referral-card .btn-compact {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+/* Liens de partage directs (WhatsApp, Telegram, SMS, e-mail). */
+.share-links {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.share-link {
+  display: block;
+  padding: 9px 4px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--field);
+  color: var(--text);
+  font-size: 12px;
+  font-weight: 600;
+  text-align: center;
+  text-decoration: none;
+}
+
+/* Partager : pleine largeur, sous les deux boutons de copie. */
+.referral-card .btn-share {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 10px;
+  width: 100%;
+}
+
+.referral-link input {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.network-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
+}
+
+.network-tile {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 10px 4px;
+  display: grid;
+  justify-items: center;
+  gap: 2px;
+  text-align: center;
+}
+
+.network-tile small {
+  color: var(--text-muted);
+  font-size: 9px;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.network-tile strong {
+  font-family: var(--font-title);
+  font-size: 22px;
+  line-height: 1.1;
+}
+
+.network-tile span {
+  color: var(--text-muted);
+  font-size: 11px;
+}
+
+.network-tile b {
+  font-size: 11px;
+  margin-top: 2px;
+}
+
+.member-list {
+  list-style: none;
+  padding: 0;
+  margin: 12px 0 0;
+  display: grid;
+  gap: 8px;
+}
+
+.member-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 12px 14px;
+}
+
+.member-item > div {
+  flex: 1;
+}
+
+.member-item strong {
+  display: block;
+  font-size: 15px;
+}
+
+.member-item small {
+  color: var(--text-muted);
+  font-size: 12px;
+}
+
+.member-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--field);
+  border: 1px solid var(--border);
+  display: grid;
+  place-items: center;
+  font-family: var(--font-title);
+  font-weight: 800;
+  color: var(--yellow);
+  flex-shrink: 0;
+}
+
+/* Page Jeux : liste de cartes. */
+.game-list {
+  list-style: none;
+  padding: 0;
+  margin: 12px 0 0;
+  display: grid;
+  gap: 10px;
+}
+
+.game-card {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 14px;
+}
+
+/* En-tête de la carte : icône et texte côte à côte. */
+.game-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.game-card .btn-compact {
+  width: 100%;
+}
+
+.game-card .game-badge {
+  align-self: flex-start;
+}
+
+.game-card.is-soon {
+  opacity: 0.6;
+}
+
+.game-icon {
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+  background: var(--field);
+  display: grid;
+  place-items: center;
+  font-size: 28px;
+  flex-shrink: 0;
+}
+
+.game-body {
+  flex: 1;
+  min-width: 0;
+  display: grid;
+  gap: 2px;
+}
+
+.game-body strong {
+  font-size: 19px;
+  line-height: 1.1;
+}
+
+.game-body > span {
+  font-size: 13px;
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
+.game-body small {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.game-badge {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--yellow);
+  border: 1px solid var(--yellow);
+  border-radius: 999px;
+  padding: 4px 10px;
+  white-space: nowrap;
+}
+
+/* Lucky Spin : roue, mise et résultat. */
+.game-title {
+  text-align: center;
+  margin-top: 4px;
+}
+
+.game-title h1 {
+  font-size: 30px;
+  margin: 0;
+}
+
+.game-title p {
+  margin: 4px 0 0;
+  font-size: 14px;
+  color: var(--text-muted);
+}
+
+.wheel-card {
+  position: relative;
+  margin-top: 16px;
+  padding: 18px 10px 14px;
+  background: var(--surface);
+  border: 1px solid #5b4bc4;
+  border-radius: 20px;
+  box-shadow: 0 12px 30px rgba(70, 50, 200, 0.3);
+}
+
+.wheel-wrap {
+  position: relative;
+  width: 100%;
+  max-width: 300px;
+  margin: 0 auto;
+  aspect-ratio: 1;
+}
+
+.wheel {
+  width: 100%;
+  height: 100%;
+  display: block;
+  border-radius: 50%;
+  box-shadow: 0 0 0 6px #f5c518, 0 0 30px rgba(245, 197, 24, 0.35);
+}
+
+.wheel-pointer {
+  position: absolute;
+  top: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 12px solid transparent;
+  border-right: 12px solid transparent;
+  border-top: 22px solid #f5c518;
+  z-index: 2;
+  filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.5));
+}
+
+.stake-box {
+  margin-top: 16px;
+  padding: 16px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+}
+
+.stake-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.stake-head span {
+  font-family: var(--font-title);
+  font-size: 15px;
+  color: var(--text);
+  font-weight: 700;
+}
+
+.stepper {
+  display: grid;
+  grid-template-columns: 52px 1fr 52px;
+  align-items: center;
+  margin-top: 10px;
+  background: var(--field);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 6px;
+}
+
+.stepper button {
+  height: 40px;
+  border: 0;
+  border-radius: 10px;
+  background: var(--surface);
+  color: var(--text);
+  font-size: 22px;
+  cursor: pointer;
+}
+
+.stepper strong {
+  text-align: center;
+  font-family: var(--font-title);
+  font-size: 22px;
+}
+
+.spin-button {
+  display: grid;
+  gap: 2px;
+  width: 100%;
+  margin-top: 14px;
+  padding: 14px;
+  border: 0;
+  border-radius: 14px;
+  background: linear-gradient(180deg, var(--green) 0%, var(--green-dark) 100%);
+  color: var(--text);
+  font-family: var(--font-title);
+  font-size: 22px;
+  font-weight: 800;
+  text-transform: uppercase;
+  cursor: pointer;
+  box-shadow: 0 6px 18px rgba(34, 165, 91, 0.35);
+}
+
+.spin-button small {
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 500;
+  text-transform: none;
+  opacity: 0.85;
+}
+
+.spin-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Résultat : carte par-dessus la page. */
+.result-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: grid;
+  place-items: center;
+  padding: 16px;
+  background: rgba(3, 2, 12, 0.7);
+}
+
+.result-card {
+  width: 100%;
+  max-width: 340px;
+  padding: 22px 18px 16px;
+  background: var(--surface);
+  border: 2px solid var(--yellow);
+  border-radius: 22px;
+  box-shadow: 0 0 40px rgba(245, 197, 24, 0.35);
+  text-align: center;
+}
+
+.result-card h2 {
+  margin: 4px 0 0;
+  font-size: 28px;
+}
+
+.result-emoji {
+  font-size: 44px;
+  line-height: 1;
+}
+
+.result-sub {
+  margin: 8px 0 0;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.result-multiplier {
+  font-family: var(--font-title);
+  font-size: 56px;
+  font-weight: 800;
+  color: var(--yellow);
+  line-height: 1.1;
+  margin: 2px 0 10px;
+}
+
+.result-card .summary {
+  text-align: left;
+}
+
+.result-close {
+  display: block;
+  margin: 12px auto 0;
+}
+
+/* Mystery Box : grille de 9 coffres et résultat. */
+.boxes-card {
+  margin-top: 16px;
+  padding: 14px;
+  background: var(--surface);
+  border: 1px solid #5b4bc4;
+  border-radius: 20px;
+  box-shadow: 0 12px 30px rgba(70, 50, 200, 0.3);
+}
+
+.boxes-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.box {
+  display: grid;
+  place-items: center;
+  gap: 4px;
+  min-height: 92px;
+  padding: 10px 4px;
+  background: var(--field);
+  border: 2px solid var(--border);
+  border-radius: 16px;
+  color: var(--text);
+  cursor: pointer;
+}
+
+.box:disabled {
+  cursor: default;
+}
+
+.box-icon {
+  font-size: 30px;
+  line-height: 1;
+}
+
+.box-value {
+  font-family: var(--font-title);
+  font-size: 16px;
+  font-weight: 800;
+}
+
+.box.is-chosen {
+  border-color: var(--yellow);
+  box-shadow: 0 0 18px rgba(245, 197, 24, 0.45);
+}
+
+.box.is-win .box-value {
+  color: var(--yellow);
+}
+
+.box.is-empty {
+  opacity: 0.6;
+}
+
+.box-result {
+  margin-top: 16px;
+  padding: 18px 16px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  text-align: center;
+}
+
+.box-result small {
+  font-size: 13px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.box-result-amount {
+  font-family: var(--font-title);
+  font-size: 40px;
+  font-weight: 800;
+  margin: 4px 0;
+}
+
+.box-result .note {
+  margin: 0 0 12px;
+  text-align: left;
+}
+
+.box-result .summary {
+  text-align: left;
+  margin: 0 0 14px;
+}
+
+/* Lucky Number : numéros tirés, grille de choix, table des gains. */
+.lucky-card {
+  margin-top: 14px;
+  padding: 14px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+}
+
+.lucky-card > small {
+  display: block;
+  font-size: 12px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 8px;
+}
+
+.balls {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.ball {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: radial-gradient(circle at 35% 30%, #fde68a, #f5c518 60%, #b8860b);
+  color: #111;
+  font-family: var(--font-title);
+  font-size: 20px;
+  font-weight: 800;
+}
+
+.number-grid {
+  display: grid;
+  grid-template-columns: repeat(10, 1fr);
+  gap: 5px;
+  margin-top: 10px;
+}
+
+.number-cell {
+  aspect-ratio: 1;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--field);
+  color: var(--text);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+}
+
+.number-cell.is-picked {
+  background: var(--purple);
+  border-color: #a78bfa;
+  color: #fff;
+}
+
+.payout-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 8px;
+}
+
+.payout-list li {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+  color: var(--text-muted);
+}
+
+.btn-jeux small {
+  display: block;
+  font-size: 12px;
+  font-weight: 500;
+  text-transform: none;
+  opacity: 0.85;
+}
+
+/* Lucky Number : vos numéros, table des gains, bouton bleu. */
+.slots {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
+  margin: 12px 0 4px;
+}
+
+.slot {
+  aspect-ratio: 1;
+  max-height: 52px;
+  justify-self: center;
+  width: 100%;
+  border: 2px dashed var(--border);
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  color: var(--text);
+  font-family: var(--font-title);
+  font-size: 20px;
+  font-weight: 800;
+}
+
+.slot.is-filled {
+  border: 0;
+  background: radial-gradient(circle at 35% 30%, #86efac, #22a55b 60%, #15803d);
+  color: #06210f;
+}
+
+.match-badge {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-family: var(--font-title);
+  font-weight: 800;
+  font-size: 14px;
+  flex-shrink: 0;
+  background: var(--field);
+  color: var(--text);
+}
+
+.match-badge.m3 {
+  background: var(--yellow);
+  color: #111;
+}
+
+.match-badge.m4 {
+  background: #f97316;
+  color: #111;
+}
+
+.match-badge.m5 {
+  background: linear-gradient(180deg, #fde68a, #b8860b);
+  color: #111;
+}
+
+.payout-list li {
+  align-items: center;
+  gap: 10px;
+  color: var(--text);
+}
+
+.payout-label {
+  flex: 1;
+}
+
+.btn-blue {
+  margin-top: 18px;
+  background: linear-gradient(180deg, #3b82f6 0%, #1d4ed8 100%);
+  box-shadow: 0 6px 18px rgba(37, 99, 235, 0.4);
+  padding: 16px;
+}
+
+.btn-blue small {
+  display: block;
+  font-size: 12px;
+  font-weight: 500;
+  text-transform: none;
+  opacity: 0.9;
+}
+
+/* Lucky Number : historique des tirages du joueur. */
+.history-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 10px;
+}
+
+.history-item {
+  position: relative;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--border);
+  border-radius: 12px;
+  padding: 8px 10px;
+  display: grid;
+  gap: 6px;
+}
+
+.history-item.is-win {
+  border-left-color: var(--green);
+}
+
+.history-item.is-loss {
+  border-left-color: var(--danger);
+}
+
+.history-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+
+.history-head small {
+  color: var(--text-muted);
+  font-size: 11px;
+}
+
+.history-net {
+  font-family: var(--font-title);
+  font-size: 16px;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.history-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.history-label {
+  display: none;
+}
+
+.history-balls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.mini-ball {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: var(--field);
+  border: 1px solid var(--border);
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.mini-ball.is-drawn {
+  background: radial-gradient(circle at 35% 30%, #fde68a, #f5c518 60%, #b8860b);
+  color: #111;
+  border: 0;
+}
+
+.mini-ball.is-hit {
+  background: radial-gradient(circle at 35% 30%, #86efac, #22a55b 60%, #15803d);
+  color: #06210f;
+  border: 0;
+}
+
+/* Côté droit de l'en-tête : détail du pari, puis gain ou perte en pastille. */
+/* Bloc de droite (détail du pari et résultat) : en position absolue, dans le coin haut droit de la carte. */
+.history-amount {
+  position: absolute;
+  top: 8px;
+  right: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 3px;
+}
+
+.history-foot {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  color: var(--text-muted);
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.3;
+  text-align: right;
+}
+
+.history-net {
+  padding: 3px 9px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+.history-net.positive {
+  background: rgba(34, 165, 91, 0.18);
+}
+
+.history-net.negative {
+  background: rgba(255, 92, 108, 0.16);
+}
+
+/* Lucky Number : carte « Votre participation », affichée en premier après un pari. */
+.participation-card {
+  margin-top: 14px;
+  padding: 16px;
+  background: linear-gradient(160deg, #14532d 0%, #0f2a1d 100%);
+  border: 2px solid #22a55b;
+  border-radius: 20px;
+  box-shadow: 0 10px 28px rgba(34, 165, 91, 0.25);
+  display: grid;
+  gap: 14px;
+}
+
+.participation-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.participation-tag {
+  font-family: var(--font-title);
+  font-size: 15px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #86efac;
+}
+
+.participation-status {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--yellow);
+  border: 1px solid var(--yellow);
+  border-radius: 999px;
+  padding: 4px 10px;
+}
+
+.participation-main {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 12px;
+}
+
+.participation-main small {
+  display: block;
+  font-size: 12px;
+  color: #bbf7d0;
+}
+
+.participation-main strong {
+  font-family: var(--font-title);
+  font-size: 26px;
+  font-weight: 800;
+}
+
+.participation-countdown {
+  text-align: right;
+}
+
+.participation-countdown b {
+  display: block;
+  font-family: var(--font-title);
+  font-size: 30px;
+  font-weight: 800;
+  color: var(--yellow);
+  line-height: 1;
+}
+
+.bet-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 8px;
+}
+
+.bet-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  background: rgba(0, 0, 0, 0.25);
+  border-radius: 14px;
+  padding: 10px 12px;
+}
+
+.bet-item small {
+  font-size: 13px;
+  color: #bbf7d0;
+  white-space: nowrap;
+}
+
+.bet-balls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.mini-ball.is-pick {
+  background: radial-gradient(circle at 35% 30%, #86efac, #22a55b 60%, #15803d);
+  color: #06210f;
+  border: 0;
+}
+
+.participation-foot {
+  margin: 0;
+  font-size: 12px;
+  color: #bbf7d0;
+  line-height: 1.5;
+}
+
+/* Lucky Number : lien vers la table des gains (feuille du bas). */
+.payout-link {
+  width: 100%;
+  margin-top: 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 16px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  color: var(--text);
+  font-family: var(--font-title);
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.payout-link span:last-child {
+  color: var(--text-muted);
+  font-size: 22px;
+}
+
+/* Jackpot : cagnotte, ticket, compte à rebours, bouton orange. */
+.jackpot-hero {
+  text-align: center;
+  padding: 4px 0 0;
+}
+
+.jackpot-hero h1 {
+  font-size: 28px;
+  margin: 4px 0 0;
+}
+
+.jackpot-hero p {
+  margin: 4px 0 0;
+  font-size: 14px;
+  color: var(--text-muted);
+}
+
+.jackpot-crown {
+  font-size: 44px;
+  line-height: 1;
+}
+
+.pot-card {
+  margin-top: 14px;
+  padding: 16px;
+  text-align: center;
+  background: var(--surface);
+  border: 1px solid #5a4a12;
+  border-radius: 18px;
+}
+
+.pot-card small {
+  font-size: 12px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.pot-amount {
+  font-family: var(--font-title);
+  font-size: 36px;
+  font-weight: 800;
+  color: var(--yellow);
+  margin-top: 4px;
+}
+
+.ticket-card {
+  margin-top: 12px;
+  padding: 12px 16px;
+  background: var(--surface);
+  border: 2px dashed var(--yellow);
+  border-radius: 16px;
+  display: grid;
+  gap: 8px;
+}
+
+.ticket-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+}
+
+.ticket-row span {
+  color: var(--text-muted);
+}
+
+.countdown-card {
+  margin-top: 12px;
+  padding: 12px 16px;
+  text-align: center;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+}
+
+.countdown-card > small {
+  font-size: 12px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.countdown {
+  display: flex;
+  justify-content: center;
+  gap: 14px;
+  margin-top: 6px;
+}
+
+.countdown span {
+  display: grid;
+  justify-items: center;
+}
+
+.countdown b {
+  font-family: var(--font-title);
+  font-size: 28px;
+  font-weight: 800;
+  color: var(--yellow);
+  line-height: 1;
+}
+
+.countdown small {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.btn-orange {
+  margin-top: 16px;
+  background: linear-gradient(180deg, #f97316 0%, #c2410c 100%);
+  box-shadow: 0 6px 18px rgba(249, 115, 22, 0.4);
+}
+
+.btn-orange small {
+  display: block;
+  font-size: 12px;
+  font-weight: 500;
+  text-transform: none;
+  opacity: 0.9;
+}
+
+/* Carte du code parrain (page Profil). */
+.referral-card {
+  background: linear-gradient(160deg, #2a1f63 0%, #1d1748 100%);
+  border: 1px solid #4a3d9c;
+  border-radius: 18px;
+  padding: 18px;
+  text-align: center;
+}
+
+.referral-card small {
+  color: var(--text-muted);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.referral-code {
+  font-family: var(--font-title);
+  font-size: 40px;
+  font-weight: 800;
+  letter-spacing: 4px;
+  color: var(--yellow);
+  margin-top: 6px;
 }

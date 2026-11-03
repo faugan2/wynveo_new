@@ -22,7 +22,6 @@ export const OPERATIONS = [
   { id: 'op2', label: 'Retrait Flooz', date: 'Hier 19:10', amount: -15000 },
 ];
 
-export const JACKPOT = { amount: 2500000, draw: '20:00' };
 
 export const DEPOSIT_RESULT = {
   reference: 'DEP-1014-77812',

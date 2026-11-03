@@ -3,16 +3,21 @@ import { DEPOSIT_RESULT } from '../mock/wallet.js';
 import { formatFcfa } from '../lib/format.js';
 
 // Écran 08 : Dépôt réussi (montant, bonus, étapes, référence).
+// Les montants viennent de la fonction simulateDeposit quand elle a répondu.
 export default function DepositSuccess() {
   const navigate = useNavigate();
   const location = useLocation();
   const amount = location.state?.amount ?? 5000;
   const operator = location.state?.method ?? 'T-Money';
+  const result = location.state?.result;
+
+  const newBalance = result ? result.balance.real : DEPOSIT_RESULT.newBalance;
+  const reference = result ? `DEP-${result.depositId.slice(0, 8).toUpperCase()}` : DEPOSIT_RESULT.reference;
 
   const steps = [
     { label: `Demande envoyée à ${operator}`, time: '09:12:04' },
     { label: 'Confirmé sur votre téléphone', time: '09:12:31' },
-    { label: 'Solde crédité', time: `Nouveau solde : ${formatFcfa(DEPOSIT_RESULT.newBalance)}` },
+    { label: 'Solde crédité', time: `Nouveau solde : ${formatFcfa(newBalance)}` },
   ];
 
   return (
@@ -26,7 +31,6 @@ export default function DepositSuccess() {
         <div className="success-check" aria-hidden="true">✓</div>
         <h2 className="title-font">Dépôt réussi</h2>
         <div className="success-amount">+{formatFcfa(amount, { unit: false })} FCFA</div>
-        <small>+ {formatFcfa(DEPOSIT_RESULT.bonus, { unit: false })} FCFA de bonus de bienvenue</small>
       </div>
 
       <ol className="timeline">
@@ -42,7 +46,7 @@ export default function DepositSuccess() {
       </ol>
 
       <dl className="details">
-        <div><dt>Référence</dt><dd>{DEPOSIT_RESULT.reference}</dd></div>
+        <div><dt>Référence</dt><dd>{reference}</dd></div>
         <div><dt>Opérateur</dt><dd>{DEPOSIT_RESULT.operator}</dd></div>
       </dl>
 

@@ -1,98 +1,173 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { PAYMENT_METHODS, DEPOSIT_AMOUNTS } from '../mock/wallet.js';
+import { DEPOSIT_AMOUNTS } from '../mock/wallet.js';
 import { formatFcfa } from '../lib/format.js';
+import { ENABLED_COUNTRIES, DEFAULT_COUNTRY, buildPhone } from '../config/countries.js';
+import { functions } from '../lib/firebase.js';
 
-// Écran 07 : Dépôt (moyen de paiement, montant, numéro, bonus).
+const MIN_DEPOSIT = 1000;
+const STEP_LABELS = ['MONTANT', 'PAYS', 'CONFIRMATION'];
+
+// Écran 07 : Dépôt en trois étapes : montant, pays, puis numéro et confirmation.
+// Le moyen de paiement est choisi par Chariow sur sa page de paiement.
 export default function Deposit() {
   const navigate = useNavigate();
-  const [methodId, setMethodId] = useState('tmoney');
+  const [step, setStep] = useState(1);
   const [amount, setAmount] = useState(5000);
-  const [number, setNumber] = useState('90 12 34 56');
+  const [country, setCountry] = useState(DEFAULT_COUNTRY);
+  const [localNumber, setLocalNumber] = useState('');
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState('');
 
-  const method = PAYMENT_METHODS.find((m) => m.id === methodId);
-  const canSubmit = amount >= 1000 && number.replace(/\D/g, '').length === 8;
-  const bonus = Math.min(amount, 10000);
+  const amountOk = amount >= MIN_DEPOSIT;
+  const phone = buildPhone(country, localNumber);
 
-  function handleSubmit(event) {
+  function handleBack() {
+    if (step > 1) setStep(step - 1);
+    else navigate(-1);
+  }
+
+  function handleAmountNext(event) {
     event.preventDefault();
-    if (canSubmit) navigate('/depot/succes', { state: { amount, method: method.label } });
+    if (amountOk) setStep(2);
+  }
+
+  function handleCountryNext(event) {
+    event.preventDefault();
+    setStep(3);
+  }
+
+  // Test : crédite le solde via la fonction simulateDeposit (émulateur seulement).
+  // Le vrai paiement passera par Chariow, à la place de cet appel.
+  async function handlePay(event) {
+    event.preventDefault();
+    if (!phone || submitting) return;
+
+    setError('');
+    setSubmitting(true);
+    try {
+      const { data } = await functions.httpsCallable('simulateDeposit')({ amount });
+      navigate('/depot/succes', { state: { amount, method: country.name, result: data } });
+    } catch (err) {
+      setError(err?.message || 'Dépôt impossible. Réessayez.');
+      setSubmitting(false);
+    }
   }
 
   return (
     <main className="app-shell screen-page">
       <div className="topbar">
-        <button type="button" className="back-button" onClick={() => navigate(-1)} aria-label="Retour">‹</button>
+        <button type="button" className="back-button" onClick={handleBack} aria-label="Retour">‹</button>
         <h1 className="title-font">Dépôt</h1>
       </div>
 
-      <form onSubmit={handleSubmit} className="screen-form">
-        <h2 className="step-title">1. Moyen de paiement</h2>
-        <div className="radio-list">
-          {PAYMENT_METHODS.map((m) => (
-            <label key={m.id} className={`radio-card${methodId === m.id ? ' is-selected' : ''}`}>
-              <input
-                type="radio"
-                name="method"
-                value={m.id}
-                checked={methodId === m.id}
-                onChange={() => setMethodId(m.id)}
-              />
-              <span className="method-badge" style={{ background: m.color }}>{m.short}</span>
-              <strong>{m.label}</strong>
-              <span className="radio-dot" aria-hidden="true" />
-            </label>
-          ))}
-        </div>
+      <div className="step-head">
+        <span>ÉTAPE {step} SUR 3 · {STEP_LABELS[step - 1]}</span>
+      </div>
+      <div className="progress step-progress-bar" aria-hidden="true">
+        <span style={{ width: `${(step / 3) * 100}%` }} />
+      </div>
 
-        <h2 className="step-title">2. Montant</h2>
-        <div className="amount-field">
-          <input
-            inputMode="numeric"
-            aria-label="Montant du dépôt"
-            value={amount}
-            onChange={(e) => setAmount(Number(e.target.value.replace(/\D/g, '')) || 0)}
-          />
-          <span>FCFA</span>
-        </div>
-        <div className="chips">
-          {DEPOSIT_AMOUNTS.map((value) => (
-            <button
-              type="button"
-              key={value}
-              className={`chip${amount === value ? ' is-selected' : ''}`}
-              onClick={() => setAmount(value)}
-            >
-              {formatFcfa(value, { unit: false })}
-            </button>
-          ))}
-        </div>
+      {step === 1 && (
+        <form onSubmit={handleAmountNext} className="screen-form">
+          <h2 className="step-title">Quel montant voulez-vous déposer ?</h2>
+          <div className="amount-field">
+            <input
+              inputMode="numeric"
+              aria-label="Montant du dépôt"
+              value={amount}
+              onChange={(e) => setAmount(Number(e.target.value.replace(/\D/g, '')) || 0)}
+              autoFocus
+            />
+            <span>FCFA</span>
+          </div>
+          <div className="chips">
+            {DEPOSIT_AMOUNTS.map((value) => (
+              <button
+                type="button"
+                key={value}
+                className={`chip${amount === value ? ' is-selected' : ''}`}
+                onClick={() => setAmount(value)}
+              >
+                {formatFcfa(value, { unit: false })}
+              </button>
+            ))}
+          </div>
 
-        <label className="field-label" htmlFor="deposit-number">Numéro {method.label.split(' ')[0]}</label>
-        <div className="field">
-          <span className="prefix">+228</span>
-          <span className="field-divider" aria-hidden="true" />
-          <input
-            id="deposit-number"
-            inputMode="tel"
-            value={number}
-            onChange={(e) => setNumber(e.target.value)}
-          />
-        </div>
+          <div className="summary">
+            <div className="summary-row"><span>Frais</span><b className="positive">Gratuit</b></div>
+          </div>
 
-        <div className="summary">
-          <div className="summary-row"><span>Frais</span><b className="positive">Gratuit</b></div>
-          <div className="summary-row"><span>Bonus 100 %</span><b className="gold">+{formatFcfa(bonus, { unit: false })} FCFA</b></div>
-        </div>
+          <button type="submit" className="btn btn-primary" disabled={!amountOk}>
+            Continuer
+          </button>
+          {!amountOk && <p className="hint">Le dépôt minimum est de {formatFcfa(MIN_DEPOSIT)}.</p>}
+        </form>
+      )}
 
-        <button type="submit" className="btn btn-primary" disabled={!canSubmit}>
-          Déposer {formatFcfa(amount)}
-        </button>
+      {step === 2 && (
+        <form onSubmit={handleCountryNext} className="screen-form">
+          <h2 className="step-title">Dans quel pays êtes-vous ?</h2>
+          <div className="radio-list">
+            {ENABLED_COUNTRIES.map((c) => (
+              <label key={c.code} className={`radio-card${country.code === c.code ? ' is-selected' : ''}`}>
+                <input
+                  type="radio"
+                  name="country"
+                  value={c.code}
+                  checked={country.code === c.code}
+                  onChange={() => setCountry(c)}
+                />
+                <span className={`fi fi-${c.code.toLowerCase()} country-flag`} aria-hidden="true" />
+                <strong>{c.name}</strong>
+                <span className="country-dial">{c.dialCode}</span>
+                <span className="radio-dot" aria-hidden="true" />
+              </label>
+            ))}
+          </div>
 
-        <p className="note">
-          📱 Vous allez recevoir une demande de confirmation sur votre téléphone. Validez-la avec votre code secret.
-        </p>
-      </form>
+          <button type="submit" className="btn btn-primary" style={{ marginTop: 20 }}>
+            Continuer
+          </button>
+        </form>
+      )}
+
+      {step === 3 && (
+        <form onSubmit={handlePay} className="screen-form">
+          <h2 className="step-title">Vérifiez votre dépôt</h2>
+          <div className="summary">
+            <div className="summary-row"><span>Montant</span><b>{formatFcfa(amount)}</b></div>
+            <div className="summary-row"><span>Pays</span><b>{country.name}</b></div>
+            <div className="summary-row"><span>Frais</span><b className="positive">Gratuit</b></div>
+          </div>
+
+          <label className="field-label" htmlFor="deposit-number">Numéro de téléphone pour le paiement</label>
+          <div className="field">
+            <span className="prefix">{country.dialCode}</span>
+            <span className="field-divider" aria-hidden="true" />
+            <input
+              id="deposit-number"
+              inputMode="tel"
+              value={localNumber}
+              onChange={(e) => setLocalNumber(e.target.value)}
+              placeholder={'• '.repeat(country.phoneLength).trim()}
+            />
+          </div>
+          {localNumber && !phone && (
+            <p className="hint">Le numéro doit comporter {country.phoneLength} chiffres.</p>
+          )}
+
+          {error && <p className="error" role="alert">{error}</p>}
+
+          <button type="submit" className="btn btn-primary" style={{ marginTop: 20 }} disabled={!phone || submitting}>
+            {submitting ? 'Dépôt en cours…' : 'Continuer vers le paiement'}
+          </button>
+
+          <p className="note">
+            📱 Vous serez redirigé vers la page de paiement sécurisée. Vous y choisirez votre moyen de paiement.
+          </p>
+        </form>
+      )}
     </main>
   );
 }

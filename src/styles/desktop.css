@@ -149,6 +149,83 @@
     flex: 1;
   }
 
+  /* Menu « Plus... » : pages secondaires, à droite des onglets. */
+  .more-menu {
+    position: relative;
+    display: block;
+  }
+
+  .more-trigger {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 14px;
+    border: 0;
+    border-radius: 12px;
+    background: transparent;
+    color: var(--text-muted);
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  .more-trigger:hover,
+  .more-trigger[aria-expanded='true'] {
+    background: var(--surface);
+    color: var(--text);
+  }
+
+  .more-panel {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    z-index: 50;
+    width: 248px;
+    list-style: none;
+    margin: 0;
+    padding: 6px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.45);
+  }
+
+  .more-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    padding: 10px 12px;
+    border: 0;
+    border-radius: 10px;
+    background: transparent;
+    color: var(--text);
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    text-align: left;
+    cursor: pointer;
+  }
+
+  .more-item svg {
+    color: var(--yellow);
+    flex-shrink: 0;
+  }
+
+  .more-item:hover {
+    background: var(--field);
+  }
+
+  .more-item--danger,
+  .more-item--danger svg {
+    color: var(--danger);
+  }
+
+  /* Le menu hamburger n'existe que sur téléphone : sur bureau, les onglets sont en haut. */
+  .menu-button {
+    display: none;
+  }
+
   .top-nav .nav-link {
     flex-direction: row;
     gap: 8px;
@@ -192,7 +269,9 @@
     padding: 0;
   }
 
+  /* Largeur pleine dans la colonne (dans un conteneur flex, margin:auto réduirait le bloc à son contenu). */
   .connected-body {
+    width: 100%;
     max-width: 1040px;
     margin: 0 auto;
     padding: 32px 48px 48px;

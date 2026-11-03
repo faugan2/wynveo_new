@@ -28,8 +28,7 @@ export const UNIVERSES = {
       {
         name: 'Crash game',
         icon: '🚀',
-        text: 'Bientôt disponible.',
-        soon: true,
+        text: 'Le multiplicateur monte. Retirez avant le crash !',
       },
     ],
     steps: [
