@@ -140,9 +140,11 @@
     font-size: 28px;
   }
 
+  /* Onglets centrés entre le logo et le solde. */
   .top-nav {
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: 4px;
     flex: 1;
   }
