@@ -67,6 +67,7 @@ exports.registerAccount = onCall({ region: REGION }, async (request) => {
     if (err.code === 'auth/email-already-exists') {
       throw new HttpsError('already-exists', 'Cette adresse e-mail est déjà utilisée.');
     }
+    console.error('registerAccount : createUser a échoué', err);
     throw new HttpsError('internal', 'Création du compte impossible.');
   }
 
@@ -91,7 +92,9 @@ exports.registerAccount = onCall({ region: REGION }, async (request) => {
   } catch (err) {
     // Annule la création Auth si le profil n'a pas pu être écrit.
     await getAuth().deleteUser(userRecord.uid);
-    throw err instanceof HttpsError ? err : new HttpsError('internal', 'Création du compte impossible.');
+    if (err instanceof HttpsError) throw err;
+    console.error('registerAccount : écriture du profil a échoué', err);
+    throw new HttpsError('internal', 'Création du compte impossible.');
   }
 
   return { uid: userRecord.uid };
