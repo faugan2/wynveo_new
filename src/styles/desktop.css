@@ -1,10 +1,5 @@
 /* Bureau (1024 px et plus) : mise en page large, sans cadre de téléphone. */
 
-/* Bureau (à partir de 1024 px) : vraie mise en page large, sans cadre de téléphone. */
-.app-shell--narrow {
-  max-width: 480px;
-}
-
 @media (min-width: 1024px) {
   .app-shell {
     max-width: 1120px;
@@ -16,8 +11,50 @@
     overflow: visible;
   }
 
-  .app-shell--narrow {
-    max-width: 520px;
+  /* Connexion, inscription, mot de passe oublié : bloc de gauche et carte de formulaire à droite. */
+  .auth-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    column-gap: 64px;
+    align-items: center;
+  }
+
+  .auth-aside {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .auth-points {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    gap: 12px;
+    color: var(--text-muted);
+    font-size: 16px;
+  }
+
+  .auth-points li {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+  }
+
+  .auth-points li::before {
+    content: '✓';
+    color: var(--green);
+    font-weight: 700;
+  }
+
+  .auth-panel {
+    width: 100%;
+    max-width: 440px;
+    justify-self: end;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 22px;
+    padding: 28px 32px 24px;
   }
 
   /* Accueil : marque et titre à gauche, cartes et boutons à droite. */

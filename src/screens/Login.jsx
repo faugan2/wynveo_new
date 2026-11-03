@@ -4,6 +4,7 @@ import { auth, functions } from '../lib/firebase.js';
 import { DEFAULT_COUNTRY, buildPhone } from '../config/countries.js';
 import PhoneInput from '../components/PhoneInput.jsx';
 import PasswordInput from '../components/PasswordInput.jsx';
+import AuthAside from '../components/AuthAside.jsx';
 
 // Écran 02 : Connexion. Le numéro sert d'identifiant ; l'e-mail réel est retrouvé côté serveur.
 export default function Login() {
@@ -36,7 +37,9 @@ export default function Login() {
   }
 
   return (
-    <main className="app-shell app-shell--narrow">
+    <main className="app-shell auth-layout">
+      <AuthAside />
+      <div className="auth-panel">
       <div className="topbar">
         <button type="button" className="back-button" onClick={() => navigate(-1)} aria-label="Retour">
           ‹
@@ -75,6 +78,7 @@ export default function Login() {
       <p style={{ textAlign: 'center', marginTop: 'auto', paddingBottom: 24, fontSize: 14, color: 'var(--text-muted)' }}>
         Pas encore de compte ? <Link to="/register" className="link">Créer un compte</Link>
       </p>
+      </div>
     </main>
   );
 }

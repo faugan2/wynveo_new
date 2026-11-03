@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { auth } from '../lib/firebase.js';
+import AuthAside from '../components/AuthAside.jsx';
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -35,7 +36,9 @@ export default function ForgotPassword() {
   }
 
   return (
-    <main className="app-shell app-shell--narrow">
+    <main className="app-shell auth-layout">
+      <AuthAside />
+      <div className="auth-panel">
       <div className="topbar">
         <button type="button" className="back-button" onClick={() => navigate(-1)} aria-label="Retour">
           ‹
@@ -69,6 +72,7 @@ export default function ForgotPassword() {
           </button>
         </form>
       )}
+      </div>
     </main>
   );
 }

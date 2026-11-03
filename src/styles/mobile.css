@@ -1,5 +1,14 @@
 /* Mise en page mobile (base, sans media query). Ne contient que le téléphone. */
 
+/* Connexion et inscription : sur téléphone, le formulaire occupe tout l'écran. */
+.auth-aside {
+  display: none;
+}
+
+.auth-panel {
+  width: 100%;
+}
+
 /* Colonne principale : pleine largeur sur téléphone, centrée sur tablette et bureau. */
 .app-shell {
   min-height: 100vh;

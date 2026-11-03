@@ -4,6 +4,7 @@ import { auth, functions } from '../lib/firebase.js';
 import { DEFAULT_COUNTRY, buildPhone } from '../config/countries.js';
 import PhoneInput from '../components/PhoneInput.jsx';
 import PasswordInput from '../components/PasswordInput.jsx';
+import AuthAside from '../components/AuthAside.jsx';
 import BottomSheet from '../components/BottomSheet.jsx';
 import { TERMS } from '../content/terms.js';
 
@@ -73,7 +74,9 @@ export default function Register() {
   }
 
   return (
-    <main className="app-shell app-shell--narrow">
+    <main className="app-shell auth-layout">
+      <AuthAside />
+      <div className="auth-panel">
       <div className="topbar">
         <button type="button" className="back-button" onClick={handleBack} aria-label="Retour">
           ‹
@@ -202,6 +205,7 @@ export default function Register() {
       <p style={{ textAlign: 'center', paddingBottom: 24, fontSize: 14, color: 'var(--text-muted)', marginTop: 'auto' }}>
         Déjà un compte ? <Link to="/login" className="link">Se connecter</Link>
       </p>
+      </div>
     </main>
   );
 }
