@@ -1,24 +1,45 @@
 import { NavLink } from 'react-router-dom';
+import {
+  IoHome,
+  IoHomeOutline,
+  IoGameController,
+  IoGameControllerOutline,
+  IoFootball,
+  IoFootballOutline,
+  IoReceipt,
+  IoReceiptOutline,
+  IoWallet,
+  IoWalletOutline,
+  IoPerson,
+  IoPersonOutline,
+} from 'react-icons/io5';
 import { MOCK_WALLET } from '../mock/wallet.js';
 import { formatFcfa } from '../lib/format.js';
 
+// Icônes Ionicons : version contour au repos, version pleine quand l'onglet est actif.
 const TABS = [
-  { to: '/home', label: 'Accueil', icon: '🏠' },
-  { to: '/jeux', label: 'Jeux', icon: '🎰' },
-  { to: '/sport', label: 'Sport', icon: '⚽' },
-  { to: '/mes-paris', label: 'Mes Paris', icon: '🧾' },
-  { to: '/portefeuille', label: 'Portefeuille', icon: '👛' },
-  { to: '/profil', label: 'Profil', icon: '👤' },
+  { to: '/home', label: 'Accueil', Icon: IoHomeOutline, ActiveIcon: IoHome },
+  { to: '/jeux', label: 'Jeux', Icon: IoGameControllerOutline, ActiveIcon: IoGameController },
+  { to: '/sport', label: 'Sport', Icon: IoFootballOutline, ActiveIcon: IoFootball },
+  { to: '/mes-paris', label: 'Mes Paris', Icon: IoReceiptOutline, ActiveIcon: IoReceipt },
+  { to: '/portefeuille', label: 'Portefeuille', Icon: IoWalletOutline, ActiveIcon: IoWallet },
+  { to: '/profil', label: 'Profil', Icon: IoPersonOutline, ActiveIcon: IoPerson },
 ];
 
 // Liens de navigation. Le même jeu de liens sert à la barre du bas (téléphone) et à la barre latérale (bureau).
 function NavTabs({ className }) {
   return (
     <nav className={className} aria-label="Navigation principale">
-      {TABS.map((tab) => (
-        <NavLink key={tab.to} to={tab.to} className={({ isActive }) => `nav-link${isActive ? ' is-active' : ''}`}>
-          <span className="nav-icon" aria-hidden="true">{tab.icon}</span>
-          <span className="nav-label">{tab.label}</span>
+      {TABS.map(({ to, label, Icon, ActiveIcon }) => (
+        <NavLink key={to} to={to} className={({ isActive }) => `nav-link${isActive ? ' is-active' : ''}`}>
+          {({ isActive }) => (
+            <>
+              <span className="nav-icon" aria-hidden="true">
+                {isActive ? <ActiveIcon size={22} /> : <Icon size={22} />}
+              </span>
+              <span className="nav-label">{label}</span>
+            </>
+          )}
         </NavLink>
       ))}
     </nav>

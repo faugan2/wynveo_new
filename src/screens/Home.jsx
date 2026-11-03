@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom';
+import { IoNotificationsOutline, IoRibbonOutline } from 'react-icons/io5';
 import { useAuth } from '../context/AuthContext.jsx';
 import ConnectedLayout from '../components/ConnectedLayout.jsx';
 import VerificationBanner from '../components/VerificationBanner.jsx';
@@ -20,7 +21,7 @@ export default function Home() {
           <small>Bonjour</small>
           <strong>{firstName} 👋</strong>
         </div>
-        <span aria-hidden="true">🔔</span>
+        <span className="bell" aria-hidden="true"><IoNotificationsOutline size={22} /></span>
       </div>
 
       <section className="balance-card">
@@ -65,7 +66,7 @@ export default function Home() {
       </button>
 
       <div className="jackpot-strip">
-        <span aria-hidden="true">👑</span>
+        <span className="jackpot-icon" aria-hidden="true"><IoRibbonOutline size={26} /></span>
         <div>
           <small>Jackpot du jour</small>
           <strong>{formatFcfa(JACKPOT.amount)}</strong>
