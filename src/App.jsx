@@ -23,6 +23,9 @@ import SportCoupon from './screens/SportCoupon.jsx';
 import SportConfirmed from './screens/SportConfirmed.jsx';
 import SportBets from './screens/SportBets.jsx';
 import Profile from './screens/Profile.jsx';
+import AdminPayments from './screens/Admin/AdminPayments.jsx';
+import AdminGames from './screens/Admin/AdminGames.jsx';
+import AdminAudit from './screens/Admin/AdminAudit.jsx';
 
 // Pages réservées aux comptes connectés.
 function RequireAuth({ children }) {
@@ -67,6 +70,11 @@ export default function App() {
       <Route path="/sport/confirme" element={<RequireAuth><SportConfirmed /></RequireAuth>} />
       <Route path="/mes-paris" element={<RequireAuth><SportBets /></RequireAuth>} />
       <Route path="/profil" element={<RequireAuth><Profile /></RequireAuth>} />
+
+      <Route path="/admin" element={<Navigate to="/admin/paiements" replace />} />
+      <Route path="/admin/paiements" element={<RequireAuth><AdminPayments /></RequireAuth>} />
+      <Route path="/admin/jeux" element={<RequireAuth><AdminGames /></RequireAuth>} />
+      <Route path="/admin/journal" element={<RequireAuth><AdminAudit /></RequireAuth>} />
 
       <Route path="/historique" element={<RequireAuth><Placeholder title="Historique" /></RequireAuth>} />
       <Route path="/bonus" element={<RequireAuth><Placeholder title="Bonus et promotions" /></RequireAuth>} />

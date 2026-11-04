@@ -18,6 +18,7 @@ const { LIMITS, priceSelections, checkCoupon, potentialPayout } = require('./spo
 const { MAIN_TOTAL_LINE } = require('./sport/odds');
 const { runSportSettlement } = require('./sport/settle');
 const { CRYPTO_CHAINS, tokenConfig } = require('./payments/chains');
+const { SETTINGS, VALIDATORS, requireAdmin } = require('./admin/adminCore');
 const { readTokenMetadata, blockNumber, getReceipt } = require('./payments/rpc');
 const { DEFAULT_RATE_XOF_PER_USD, DEFAULT_MIN_DEPOSIT_XOF, DEFAULT_EXPIRY_MINUTES, UNIQUE_SUFFIX_MAX, expectedUnits, formatUnits, findTransfer, hasConfirmations } = require('./payments/deposits');
 
@@ -1544,6 +1545,61 @@ exports.confirmCryptoDeposit = onCall({ region: REGION }, async (request) => {
     }
     return { status: 'credited', amountXof: amount };
   });
+});
+
+// Administration : rôle de l'appelant, lecture et modification des réglages, journal d'audit.
+exports.adminMe = onCall({ region: REGION }, async (request) => {
+  const admin = await requireAdmin(db, request);
+  return { uid: admin.uid, role: admin.role };
+});
+
+exports.adminGetSettings = onCall({ region: REGION }, async (request) => {
+  const name = request.data?.name;
+  if (!SETTINGS[name]) throw new HttpsError('invalid-argument', 'Réglage inconnu.');
+  await requireAdmin(db, request, SETTINGS[name].roles.concat(['support']));
+  const snapshot = await db.collection('wy_settings').doc(name).get();
+  return { name, values: snapshot.exists ? snapshot.data() : {} };
+});
+
+exports.adminSaveSettings = onCall({ region: REGION }, async (request) => {
+  const name = request.data?.name;
+  const values = request.data?.values;
+  if (!SETTINGS[name]) throw new HttpsError('invalid-argument', 'Réglage inconnu.');
+  const admin = await requireAdmin(db, request, SETTINGS[name].roles);
+  if (!values || typeof values !== 'object') throw new HttpsError('invalid-argument', 'Valeurs manquantes.');
+  const problem = VALIDATORS[name](values);
+  if (problem) throw new HttpsError('invalid-argument', problem);
+
+  const ref = db.collection('wy_settings').doc(name);
+  const before = (await ref.get()).data() || {};
+  await ref.set(values, { merge: true });
+  await db.collection('wy_audit_log').add({
+    uid: admin.uid,
+    role: admin.role,
+    action: 'settings.save',
+    setting: name,
+    before,
+    after: values,
+    createdAt: FieldValue.serverTimestamp(),
+  });
+  return { ok: true };
+});
+
+exports.adminGetAuditLog = onCall({ region: REGION }, async (request) => {
+  await requireAdmin(db, request);
+  const snapshot = await db.collection('wy_audit_log').orderBy('createdAt', 'desc').limit(50).get();
+  return {
+    entries: snapshot.docs.map((doc) => {
+      const data = doc.data();
+      return {
+        id: doc.id,
+        role: data.role,
+        action: data.action,
+        setting: data.setting,
+        createdAt: data.createdAt ? data.createdAt.toMillis() : 0,
+      };
+    }),
+  };
 });
 
 // Dépôt simulé, pour les tests : crédite le solde sans paiement réel.

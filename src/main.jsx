@@ -14,6 +14,7 @@ import './styles/connected.css';
 import './styles/crash.css';
 import './styles/sport.css';
 import './styles/crypto.css';
+import './styles/admin.css';
 import './styles/tablet.css';
 import './styles/desktop.css';
 
