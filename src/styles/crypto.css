@@ -1,0 +1,602 @@
+/* Dépôt crypto : progression, cartes, montant à envoyer, coordonnées et suivi de la transaction. */
+
+.crypto-deposit {
+  display: grid;
+  gap: 16px;
+  margin-top: 12px;
+}
+
+/* Progression : Montant, Paiement, Confirmation. */
+.crypto-stepper {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.crypto-step {
+  display: grid;
+  justify-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: #8b82a8;
+}
+
+.crypto-step-dot {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 1px solid #3b3352;
+  background: #15102a;
+  font-weight: 700;
+}
+
+.crypto-step.is-active {
+  color: #f5f3ff;
+}
+
+.crypto-step.is-active .crypto-step-dot {
+  border-color: #2dd4bf;
+  color: #2dd4bf;
+}
+
+.crypto-step.is-done .crypto-step-dot {
+  background: #0f9b8e;
+  border-color: #0f9b8e;
+  color: #ffffff;
+}
+
+/* Cartes et titres. */
+.crypto-card {
+  display: grid;
+  gap: 16px;
+  padding: 18px;
+  border-radius: 18px;
+  background: #15102a;
+  border: 1px solid #2a2140;
+  color: #f5f3ff;
+}
+
+.crypto-title {
+  margin: 0;
+  font-size: 18px;
+}
+
+.crypto-subtitle {
+  margin: 0;
+  color: #8b82a8;
+  font-size: 13px;
+}
+
+.crypto-label {
+  font-size: 12px;
+  color: #8b82a8;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+/* Montant saisi. */
+.crypto-field {
+  display: grid;
+  gap: 8px;
+}
+
+.crypto-field > span {
+  font-size: 12px;
+  color: #8b82a8;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.crypto-amount {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  border: 1px solid #3b3352;
+  background: #0b0a1f;
+}
+
+.crypto-amount input {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  background: transparent;
+  color: #f5f3ff;
+  font: inherit;
+  font-size: 22px;
+  font-weight: 700;
+  outline: none;
+}
+
+.crypto-amount span {
+  color: #8b82a8;
+  font-size: 13px;
+}
+
+.crypto-amount:focus-within {
+  border-color: #2dd4bf;
+}
+
+.crypto-hint {
+  margin: 0;
+  font-size: 12px;
+  color: #8b82a8;
+}
+
+.crypto-hint.is-warning,
+.crypto-details .is-warning {
+  color: #fbbf24;
+}
+
+/* Choix de la crypto. */
+.crypto-tokens {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.crypto-token {
+  display: grid;
+  gap: 2px;
+  justify-items: start;
+  padding: 12px;
+  border-radius: 12px;
+  border: 1px solid #3b3352;
+  background: #0b0a1f;
+  color: #f5f3ff;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.crypto-token small {
+  color: #8b82a8;
+  font-size: 11px;
+}
+
+.crypto-token.is-selected {
+  border-color: #2dd4bf;
+  background: #0f2f2f;
+}
+
+/* Bouton principal. */
+.crypto-primary {
+  width: 100%;
+}
+
+/* Montant à envoyer, mis en avant. */
+.crypto-amount-due {
+  display: grid;
+  gap: 6px;
+  justify-items: center;
+  padding: 16px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #0f2f2f, #0b0a1f);
+  border: 1px solid #0f9b8e;
+  text-align: center;
+}
+
+.crypto-amount-due span {
+  font-size: 12px;
+  color: #8b82a8;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.crypto-amount-due strong {
+  font-size: 30px;
+  color: #2dd4bf;
+}
+
+.crypto-amount-due strong small {
+  font-size: 16px;
+  color: #5eead4;
+}
+
+.crypto-copy {
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 1px solid #3b3352;
+  background: transparent;
+  color: #c4b5fd;
+  font: inherit;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.crypto-copy:hover {
+  border-color: #2dd4bf;
+  color: #2dd4bf;
+}
+
+/* Coordonnées du paiement. */
+.crypto-details {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+}
+
+.crypto-details > div {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #2a2140;
+}
+
+.crypto-details dt {
+  color: #8b82a8;
+  font-size: 13px;
+}
+
+.crypto-details dd {
+  margin: 0;
+  font-weight: 600;
+  text-align: right;
+}
+
+.crypto-address {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  max-width: 70%;
+}
+
+.crypto-address span {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 12px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.crypto-warning {
+  margin: 0;
+  padding: 12px;
+  border-radius: 12px;
+  background: #2a1f0f;
+  border: 1px solid #78350f;
+  color: #fde68a;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+/* Connexion et paiement. */
+.crypto-connect,
+.crypto-pay {
+  display: grid;
+  gap: 10px;
+}
+
+.crypto-connect p {
+  margin: 0;
+  color: #8b82a8;
+  font-size: 13px;
+}
+
+/* Suivi de la transaction. */
+.crypto-progress {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px;
+  border-radius: 12px;
+  background: #0b0a1f;
+  border: 1px solid #2a2140;
+}
+
+.crypto-progress div {
+  display: grid;
+  gap: 2px;
+}
+
+.crypto-progress small {
+  color: #8b82a8;
+}
+
+.crypto-spinner {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 2px solid #2a2140;
+  border-top-color: #2dd4bf;
+  animation: crypto-spin 0.9s linear infinite;
+  flex: 0 0 auto;
+}
+
+@keyframes crypto-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.crypto-error {
+  margin: 0;
+}
+
+/* Bouton de choix du moyen de paiement (écran précédent). */
+.method-choice {
+  display: grid;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.method-card {
+  display: grid;
+  gap: 4px;
+  padding: 16px;
+  border-radius: 14px;
+  border: 1px solid #3b3352;
+  background: #15102a;
+  color: #f5f3ff;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.method-card span {
+  color: #8b82a8;
+  font-size: 13px;
+}
+
+/* Adaptation téléphone : rien ne dépasse de l'écran, les coordonnées passent en colonne. */
+.crypto-deposit,
+.crypto-card,
+.crypto-details,
+.crypto-details > div {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.crypto-details > div {
+  flex-wrap: wrap;
+}
+
+.crypto-details dd {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.crypto-address {
+  max-width: 100%;
+  flex-wrap: wrap;
+}
+
+.crypto-address span {
+  overflow-wrap: anywhere;
+  white-space: normal;
+  word-break: break-all;
+}
+
+@media (max-width: 480px) {
+  .crypto-stepper {
+    gap: 4px;
+  }
+
+  .crypto-step {
+    font-size: 11px;
+  }
+
+  .crypto-card {
+    padding: 14px;
+  }
+
+  .crypto-details > div {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+
+  .crypto-details dd {
+    text-align: left;
+  }
+
+  .crypto-address {
+    width: 100%;
+  }
+
+  .crypto-amount-due strong {
+    font-size: 26px;
+  }
+}
+
+/* Champ du montant : reste dans la carte, sans dépasser la marge intérieure. */
+.crypto-deposit *,
+.crypto-deposit *::before,
+.crypto-deposit *::after {
+  box-sizing: border-box;
+}
+
+.crypto-field {
+  width: 100%;
+  min-width: 0;
+}
+
+.crypto-amount {
+  width: 100%;
+  min-width: 0;
+}
+
+.crypto-amount input {
+  width: 0;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.crypto-tokens,
+.crypto-token {
+  min-width: 0;
+}
+
+/* Après connexion du portefeuille : les composants Thirdweb restent dans la largeur de l'écran. */
+.crypto-connect,
+.crypto-pay {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+.crypto-connect > *,
+.crypto-pay > * {
+  max-width: 100%;
+  min-width: 0;
+}
+
+.crypto-connect button,
+.crypto-pay button {
+  max-width: 100%;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+.crypto-pay [class*="thirdweb"],
+.crypto-pay iframe {
+  max-width: 100% !important;
+  box-sizing: border-box;
+}
+
+@media (max-width: 480px) {
+  .crypto-pay button {
+    width: 100%;
+  }
+}
+
+/* Page de dépôt : rien ne dépasse à droite sur téléphone (la fenêtre du portefeuille reste en plein écran). */
+main.screen-page:has(.crypto-deposit) {
+  overflow-x: hidden;
+}
+
+.crypto-deposit {
+  overflow-x: clip;
+}
+
+/* Audit tactile : zones de toucher d'au moins 44 px et textes lisibles sur téléphone. */
+.crypto-copy {
+  min-height: 44px;
+  min-width: 44px;
+  padding: 10px 16px;
+  font-size: 13px;
+}
+
+.crypto-amount {
+  min-height: 52px;
+}
+
+.crypto-amount input {
+  min-height: 44px;
+}
+
+.crypto-token {
+  min-height: 56px;
+}
+
+.crypto-primary,
+.crypto-deposit .btn {
+  min-height: 52px;
+}
+
+@media (max-width: 480px) {
+  .crypto-step {
+    font-size: 12px;
+  }
+
+  .crypto-hint,
+  .crypto-details dt,
+  .crypto-warning {
+    font-size: 13px;
+  }
+}
+
+/* Carte de transaction Thirdweb : elle reste dans l'écran du téléphone, texte et boutons compris. */
+.crypto-tx-widget,
+.crypto-tx-widget * {
+  box-sizing: border-box;
+  max-width: 100% !important;
+}
+
+.crypto-tx-widget {
+  width: 100% !important;
+  min-width: 0 !important;
+  overflow-wrap: anywhere;
+}
+
+.crypto-tx-widget * {
+  min-width: 0;
+}
+
+.crypto-tx-widget button {
+  width: 100%;
+  min-height: 48px;
+  white-space: normal;
+}
+
+.crypto-tx-widget [class*="thirdweb"] {
+  font-size: 13px;
+}
+
+@media (max-width: 480px) {
+  .crypto-tx-widget {
+    font-size: 13px;
+  }
+
+  .crypto-tx-widget h1,
+  .crypto-tx-widget h2,
+  .crypto-tx-widget h3 {
+    font-size: 16px;
+  }
+}
+
+/* Adresse de réception : tronquée avec « … », et le bouton Copier reste sur la même ligne. */
+.crypto-address {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+}
+
+.crypto-address span {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  word-break: normal;
+  overflow-wrap: normal;
+  font-size: 12px;
+}
+
+.crypto-address .crypto-copy {
+  flex: 0 0 auto;
+}
+
+
+/* Adresse dans la carte de transaction : version courte au milieu (0x55d3…7955), calculée par le script du dépôt. */
+.crypto-tx-widget a[data-short] {
+  position: relative;
+  display: inline-block;
+  max-width: 100%;
+  overflow: hidden;
+  white-space: nowrap;
+  vertical-align: bottom;
+  color: transparent;
+}
+
+.crypto-tx-widget a[data-short]::before {
+  content: attr(data-short);
+  position: absolute;
+  left: 0;
+  top: 0;
+  color: #60a5fa;
+  white-space: nowrap;
+}

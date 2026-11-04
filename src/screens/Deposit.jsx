@@ -4,6 +4,7 @@ import { DEPOSIT_AMOUNTS } from '../mock/wallet.js';
 import { formatFcfa } from '../lib/format.js';
 import { ENABLED_COUNTRIES, DEFAULT_COUNTRY, buildPhone } from '../config/countries.js';
 import { functions } from '../lib/firebase.js';
+import CryptoDeposit from '../components/CryptoDeposit.jsx';
 
 const MIN_DEPOSIT = 1000;
 const STEP_LABELS = ['MONTANT', 'PAYS', 'CONFIRMATION'];
@@ -18,12 +19,15 @@ export default function Deposit() {
   const [localNumber, setLocalNumber] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
+  // Moyen de paiement choisi : '' (à choisir), 'mobile' (Mobile Money) ou 'crypto'.
+  const [method, setMethod] = useState('');
 
   const amountOk = amount >= MIN_DEPOSIT;
   const phone = buildPhone(country, localNumber);
 
   function handleBack() {
-    if (step > 1) setStep(step - 1);
+    if (method === 'mobile' && step > 1) setStep(step - 1);
+    else if (method) setMethod('');
     else navigate(-1);
   }
 
@@ -52,6 +56,41 @@ export default function Deposit() {
       setError(err?.message || 'Dépôt impossible. Réessayez.');
       setSubmitting(false);
     }
+  }
+
+  // Premier choix : Mobile Money ou crypto.
+  if (method === '') {
+    return (
+      <main className="app-shell screen-page">
+        <div className="topbar">
+          <button type="button" className="back-button" onClick={handleBack} aria-label="Retour">‹</button>
+          <h1 className="title-font">Dépôt</h1>
+        </div>
+        <h2 className="step-title">Comment voulez-vous déposer ?</h2>
+        <div className="method-choice">
+          <button type="button" className="method-card" onClick={() => setMethod('mobile')}>
+            <strong>Mobile Money</strong>
+            <span>En FCFA, avec votre numéro de téléphone</span>
+          </button>
+          <button type="button" className="method-card" onClick={() => setMethod('crypto')}>
+            <strong>Crypto</strong>
+            <span>USDT ou USDC, depuis votre portefeuille</span>
+          </button>
+        </div>
+      </main>
+    );
+  }
+
+  if (method === 'crypto') {
+    return (
+      <main className="app-shell screen-page">
+        <div className="topbar">
+          <button type="button" className="back-button" onClick={handleBack} aria-label="Retour">‹</button>
+          <h1 className="title-font">Dépôt</h1>
+        </div>
+        <CryptoDeposit />
+      </main>
+    );
   }
 
   return (

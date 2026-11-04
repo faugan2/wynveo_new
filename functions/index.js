@@ -1,3 +1,7 @@
+// Version de déploiement : à changer pour forcer la mise à jour des fonctions (Firebase ignore un code inchangé).
+const DEPLOY_VERSION = '2026-11-04-1';
+console.log('Version de déploiement des fonctions :', DEPLOY_VERSION);
+
 const { onCall, HttpsError } = require('firebase-functions/v2/https');
 const admin = require('firebase-admin');
 const { getAuth } = require('firebase-admin/auth');
@@ -13,6 +17,9 @@ const { runSportOddsImport } = require('./sport/importOdds');
 const { LIMITS, priceSelections, checkCoupon, potentialPayout } = require('./sport/betRules');
 const { MAIN_TOTAL_LINE } = require('./sport/odds');
 const { runSportSettlement } = require('./sport/settle');
+const { CRYPTO_CHAINS, tokenConfig } = require('./payments/chains');
+const { readTokenMetadata, blockNumber, getReceipt } = require('./payments/rpc');
+const { DEFAULT_RATE_XOF_PER_USD, DEFAULT_MIN_DEPOSIT_XOF, DEFAULT_EXPIRY_MINUTES, UNIQUE_SUFFIX_MAX, expectedUnits, formatUnits, findTransfer, hasConfirmations } = require('./payments/deposits');
 
 // Clé de The Odds API : secret Firebase en production, variable ODDS_API_KEY dans functions/.env en émulateur.
 const oddsApiKey = defineSecret('ODDS_API_KEY');
@@ -1321,6 +1328,224 @@ exports.getMySportBets = onCall({ region: REGION }, async (request) => {
   return { bets: bets.sort((a, b) => b.createdAt - a.createdAt).slice(0, 50) };
 });
 
+// Dépôts crypto : demande de dépôt, puis confirmation après vérification de la transaction sur la blockchain.
+const ADDRESS_PATTERN = /^0x[0-9a-fA-F]{40}$/;
+const TX_HASH_PATTERN = /^0x[0-9a-fA-F]{64}$/;
+
+// Paramètres des dépôts crypto (wy_settings/payments). L'adresse de réception doit être renseignée par l'admin.
+async function cryptoSettings() {
+  return gameSettings('payments', {
+    adminAddress: null,
+    rateXofPerUsd: DEFAULT_RATE_XOF_PER_USD,
+    minDepositXof: DEFAULT_MIN_DEPOSIT_XOF,
+    expiryMinutes: DEFAULT_EXPIRY_MINUTES,
+  });
+}
+
+// Vérifie sur la blockchain que le contrat est bien le token attendu (symbole et décimales).
+async function assertTokenOnChain(chain, token) {
+  const onChain = await readTokenMetadata(chain.rpcUrl, token.address);
+  if (onChain.symbol !== token.symbol || onChain.decimals !== token.decimals) {
+    console.error('Token inattendu sur la chaîne', token.address, onChain);
+    throw new HttpsError('failed-precondition', 'Token non reconnu : dépôt impossible.');
+  }
+}
+
+// Demande de dépôt crypto : montant exact à envoyer, unique parmi les demandes en attente.
+// Paramètres affichés à l'écran de dépôt crypto (minimum, taux, durée). Aucune adresse ni secret.
+exports.getCryptoDepositSettings = onCall({ region: REGION }, async (request) => {
+  if (!request.auth) {
+    throw new HttpsError('unauthenticated', 'Connexion requise.');
+  }
+  const settings = await cryptoSettings();
+  return {
+    minDepositXof: settings.minDepositXof,
+    rateXofPerUsd: settings.rateXofPerUsd,
+    expiryMinutes: settings.expiryMinutes,
+  };
+});
+
+exports.createCryptoDeposit = onCall({ region: REGION }, async (request) => {
+  if (!request.auth) {
+    throw new HttpsError('unauthenticated', 'Connexion requise.');
+  }
+  const found = tokenConfig(request.data?.token);
+  if (!found) {
+    throw new HttpsError('invalid-argument', 'Token non accepté.');
+  }
+  const settings = await cryptoSettings();
+  if (!ADDRESS_PATTERN.test(settings.adminAddress || '')) {
+    throw new HttpsError('failed-precondition', 'Dépôts crypto indisponibles pour le moment.');
+  }
+  const amountXof = Number(request.data?.amountXof);
+  if (!Number.isInteger(amountXof) || amountXof < settings.minDepositXof) {
+    throw new HttpsError('invalid-argument', 'Montant invalide.');
+  }
+
+  const { token, chain, network } = found;
+  await assertTokenOnChain(chain, token);
+
+  // Montant unique : on tire un décalage jusqu'à trouver un montant libre parmi les demandes en attente.
+  let units = null;
+  for (let attempt = 0; attempt < 5 && units === null; attempt += 1) {
+    const candidate = expectedUnits(amountXof, settings.rateXofPerUsd, token.decimals, crypto.randomInt(1, UNIQUE_SUFFIX_MAX + 1));
+    const clash = await db
+      .collection('wy_crypto_deposits')
+      .where('status', '==', 'pending')
+      .where('token', '==', token.symbol)
+      .where('expectedUnits', '==', candidate.toString())
+      .limit(1)
+      .get();
+    if (clash.empty) units = candidate;
+  }
+  if (units === null) {
+    throw new HttpsError('unavailable', 'Demande impossible pour le moment, réessayez.');
+  }
+
+  const expiresAt = Date.now() + settings.expiryMinutes * 60 * 1000;
+  const ref = db.collection('wy_crypto_deposits').doc();
+  await ref.set({
+    uid: request.auth.uid,
+    status: 'pending',
+    token: token.symbol,
+    network,
+    chainId: chain.chainId,
+    tokenAddress: token.address,
+    toAddress: settings.adminAddress,
+    amountXof,
+    rateXofPerUsd: settings.rateXofPerUsd,
+    decimals: token.decimals,
+    expectedUnits: units.toString(),
+    expiresAt: Timestamp.fromMillis(expiresAt),
+    createdAt: FieldValue.serverTimestamp(),
+  });
+
+  return {
+    depositId: ref.id,
+    token: token.symbol,
+    network,
+    chainId: chain.chainId,
+    tokenAddress: token.address,
+    toAddress: settings.adminAddress,
+    amount: formatUnits(units, token.decimals),
+    expiresAt,
+  };
+});
+
+// Confirmation d'un dépôt crypto : le navigateur envoie le hash, le serveur vérifie la transaction puis crédite une seule fois.
+exports.confirmCryptoDeposit = onCall({ region: REGION }, async (request) => {
+  if (!request.auth) {
+    throw new HttpsError('unauthenticated', 'Connexion requise.');
+  }
+  const uid = request.auth.uid;
+  const depositId = request.data?.depositId;
+  const txHash = request.data?.txHash;
+  if (typeof depositId !== 'string' || !depositId) {
+    throw new HttpsError('invalid-argument', 'Demande de dépôt invalide.');
+  }
+  if (typeof txHash !== 'string' || !TX_HASH_PATTERN.test(txHash)) {
+    throw new HttpsError('invalid-argument', 'Hash de transaction invalide.');
+  }
+
+  const depositRef = db.collection('wy_crypto_deposits').doc(depositId);
+  const depositSnap = await depositRef.get();
+  if (!depositSnap.exists) {
+    throw new HttpsError('not-found', 'Demande de dépôt introuvable.');
+  }
+  const deposit = depositSnap.data();
+  if (deposit.uid !== uid) {
+    throw new HttpsError('permission-denied', 'Cette demande ne vous appartient pas.');
+  }
+  if (deposit.status === 'credited') {
+    return { status: 'credited', amountXof: deposit.amountXof };
+  }
+  if (deposit.status !== 'pending') {
+    throw new HttpsError('failed-precondition', 'Cette demande n\'est plus valable.');
+  }
+  if (Date.now() > deposit.expiresAt.toMillis()) {
+    await depositRef.update({ status: 'expired' });
+    throw new HttpsError('failed-precondition', 'La demande a expiré. Créez une nouvelle demande.');
+  }
+
+  const chain = CRYPTO_CHAINS[deposit.network];
+  const token = chain.tokens[deposit.token];
+  await assertTokenOnChain(chain, token);
+
+  const receipt = await getReceipt(chain.rpcUrl, txHash);
+  if (!receipt) {
+    return { status: 'pending', message: 'Transaction non encore visible sur la blockchain.' };
+  }
+  if (receipt.status !== '0x1') {
+    throw new HttpsError('failed-precondition', 'La transaction a échoué sur la blockchain.');
+  }
+  const current = await blockNumber(chain.rpcUrl);
+  const receiptBlock = Number(BigInt(receipt.blockNumber));
+  if (!hasConfirmations(receiptBlock, current, chain.confirmations)) {
+    return { status: 'confirming', confirmations: current - receiptBlock + 1, required: chain.confirmations };
+  }
+
+  const transfer = findTransfer(receipt, deposit.tokenAddress, deposit.toAddress, BigInt(deposit.expectedUnits));
+  if (!transfer) {
+    throw new HttpsError('failed-precondition', 'Aucun transfert correspondant à cette demande dans la transaction.');
+  }
+
+  const rates = await referralRates();
+  const hashRef = db.collection('wy_crypto_tx').doc(txHash.toLowerCase());
+  const userRef = db.collection('wy_users').doc(uid);
+
+  return db.runTransaction(async (tx) => {
+    // Lectures avant écritures. Un appel concurrent voit le dépôt déjà crédité.
+    const freshDeposit = await tx.get(depositRef);
+    if (freshDeposit.get('status') === 'credited') {
+      return { status: 'credited', amountXof: freshDeposit.get('amountXof') };
+    }
+    const hashSnap = await tx.get(hashRef);
+    if (hashSnap.exists) {
+      throw new HttpsError('failed-precondition', 'Cette transaction a déjà été utilisée.');
+    }
+    const userSnap = await tx.get(userRef);
+    if (!userSnap.exists) {
+      throw new HttpsError('not-found', 'Profil introuvable.');
+    }
+    const chainUids = (userSnap.get('referrerChain') || []).slice(0, MAX_REFERRAL_LEVELS);
+    const referrerSnaps = await Promise.all(chainUids.map((id) => tx.get(db.collection('wy_users').doc(id))));
+
+    const amount = deposit.amountXof;
+    const bonuses = [];
+    chainUids.forEach((referrerUid, index) => {
+      const bonus = Math.floor((amount * rates[index]) / 100);
+      if (bonus > 0 && referrerSnaps[index].exists) bonuses.push({ referrerUid, level: index + 1, bonus });
+    });
+
+    const depositDocRef = db.collection('wy_deposits').doc();
+    tx.update(userRef, { 'balance.real': FieldValue.increment(amount), verified: true });
+    tx.set(depositDocRef, {
+      uid,
+      amount,
+      status: 'confirmed',
+      method: 'crypto',
+      token: deposit.token,
+      network: deposit.network,
+      txHash,
+      createdAt: FieldValue.serverTimestamp(),
+    });
+    tx.set(hashRef, { uid, depositId, from: transfer.from, createdAt: FieldValue.serverTimestamp() });
+    tx.update(depositRef, { status: 'credited', txHash, from: transfer.from, creditedAt: FieldValue.serverTimestamp() });
+    for (const credit of bonuses) {
+      tx.update(db.collection('wy_users').doc(credit.referrerUid), { 'balance.bonus': FieldValue.increment(credit.bonus) });
+      tx.set(db.collection('wy_referral_bonuses').doc(), {
+        referrerId: credit.referrerUid,
+        referredId: uid,
+        depositId: depositDocRef.id,
+        level: credit.level,
+        amount: credit.bonus,
+        createdAt: FieldValue.serverTimestamp(),
+      });
+    }
+    return { status: 'credited', amountXof: amount };
+  });
+});
+
 // Dépôt simulé, pour les tests : crédite le solde sans paiement réel.
 // Refusé hors émulateur, pour ne jamais créditer un vrai compte sans paiement.
 exports.simulateDeposit = onCall({ region: REGION }, async (request) => {
@@ -1397,3 +1622,10 @@ exports.simulateDeposit = onCall({ region: REGION }, async (request) => {
     };
   });
 });
+
+// Fonctions de test (tirages et imports manuels) : exportées seulement dans l'émulateur, jamais déployées en production.
+if (process.env.FUNCTIONS_EMULATOR !== 'true') {
+  for (const name of ['runLuckyNumberDrawNow', 'runJackpotDrawNow', 'runSportSettlementNow', 'runSportOddsImportNow']) {
+    delete exports[name];
+  }
+}

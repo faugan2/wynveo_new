@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ConnectedLayout from '../components/ConnectedLayout.jsx';
+import { useToast } from '../components/Toast.jsx';
 import { useAuth } from '../context/AuthContext.jsx';
 import { functions } from '../lib/firebase.js';
 import { formatFcfa } from '../lib/format.js';
@@ -10,6 +11,7 @@ import { walletFromProfile } from '../lib/wallet.js';
 // Les soldes et les opérations viennent de la base.
 export default function Wallet() {
   const navigate = useNavigate();
+  const toast = useToast();
   const { profile } = useAuth();
   const wallet = walletFromProfile(profile);
 
@@ -41,7 +43,7 @@ export default function Wallet() {
           <button type="button" className="btn btn-primary btn-small" onClick={() => navigate('/depot')}>
             + Déposer
           </button>
-          <button type="button" className="btn btn-outline btn-small" onClick={() => navigate('/retrait')}>
+          <button type="button" className="btn btn-outline btn-small is-soon" aria-disabled="true" onClick={() => toast.show('Bientôt disponible')}>
             Retirer
           </button>
         </div>
@@ -76,6 +78,7 @@ export default function Wallet() {
           ))}
         </ul>
       )}
+      {toast.view}
     </ConnectedLayout>
   );
 }

@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { IoHandRightOutline, IoNotificationsOutline, IoRibbonOutline } from 'react-icons/io5';
 import { useAuth } from '../context/AuthContext.jsx';
+import { useToast } from '../components/Toast.jsx';
 import ConnectedLayout from '../components/ConnectedLayout.jsx';
 import VerificationBanner from '../components/VerificationBanner.jsx';
 import { formatFcfa } from '../lib/format.js';
@@ -11,6 +12,7 @@ import { walletFromProfile } from '../lib/wallet.js';
 // Écran 05 : Accueil connecté (solde, choix Jeux ou Sport, jackpot).
 export default function Home() {
   const navigate = useNavigate();
+  const toast = useToast();
   const { profile } = useAuth();
   const wallet = walletFromProfile(profile);
   const firstName = profile?.fullName?.split(' ')[0] ?? '';
@@ -49,7 +51,7 @@ export default function Home() {
           <button type="button" className="btn btn-primary btn-small" onClick={() => navigate('/depot')}>
             + Dépôt
           </button>
-          <button type="button" className="btn btn-outline btn-small" onClick={() => navigate('/retrait')}>
+          <button type="button" className="btn btn-outline btn-small is-soon" aria-disabled="true" onClick={() => toast.show('Bientôt disponible')}>
             Retrait
           </button>
         </div>
@@ -87,6 +89,7 @@ export default function Home() {
           <strong>{jackpot ? formatDrawTime(jackpot.drawAt) : '—'}</strong>
         </div>
       </div>
+      {toast.view}
     </ConnectedLayout>
   );
 }
