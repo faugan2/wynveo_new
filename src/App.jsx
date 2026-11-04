@@ -26,6 +26,9 @@ import Profile from './screens/Profile.jsx';
 import AdminPayments from './screens/Admin/AdminPayments.jsx';
 import AdminGames from './screens/Admin/AdminGames.jsx';
 import AdminAudit from './screens/Admin/AdminAudit.jsx';
+import AdminUsers from './screens/Admin/AdminUsers.jsx';
+import AdminUser from './screens/Admin/AdminUser.jsx';
+import AdminTransactions from './screens/Admin/AdminTransactions.jsx';
 
 // Pages réservées aux comptes connectés.
 function RequireAuth({ children }) {
@@ -72,9 +75,12 @@ export default function App() {
       <Route path="/profil" element={<RequireAuth><Profile /></RequireAuth>} />
 
       <Route path="/admin" element={<Navigate to="/admin/paiements" replace />} />
+      <Route path="/admin/transactions" element={<RequireAuth><AdminTransactions /></RequireAuth>} />
       <Route path="/admin/paiements" element={<RequireAuth><AdminPayments /></RequireAuth>} />
       <Route path="/admin/jeux" element={<RequireAuth><AdminGames /></RequireAuth>} />
       <Route path="/admin/journal" element={<RequireAuth><AdminAudit /></RequireAuth>} />
+      <Route path="/admin/utilisateurs" element={<RequireAuth><AdminUsers /></RequireAuth>} />
+      <Route path="/admin/utilisateurs/:uid" element={<RequireAuth><AdminUser /></RequireAuth>} />
 
       <Route path="/historique" element={<RequireAuth><Placeholder title="Historique" /></RequireAuth>} />
       <Route path="/bonus" element={<RequireAuth><Placeholder title="Bonus et promotions" /></RequireAuth>} />

@@ -1587,19 +1587,248 @@ exports.adminSaveSettings = onCall({ region: REGION }, async (request) => {
 
 exports.adminGetAuditLog = onCall({ region: REGION }, async (request) => {
   await requireAdmin(db, request);
-  const snapshot = await db.collection('wy_audit_log').orderBy('createdAt', 'desc').limit(50).get();
+  const pageSize = adminPageSize(request.data?.pageSize);
+  const cursor = parseAdminCursor(request.data?.cursor);
+  const { rows, next } = await pageAcrossCollections(
+    [{
+      key: 'a',
+      collection: 'wy_audit_log',
+      filters: [],
+      map: (doc) => {
+        const data = doc.data();
+        return {
+          id: doc.id,
+          role: data.role,
+          action: data.action,
+          setting: data.setting,
+          createdAt: data.createdAt ? data.createdAt.toMillis() : 0,
+        };
+      },
+    }],
+    cursor,
+    pageSize
+  );
+  return { entries: rows, next };
+});
+
+// Administration : listes paginées par curseur (lecture seule). Une page lit au plus pageSize + 1 documents par collection,
+// quel que soit le nombre total de lignes. Le curseur est la date du dernier élément affiché ; les éléments de même date
+// déjà affichés sont exclus par identifiant, pour ne rien perdre ni répéter entre deux pages.
+const ADMIN_PAGE_SIZE = 20;
+const ADMIN_PAGE_MAX = 50;
+
+function adminPageSize(value) {
+  const n = Number(value);
+  return Number.isInteger(n) && n > 0 ? Math.min(n, ADMIN_PAGE_MAX) : ADMIN_PAGE_SIZE;
+}
+
+function parseAdminCursor(value) {
+  if (!value || typeof value !== 'object') return null;
+  const createdAt = Number(value.createdAt);
+  if (!Number.isFinite(createdAt) || createdAt <= 0) return null;
+  const keys = Array.isArray(value.keys) ? value.keys.filter((k) => typeof k === 'string').slice(0, ADMIN_PAGE_MAX) : [];
+  return { createdAt, keys };
+}
+
+// Lit une page dans une ou plusieurs collections, fusionnées par date décroissante.
+// sources : [{ key, collection, filters: [[champ, opérateur, valeur]], map(doc) }]
+async function pageAcrossCollections(sources, cursor, pageSize) {
+  const fetched = await Promise.all(
+    sources.map(async (source) => {
+      let query = db.collection(source.collection);
+      for (const [field, op, value] of source.filters || []) {
+        query = query.where(field, op, value);
+      }
+      query = query.orderBy('createdAt', 'desc');
+      if (cursor) query = query.where('createdAt', '<=', Timestamp.fromMillis(cursor.createdAt));
+      const snapshot = await query.limit(pageSize + 1).get();
+      return snapshot.docs.map((doc) => ({
+        key: `${source.key}:${doc.id}`,
+        createdAt: doc.get('createdAt')?.toMillis?.() || 0,
+        row: source.map(doc),
+      }));
+    })
+  );
+
+  const merged = fetched
+    .flat()
+    .filter((item) => !(cursor && item.createdAt === cursor.createdAt && cursor.keys.includes(item.key)))
+    .sort((a, b) => b.createdAt - a.createdAt);
+
+  const pageItems = merged.slice(0, pageSize);
+  let next = null;
+  if (merged.length > pageSize && pageItems.length) {
+    const last = pageItems[pageItems.length - 1].createdAt;
+    next = { createdAt: last, keys: pageItems.filter((item) => item.createdAt === last).map((item) => item.key) };
+  }
+  return { rows: pageItems.map((item) => item.row), next };
+}
+
+function userRow(doc) {
+  const data = doc.data();
   return {
-    entries: snapshot.docs.map((doc) => {
-      const data = doc.data();
-      return {
-        id: doc.id,
-        role: data.role,
-        action: data.action,
-        setting: data.setting,
-        createdAt: data.createdAt ? data.createdAt.toMillis() : 0,
-      };
-    }),
+    uid: doc.id,
+    fullName: data.fullName || '',
+    phone: data.phone || '',
+    email: data.email || '',
+    verified: Boolean(data.verified),
+    balanceReal: data.balance?.real || 0,
+    balanceBonus: data.balance?.bonus || 0,
+    createdAt: data.createdAt ? data.createdAt.toMillis() : 0,
   };
+}
+
+// Liste des joueurs. Recherche exacte seulement : numéro (wy_phones) ou e-mail. Une recherche par nom
+// demanderait de lire toute la collection, elle n'est donc pas proposée.
+exports.adminListUsers = onCall({ region: REGION }, async (request) => {
+  await requireAdmin(db, request);
+  const pageSize = adminPageSize(request.data?.pageSize);
+  const cursor = parseAdminCursor(request.data?.cursor);
+  const search = typeof request.data?.search === 'string' ? request.data.search.trim() : '';
+
+  if (search) {
+    const uids = new Set();
+    const key = phoneKey(search);
+    if (key) {
+      const phoneSnap = await db.collection('wy_phones').doc(key).get();
+      if (phoneSnap.exists) uids.add(phoneSnap.get('uid'));
+    }
+    if (search.includes('@')) {
+      const byEmail = await db.collection('wy_users').where('email', '==', search.toLowerCase()).limit(5).get();
+      byEmail.forEach((doc) => uids.add(doc.id));
+    }
+    const docs = await Promise.all([...uids].filter(Boolean).map((uid) => db.collection('wy_users').doc(uid).get()));
+    return { users: docs.filter((doc) => doc.exists).map(userRow), next: null };
+  }
+
+  const verified = request.data?.verified;
+  const filters = verified === 'oui' ? [['verified', '==', true]] : verified === 'non' ? [['verified', '==', false]] : [];
+  return pageAcrossCollections(
+    [{ key: 'u', collection: 'wy_users', filters, map: userRow }],
+    cursor,
+    pageSize
+  ).then(({ rows, next }) => ({ users: rows, next }));
+});
+
+exports.adminGetUser = onCall({ region: REGION }, async (request) => {
+  await requireAdmin(db, request);
+  const uid = request.data?.uid;
+  if (typeof uid !== 'string' || !uid) throw new HttpsError('invalid-argument', 'Joueur invalide.');
+  const userSnap = await db.collection('wy_users').doc(uid).get();
+  if (!userSnap.exists) throw new HttpsError('not-found', 'Joueur introuvable.');
+  const user = userSnap.data();
+
+  return {
+    user: {
+      uid,
+      fullName: user.fullName || '',
+      phone: user.phone || '',
+      email: user.email || '',
+      verified: Boolean(user.verified),
+      referralCode: user.referralCode || '',
+      balanceReal: user.balance?.real || 0,
+      balanceBonus: user.balance?.bonus || 0,
+      createdAt: user.createdAt ? user.createdAt.toMillis() : 0,
+    },
+  };
+});
+
+// Opérations d'un joueur (dépôts, dépôts crypto, paris), paginées, filtrables par type.
+exports.adminListUserOperations = onCall({ region: REGION }, async (request) => {
+  await requireAdmin(db, request);
+  const uid = request.data?.uid;
+  if (typeof uid !== 'string' || !uid) throw new HttpsError('invalid-argument', 'Joueur invalide.');
+  const pageSize = adminPageSize(request.data?.pageSize);
+  const cursor = parseAdminCursor(request.data?.cursor);
+  const type = request.data?.type;
+
+  const GAMES = { 'lucky-spin': 'Lucky Spin', 'mystery-box': 'Mystery Box', 'lucky-number': 'Lucky Number', crash: 'Crash', sport: 'Sport', jackpot: 'Jackpot' };
+  const sources = {
+    deposit: {
+      key: 'd',
+      collection: 'wy_deposits',
+      filters: [['uid', '==', uid]],
+      map: (doc) => {
+        const d = doc.data();
+        return { id: doc.id, type: 'Dépôt', detail: d.method === 'crypto' ? `Crypto ${d.token || ''}` : 'Mobile Money', amount: d.amount || 0, status: d.status || '—', createdAt: d.createdAt ? d.createdAt.toMillis() : 0 };
+      },
+    },
+    crypto: {
+      key: 'c',
+      collection: 'wy_crypto_deposits',
+      filters: [['uid', '==', uid]],
+      map: (doc) => {
+        const d = doc.data();
+        return { id: doc.id, type: 'Dépôt crypto', detail: `${d.token || ''} · ${d.network || ''}`, amount: d.amountXof || 0, status: d.status || '—', createdAt: d.createdAt ? d.createdAt.toMillis() : 0 };
+      },
+    },
+    bet: {
+      key: 'b',
+      collection: 'wy_bets',
+      filters: [['uid', '==', uid]],
+      map: (doc) => {
+        const d = doc.data();
+        return { id: doc.id, type: 'Pari', detail: GAMES[d.game] || d.game || '', amount: -(d.stake || 0), status: d.status || '—', createdAt: d.createdAt ? d.createdAt.toMillis() : 0 };
+      },
+    },
+  };
+  const selected = {
+    'Dépôt': [sources.deposit],
+    'Dépôt crypto': [sources.crypto],
+    'Pari': [sources.bet],
+  }[type] || [sources.deposit, sources.crypto, sources.bet];
+
+  const { rows, next } = await pageAcrossCollections(selected, cursor, pageSize);
+  return { operations: rows, next };
+});
+
+// Administration : dépôts, du plus récent au plus ancien, paginés. Deux sources :
+// 'crypto' = demandes de dépôt crypto (tous statuts), 'ledger' = crédits enregistrés dans wy_deposits.
+exports.adminListDeposits = onCall({ region: REGION }, async (request) => {
+  await requireAdmin(db, request);
+  const pageSize = adminPageSize(request.data?.pageSize);
+  const cursor = parseAdminCursor(request.data?.cursor);
+  const status = typeof request.data?.status === 'string' && request.data.status ? request.data.status.slice(0, 40) : '';
+  const statusFilter = status ? [['status', '==', status]] : [];
+
+  const source = request.data?.source === 'ledger'
+    ? {
+        key: 'l',
+        collection: 'wy_deposits',
+        filters: statusFilter,
+        map: (doc) => {
+          const d = doc.data();
+          return {
+            id: doc.id,
+            uid: d.uid || '',
+            type: d.method === 'crypto' ? 'Crypto' : 'Mobile Money',
+            detail: d.method === 'crypto' ? d.token || '' : d.method || 'Simulé',
+            amount: d.amount || 0,
+            status: d.status || '—',
+            createdAt: d.createdAt ? d.createdAt.toMillis() : 0,
+          };
+        },
+      }
+    : {
+        key: 'c',
+        collection: 'wy_crypto_deposits',
+        filters: statusFilter,
+        map: (doc) => {
+          const d = doc.data();
+          return {
+            id: doc.id,
+            uid: d.uid || '',
+            type: 'Crypto',
+            detail: `${d.token || ''} · ${d.network || ''}`,
+            amount: d.amountXof || 0,
+            status: d.status || '—',
+            createdAt: d.createdAt ? d.createdAt.toMillis() : 0,
+          };
+        },
+      };
+
+  const { rows, next } = await pageAcrossCollections([source], cursor, pageSize);
+  return { deposits: rows, next };
 });
 
 // Dépôt simulé, pour les tests : crédite le solde sans paiement réel.

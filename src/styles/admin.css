@@ -248,3 +248,158 @@
     padding: 16px;
   }
 }
+
+/* Utilisateurs : recherche, liens, fiche joueur. */
+.admin-search {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.admin-search input {
+  flex: 1 1 240px;
+  min-width: 0;
+  padding: 10px 12px;
+  border: 1px solid #d6d2e8;
+  border-radius: 10px;
+  font: inherit;
+  font-size: 14px;
+}
+
+.admin-table-wrap {
+  overflow-x: auto;
+}
+
+.admin-link {
+  color: #5b21b6;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.admin-sub {
+  display: block;
+  color: #6b6390;
+  font-size: 12px;
+}
+
+.admin-back-link a {
+  color: #5b21b6;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.admin-facts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+  margin: 0;
+}
+
+.admin-facts div {
+  display: grid;
+  gap: 2px;
+}
+
+.admin-facts dt {
+  color: #6b6390;
+  font-size: 12px;
+  text-transform: uppercase;
+}
+
+.admin-facts dd {
+  margin: 0;
+  font-weight: 600;
+}
+
+.admin-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 14px;
+  margin: 14px 0;
+}
+
+.admin-stat {
+  display: grid;
+  gap: 4px;
+  padding: 16px;
+  background: #ffffff;
+  border: 1px solid #e4e1f0;
+  border-radius: 14px;
+}
+
+.admin-stat span {
+  color: #6b6390;
+  font-size: 12px;
+  text-transform: uppercase;
+}
+
+.admin-stat strong {
+  font-size: 22px;
+}
+
+.admin-neg {
+  color: #b91c1c;
+  font-weight: 600;
+}
+
+/* Filtres et pagination des tableaux. */
+.admin-filters {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  align-items: end;
+}
+
+.admin-filters label {
+  display: grid;
+  gap: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #3b3352;
+  flex: 1 1 160px;
+  min-width: 0;
+}
+
+.admin-filters select {
+  padding: 10px 12px;
+  border: 1px solid #d6d2e8;
+  border-radius: 10px;
+  font: inherit;
+  font-size: 14px;
+  background: #ffffff;
+  min-width: 0;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.admin-pager {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.admin-pager-buttons {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+}
+
+.admin-pager-buttons button {
+  padding: 8px 14px;
+  border: 1px solid #d6d2e8;
+  border-radius: 10px;
+  background: #ffffff;
+  color: #3b3352;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  min-height: 44px;
+}
+
+.admin-pager-buttons button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

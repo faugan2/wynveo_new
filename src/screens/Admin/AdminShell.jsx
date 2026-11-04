@@ -3,6 +3,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import { functions } from '../../lib/firebase.js';
 
 const NAV = [
+  { key: 'utilisateurs', label: 'Utilisateurs', to: '/admin/utilisateurs' },
+  { key: 'transactions', label: 'Transactions', to: '/admin/transactions' },
   { key: 'paiements', label: 'Paiements', to: '/admin/paiements' },
   { key: 'jeux', label: 'Jeux', to: '/admin/jeux' },
   { key: 'journal', label: "Journal d'audit", to: '/admin/journal' },
