@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ConnectButton, TransactionWidget, useActiveAccount } from 'thirdweb/react';
+import { ConnectButton, useActiveAccount, useSendTransaction } from 'thirdweb/react';
 import { getContract } from 'thirdweb';
 import { transfer } from 'thirdweb/extensions/erc20';
 import { CHAINS_BY_NETWORK, thirdwebClient } from '../lib/thirdweb.js';
@@ -50,6 +50,8 @@ function Stepper({ current }) {
 export default function CryptoDeposit() {
   const navigate = useNavigate();
   const account = useActiveAccount();
+  // Transfert direct depuis le portefeuille (pas de conversion, pas de sélecteur de token).
+  const { mutate: sendTransfer, isPending: paying } = useSendTransaction({ payModal: false });
   const [settings, setSettings] = useState(null); // minDepositXof, rateXofPerUsd, expiryMinutes
   const [amount, setAmount] = useState(5000);
   const [tokenSymbol, setTokenSymbol] = useState('USDT');
@@ -131,6 +133,20 @@ export default function CryptoDeposit() {
     } catch (err) {
       setError(err?.message || 'Vérification impossible. Réessayez.');
     }
+  }
+
+  // Le portefeuille signe le transfert direct ; le hash part ensuite au serveur pour vérification.
+  function payNow() {
+    if (!transaction) return;
+    setError('');
+    sendTransfer(transaction, {
+      onSuccess: (receipt) => {
+        const txHash = receipt?.transactionHash;
+        if (txHash) confirm(txHash);
+        else setError('Hash de transaction introuvable.');
+      },
+      onError: (err) => setError(err?.message || 'Paiement annulé ou échoué.'),
+    });
   }
 
   function applyStatus(data) {
@@ -276,19 +292,12 @@ export default function CryptoDeposit() {
 
           {!expired && account && transaction && status === '' && (
             <div className="crypto-pay">
-              <TransactionWidget
-                client={thirdwebClient}
-                transaction={transaction}
-                className="crypto-tx-widget"
-                showThirdwebBranding={false}
-                title=""
-                onSuccess={(data) => {
-                  const txHash = data?.receipt?.transactionHash || data?.transactionHash;
-                  if (txHash) confirm(txHash);
-                  else setError('Hash de transaction introuvable.');
-                }}
-                onError={(err) => setError(err?.message || 'Paiement échoué.')}
-              />
+              <p className="crypto-pay-note">
+                Votre portefeuille va demander de signer un transfert direct de <strong>{request.amount} {tokenSymbol}</strong> vers l'adresse de réception.
+              </p>
+              <button type="button" className="btn btn-sport crypto-primary" onClick={payNow} disabled={paying}>
+                {paying ? 'Confirmez dans votre portefeuille…' : `Payer ${request.amount} ${tokenSymbol}`}
+              </button>
             </div>
           )}
 
