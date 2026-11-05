@@ -39,6 +39,15 @@ export const DEFAULT_HERO = [
 const VISITOR_PATHS = { register: '/register', login: '/login', games: '/univers/jeux', sport: '/univers/sport', home: '/', bonus: '/register' };
 const MEMBER_PATHS = { register: '/home', login: '/home', games: '/jeux', sport: '/sport', home: '/home', bonus: '/bonus' };
 
+// Page de chaque jeu de la rangée d'accueil, selon sa clé (même routes que la page Jeux).
+export const GAME_PAGES = {
+  spin: '/jeux/lucky-spin',
+  box: '/jeux/mystery-box',
+  number: '/jeux/lucky-number',
+  jackpot: '/jeux/jackpot',
+  crash: '/jeux/crash',
+};
+
 export function targetPath(target, user) {
   const table = user ? MEMBER_PATHS : VISITOR_PATHS;
   return table[target] || '/';

@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
+import { FaTelegramPlane } from 'react-icons/fa';
+import { telegramLink } from '../lib/helpInfo.js';
 import {
   IoChatbubbleEllipsesOutline,
   IoChevronDown,
@@ -63,6 +65,7 @@ export default function GuestMenu({ support, onClose }) {
   const navigate = useNavigate();
   const [openGroup, setOpenGroup] = useState(null); // 'games' | 'sport' | null
   const whatsapp = support?.whatsapp ? support.whatsapp.replace(/\D/g, '') : '';
+  const telegram = telegramLink(support?.telegram);
   const toggle = (group) => setOpenGroup((current) => (current === group ? null : group));
 
   const gameLinks = user ? MEMBER_GAMES : VISITOR_GAMES;
@@ -163,7 +166,7 @@ export default function GuestMenu({ support, onClose }) {
           <span className="guest-menu-promo-text">Versé à votre premier dépôt confirmé</span>
           <IoGiftOutline className="guest-menu-promo-icon" aria-hidden="true" />
         </Link>
-        {(support?.email || whatsapp) && (
+        {(support?.email || whatsapp || telegram) && (
           <div className="guest-menu-social">
             {support?.email && (
               <a href={`mailto:${support.email}`} aria-label="Écrire au support">
@@ -173,6 +176,11 @@ export default function GuestMenu({ support, onClose }) {
             {whatsapp && (
               <a href={`https://wa.me/${whatsapp}`} target="_blank" rel="noreferrer" aria-label="WhatsApp du support">
                 <IoLogoWhatsapp aria-hidden="true" />
+              </a>
+            )}
+            {telegram && (
+              <a href={telegram.url} target="_blank" rel="noreferrer" aria-label="Telegram du support">
+                <FaTelegramPlane aria-hidden="true" />
               </a>
             )}
           </div>

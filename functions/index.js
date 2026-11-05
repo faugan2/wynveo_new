@@ -636,6 +636,56 @@ function publicMatch(doc) {
   };
 }
 
+// Nombre de parties jouées par jeu, pour les cartes de jeu (lecture publique, sans données personnelles).
+// Chaque mise d'un jeu est une ligne de wy_bets (champ game) ; le jackpot compte ses tickets.
+const GAME_PLAY_SOURCES = {
+  'lucky-spin': () => db.collection('wy_bets').where('game', '==', 'lucky-spin'),
+  'mystery-box': () => db.collection('wy_bets').where('game', '==', 'mystery-box'),
+  'lucky-number': () => db.collection('wy_bets').where('game', '==', 'lucky-number'),
+  crash: () => db.collection('wy_bets').where('game', '==', 'crash'),
+  jackpot: () => db.collection('wy_jackpot_tickets'),
+};
+
+const isGameSlug = (slug) => typeof slug === 'string' && Object.prototype.hasOwnProperty.call(GAME_PLAY_SOURCES, slug);
+
+exports.getGamePlayCounts = onCall({ region: REGION }, async () => {
+  const entries = Object.entries(GAME_PLAY_SOURCES);
+  const results = await Promise.all(entries.map(([, query]) => query().count().get()));
+  const counts = {};
+  entries.forEach(([slug], index) => {
+    counts[slug] = results[index].data().count;
+  });
+  return { counts };
+});
+
+// Jeux favoris du membre connecté : un document par membre dans wy_game_favorites (lecture et écriture par ces fonctions seulement).
+exports.getGameFavorites = onCall({ region: REGION }, async (request) => {
+  if (!request.auth) {
+    throw new HttpsError('unauthenticated', 'Connexion requise.');
+  }
+  const snapshot = await db.collection('wy_game_favorites').doc(request.auth.uid).get();
+  const slugs = snapshot.exists ? snapshot.get('slugs') : [];
+  return { slugs: Array.isArray(slugs) ? slugs.filter(isGameSlug) : [] };
+});
+
+exports.setGameFavorite = onCall({ region: REGION }, async (request) => {
+  if (!request.auth) {
+    throw new HttpsError('unauthenticated', 'Connexion requise.');
+  }
+  const { slug, saved } = request.data || {};
+  if (!isGameSlug(slug) || typeof saved !== 'boolean') {
+    throw new HttpsError('invalid-argument', 'Jeu ou choix invalide.');
+  }
+  await db
+    .collection('wy_game_favorites')
+    .doc(request.auth.uid)
+    .set(
+      { slugs: saved ? FieldValue.arrayUnion(slug) : FieldValue.arrayRemove(slug), updatedAt: FieldValue.serverTimestamp() },
+      { merge: true }
+    );
+  return { ok: true };
+});
+
 // Prochains matchs de l'accueil visiteur : matchs à venir des compétitions visibles, les plus proches d'abord.
 exports.getPublicMatches = onCall({ region: REGION }, async () => {
   const since = Timestamp.fromDate(new Date(Date.now() - 2 * 3600 * 1000));
@@ -698,11 +748,17 @@ exports.adminUploadHomeImage = onCall({ region: REGION }, async (request) => {
   };
 });
 
+// Logo de l'application (réglé dans l'admin). Public : affiché dans l'en-tête de tous les écrans.
+exports.getBranding = onCall({ region: REGION }, async () => {
+  const branding = await gameSettings('branding', { logoUrl: '' });
+  return { logoUrl: typeof branding.logoUrl === 'string' ? branding.logoUrl : '' };
+});
+
 // Informations d'aide, lues dans les réglages : contacts (wy_settings/support), dépôt (payments), bonus et parrainage.
 // Rien n'est écrit en dur dans l'application : tout ce qui est réglable dans l'admin vient d'ici.
 // Accessible sans connexion : seules des informations publiques sont renvoyées (contacts, minimums, bonus publics).
 exports.getHelpInfo = onCall({ region: REGION }, async () => {
-  const support = await gameSettings('support', { email: '', whatsapp: '', hours: '', helpline: '' });
+  const support = await gameSettings('support', { email: '', whatsapp: '', telegram: '', hours: '', helpline: '' });
   const payments = await gameSettings('payments', { minDepositXof: 1000, expiryMinutes: 30 });
   const welcome = await gameSettings('welcome-bonus', { enabled: false, amountXof: 0 });
   const rates = await referralRates();
@@ -710,6 +766,7 @@ exports.getHelpInfo = onCall({ region: REGION }, async () => {
     support: {
       email: support.email || '',
       whatsapp: support.whatsapp || '',
+      telegram: support.telegram || '',
       hours: support.hours || '',
       helpline: support.helpline || '',
     },

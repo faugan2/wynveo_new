@@ -13,6 +13,7 @@ const NAV = [
   { key: 'rapports', label: 'Rapports', to: '/admin/rapports' },
   { key: 'aide', label: 'Aide et contacts', to: '/admin/support' },
   { key: 'accueil', label: 'Accueil visiteur', to: '/admin/accueil' },
+  { key: 'logo', label: 'Logo', to: '/admin/logo' },
   { key: 'paiements', label: 'Paiements', to: '/admin/paiements' },
   { key: 'jeux', label: 'Jeux', to: '/admin/jeux' },
   { key: 'journal', label: "Journal d'audit", to: '/admin/journal' },

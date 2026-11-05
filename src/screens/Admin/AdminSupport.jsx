@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import AdminShell from './AdminShell.jsx';
 import { functions } from '../../lib/firebase.js';
 
-const EMPTY = { email: '', whatsapp: '', hours: '', helpline: '' };
+const EMPTY = { email: '', whatsapp: '', telegram: '', hours: '', helpline: '' };
 
 // Contacts affichés aux joueurs (Aide et support, Jeu responsable). Les valeurs vides ne sont pas affichées.
 export default function AdminSupport() {
@@ -33,6 +33,7 @@ export default function AdminSupport() {
         values: {
           email: form.email.trim(),
           whatsapp: form.whatsapp.trim(),
+          telegram: form.telegram.trim(),
           hours: form.hours.trim(),
           helpline: form.helpline.trim(),
         },
@@ -62,6 +63,10 @@ export default function AdminSupport() {
             <label>
               WhatsApp (numéro avec indicatif)
               <input type="text" value={form.whatsapp} onChange={(e) => update('whatsapp', e.target.value)} placeholder="+228 …" />
+            </label>
+            <label>
+              Telegram (@nom d’utilisateur ou lien t.me)
+              <input type="text" value={form.telegram} onChange={(e) => update('telegram', e.target.value)} placeholder="@wynveo" />
             </label>
             <label>
               Horaires du support

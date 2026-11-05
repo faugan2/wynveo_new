@@ -113,6 +113,15 @@
   text-overflow: ellipsis;
 }
 
+.game-tile-plays {
+  font-size: 12px;
+  font-weight: 400;
+  color: #9aa1b1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 .game-tile-meta {
   font-size: 12px;
   color: #9aa1b1;
@@ -123,6 +132,80 @@
 
 .game-tile.is-soon {
   opacity: 0.6;
+}
+
+/* Ligne sous l'illustration : nom et parties à gauche, menu ⋮ à droite. */
+.game-tile-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 4px;
+  min-width: 0;
+}
+
+.game-tile-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.game-tile-more-wrap {
+  flex: 0 0 auto;
+  position: relative;
+}
+
+.game-tile-more {
+  width: 28px;
+  height: 28px;
+  display: grid;
+  place-items: center;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: #9aa1b1;
+  cursor: pointer;
+}
+
+.game-tile-more:hover,
+.game-tile-more[aria-expanded='true'] {
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+}
+
+/* Menu : fixé à l'écran pour ne pas être coupé par la rangée qui défile. */
+.game-tile-menu {
+  position: fixed;
+  z-index: 1000;
+  min-width: 260px;
+  margin: 0;
+  padding: 8px 0;
+  list-style: none;
+  background: #282828;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+}
+
+.game-tile-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  width: 100%;
+  padding: 10px 18px;
+  border: none;
+  background: none;
+  color: #f1f1f1;
+  font: inherit;
+  font-size: 14px;
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.game-tile-menu-item:hover,
+.game-tile-menu-item:focus-visible {
+  background: rgba(255, 255, 255, 0.08);
+  outline: none;
 }
 
 /* Page Jeux : grille de cartes, 2 colonnes sur téléphone, 4 sur ordinateur. */

@@ -543,6 +543,27 @@
   grid-column: 1 / -1;
 }
 
+/* Logo de l'application dans l'en-tête (réglé dans l'admin). */
+.brand-logo {
+  display: block;
+  height: 32px;
+  width: auto;
+  max-width: 160px;
+  object-fit: contain;
+}
+
+/* Liens du pied de page avec icône : icône à gauche, texte aligné. */
+.guest-footer-cols .guest-footer-link {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.guest-footer-cols .guest-footer-link > svg {
+  flex: 0 0 auto;
+  color: var(--g-green);
+}
+
 .guest-footer-cols h3 {
   margin: 0 0 10px;
   color: var(--g-text);
@@ -570,6 +591,11 @@
 
   .guest-footer-cols {
     grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  /* Sur ordinateur, la colonne Contact reprend sa place dans les trois colonnes (pas de ligne entière). */
+  .guest-footer-cols > :nth-child(3) {
+    grid-column: auto;
   }
 }
 

@@ -1,14 +1,23 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
-import { useHelpInfo } from '../lib/helpInfo.js';
+import { telegramLink, useHelpInfo } from '../lib/helpInfo.js';
+import { useLogoUrl } from '../lib/branding.js';
+import { FaTelegramPlane } from 'react-icons/fa';
 import GuestMenu from './GuestMenu.jsx';
 import {
+  IoCallOutline,
+  IoDocumentTextOutline,
   IoFootballOutline,
   IoGameControllerOutline,
+  IoGiftOutline,
+  IoHelpCircleOutline,
   IoHome,
   IoHomeOutline,
+  IoLogoWhatsapp,
+  IoMailOutline,
   IoMenuOutline,
+  IoShieldCheckmarkOutline,
   IoWalletOutline,
 } from 'react-icons/io5';
 import '../styles/guest-home.css';
@@ -18,6 +27,7 @@ import '../styles/guest-home.css';
 export default function GuestLayout({ active = null, children }) {
   const { user } = useAuth();
   const { info } = useHelpInfo();
+  const logoUrl = useLogoUrl();
   const support = info?.support;
   const [menuOpen, setMenuOpen] = useState(false);
   // Pour un visiteur, les liens d'aide passent par la connexion ; pour un compte connecté, ils vont directement à la page.
@@ -28,7 +38,7 @@ export default function GuestLayout({ active = null, children }) {
     <div className={`guest-home${menuOpen ? ' is-menu-open' : ''}`}>
       <header className="guest-topbar">
         <Link to="/" className="guest-brand" aria-label="Wynveo, accueil">
-          WYN<span>VEO</span>
+          {logoUrl ? <img className="brand-logo" src={logoUrl} alt="Wynveo" /> : <>WYN<span>VEO</span></>}
         </Link>
         <nav className="guest-nav" aria-label="Rubriques">
           <Link to="/" className={current('home').trim()}>Accueil</Link>
@@ -81,22 +91,34 @@ export default function GuestLayout({ active = null, children }) {
             <div className="guest-footer-cols">
               <div>
                 <h3>Informations</h3>
-                <Link to={authTo('/aide')}>Aide et support</Link>
-                <Link to={authTo('/jeu-responsable')}>Jeu responsable</Link>
-                <Link to={authTo('/conditions')}>Conditions d'utilisation</Link>
+                <Link to={authTo('/aide')} className="guest-footer-link"><IoHelpCircleOutline size={18} aria-hidden="true" /><span>Aide et support</span></Link>
+                <Link to={authTo('/jeu-responsable')} className="guest-footer-link"><IoShieldCheckmarkOutline size={18} aria-hidden="true" /><span>Jeu responsable</span></Link>
+                <Link to={authTo('/conditions')} className="guest-footer-link"><IoDocumentTextOutline size={18} aria-hidden="true" /><span>Conditions d'utilisation</span></Link>
               </div>
               <div>
                 <h3>Catégories</h3>
-                <Link to="/univers/jeux">Jeux</Link>
-                <Link to="/univers/sport">Sport</Link>
-                <Link to="/register">Bonus</Link>
+                <Link to="/univers/jeux" className="guest-footer-link"><IoGameControllerOutline size={18} aria-hidden="true" /><span>Jeux</span></Link>
+                <Link to="/univers/sport" className="guest-footer-link"><IoFootballOutline size={18} aria-hidden="true" /><span>Sport</span></Link>
+                <Link to="/register" className="guest-footer-link"><IoGiftOutline size={18} aria-hidden="true" /><span>Bonus</span></Link>
               </div>
-              {support && (support.email || support.whatsapp || support.helpline) && (
+              {support && (support.email || support.whatsapp || support.telegram || support.helpline) && (
                 <div>
                   <h3>Contact</h3>
-                  {support.email && <a href={`mailto:${support.email}`}>{support.email}</a>}
-                  {support.whatsapp && <span>WhatsApp : {support.whatsapp}</span>}
-                  {support.helpline && <span>Ligne d'aide : {support.helpline}</span>}
+                  {support.email && (
+                    <a href={`mailto:${support.email}`} className="guest-footer-link"><IoMailOutline size={18} aria-hidden="true" /><span>{support.email}</span></a>
+                  )}
+                  {support.whatsapp && (
+                    <span className="guest-footer-link"><IoLogoWhatsapp size={18} aria-hidden="true" /><span>WhatsApp : {support.whatsapp}</span></span>
+                  )}
+                  {telegramLink(support.telegram) && (
+                    <a href={telegramLink(support.telegram).url} target="_blank" rel="noreferrer" className="guest-footer-link">
+                      <FaTelegramPlane size={18} aria-hidden="true" />
+                      <span>Telegram : {telegramLink(support.telegram).handle}</span>
+                    </a>
+                  )}
+                  {support.helpline && (
+                    <span className="guest-footer-link"><IoCallOutline size={18} aria-hidden="true" /><span>Ligne d'aide : {support.helpline}</span></span>
+                  )}
                 </div>
               )}
             </div>

@@ -25,6 +25,7 @@ import {
 import { formatFcfa } from '../lib/format.js';
 import { useAuth } from '../context/AuthContext.jsx';
 import { useHelpInfo } from '../lib/helpInfo.js';
+import { useLogoUrl } from '../lib/branding.js';
 import { walletFromProfile } from '../lib/wallet.js';
 import GuestMenu from './GuestMenu.jsx';
 import '../styles/guest-home.css';
@@ -162,6 +163,7 @@ export default function ConnectedLayout({ children }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const { profile } = useAuth();
   const { info } = useHelpInfo();
+  const logoUrl = useLogoUrl();
   const wallet = walletFromProfile(profile);
   const support = info?.support;
 
@@ -169,7 +171,7 @@ export default function ConnectedLayout({ children }) {
     <div className={`connected-shell${menuOpen ? ' is-menu-open' : ''}`}>
       <header className="connected-header">
         <Link to="/" className="brand header-brand" style={{ fontSize: 24 }} aria-label="Retour à l'accueil du site">
-          WYN<span>VEO</span>
+          {logoUrl ? <img className="brand-logo" src={logoUrl} alt="Wynveo" /> : <>WYN<span>VEO</span></>}
         </Link>
         <NavTabs className="top-nav" tabs={TABS} />
         <MoreMenu />

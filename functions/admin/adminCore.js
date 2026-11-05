@@ -16,6 +16,7 @@ const SETTINGS = {
   'welcome-bonus': { roles: ['super_admin', 'finance'] },
   support: { roles: ['super_admin', 'support'] },
   home: { roles: ['super_admin', 'support'] },
+  branding: { roles: ['super_admin', 'support'] },
 };
 
 // Destinations proposées pour les boutons du héros (visiteur et connecté).
@@ -106,8 +107,14 @@ const VALIDATORS = {
     }
     return null;
   },
+  branding: (v) => {
+    if (v.logoUrl && (typeof v.logoUrl !== 'string' || !IMAGE_URL.test(v.logoUrl) || v.logoUrl.length > 500)) {
+      return "Le logo doit être une adresse https valide.";
+    }
+    return null;
+  },
   support: (v) => {
-    for (const key of ['email', 'whatsapp', 'hours', 'helpline']) {
+    for (const key of ['email', 'whatsapp', 'telegram', 'hours', 'helpline']) {
       if (typeof v[key] !== 'string' || v[key].length > 200) return 'Un champ de contact est invalide (200 caractères au maximum).';
     }
     if (v.email && !/^\S+@\S+\.\S+$/.test(v.email)) return "L'adresse e-mail n'est pas valide.";

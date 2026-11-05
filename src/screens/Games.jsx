@@ -4,27 +4,52 @@ import GameCard from '../components/GameCard.jsx';
 import { GAMES, GAMES_BY_SLUG } from '../content/games.js';
 import { formatFcfa } from '../lib/format.js';
 import { useJackpotSummary } from '../lib/jackpotSummary.js';
+import { usePlayCounts } from '../lib/gameStats.js';
+import { useGameFavorites } from '../lib/gameFavorites.js';
 
-// Page Jeux : grille de cartes (même style que la rangée de l'accueil), avec la mise de chaque jeu.
+// Page Jeux : favoris du membre en haut, puis tous les jeux, en cartes (même style que la rangée de l'accueil).
 export default function Games() {
   const jackpot = useJackpotSummary();
+  const playCounts = usePlayCounts();
+  const { favorites, toggle } = useGameFavorites();
+  const favoriteGames = GAMES.filter((game) => favorites.includes(game.slug));
+
+  // Une carte de jeu, avec le menu ⋮ (favoris, partage, infos).
+  function renderCard(game) {
+    return (
+      <GameCard
+        name={game.name}
+        infoTo="/univers/jeux"
+        meta={game.slug === 'jackpot' ? `Cagnotte : ${jackpot ? formatFcfa(jackpot.pot) : '—'}` : game.stake}
+        to={`/jeux/${game.slug}`}
+        plays={playCounts ? playCounts[game.slug] : undefined}
+        icon={game.icon}
+        soon={Boolean(game.soon)}
+        favorite={favorites.includes(game.slug)}
+        onToggleFavorite={(saved) => toggle(game.slug, saved)}
+      />
+    );
+  }
 
   return (
     <ConnectedLayout>
       <h1 className="title-font page-title">Jeux</h1>
       <p className="note">Choisissez un jeu et misez avec le solde de vos dépôts.</p>
 
+      {favoriteGames.length > 0 && (
+        <section className="game-favorites" aria-labelledby="game-favorites-title">
+          <h2 id="game-favorites-title" className="section-label-sport">Vos favoris</h2>
+          <ul className="game-tile-grid">
+            {favoriteGames.map((game) => (
+              <li key={game.slug}>{renderCard(game)}</li>
+            ))}
+          </ul>
+        </section>
+      )}
+
       <ul className="game-tile-grid">
         {GAMES.map((game) => (
-          <li key={game.slug}>
-            <GameCard
-              name={game.name}
-              meta={game.slug === 'jackpot' ? `Cagnotte : ${jackpot ? formatFcfa(jackpot.pot) : '—'}` : game.stake}
-              to={`/jeux/${game.slug}`}
-              icon={game.icon}
-              soon={Boolean(game.soon)}
-            />
-          </li>
+          <li key={game.slug}>{renderCard(game)}</li>
         ))}
       </ul>
     </ConnectedLayout>

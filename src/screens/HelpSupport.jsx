@@ -1,12 +1,13 @@
 import ConnectedLayout from '../components/ConnectedLayout.jsx';
-import { useHelpInfo } from '../lib/helpInfo.js';
+import { telegramLink, useHelpInfo } from '../lib/helpInfo.js';
 import { formatFcfa } from '../lib/format.js';
 
 // Aide et support. Les contacts, le dépôt minimum, la durée de validité, le bonus et le parrainage viennent des réglages.
 export default function HelpSupport() {
   const { info, error } = useHelpInfo();
   const contacts = info?.support;
-  const hasContact = contacts && (contacts.email || contacts.whatsapp || contacts.hours);
+  const hasContact = contacts && (contacts.email || contacts.whatsapp || contacts.telegram || contacts.hours);
+  const telegram = telegramLink(contacts?.telegram);
 
   return (
     <ConnectedLayout>
@@ -50,6 +51,7 @@ export default function HelpSupport() {
             <ul className="help-list">
               {contacts.email && <li>E-mail : <a href={`mailto:${contacts.email}`}>{contacts.email}</a></li>}
               {contacts.whatsapp && <li>WhatsApp : {contacts.whatsapp}</li>}
+              {telegram && <li>Telegram : <a href={telegram.url} target="_blank" rel="noreferrer">{telegram.handle}</a></li>}
               {contacts.hours && <li>Horaires : {contacts.hours}</li>}
             </ul>
           ) : (

@@ -42,6 +42,7 @@ import AdminReports from './screens/Admin/AdminReports.jsx';
 import AdminLeagues from './screens/Admin/AdminLeagues.jsx';
 import AdminSupport from './screens/Admin/AdminSupport.jsx';
 import AdminHome from './screens/Admin/AdminHome.jsx';
+import AdminBranding from './screens/Admin/AdminBranding.jsx';
 import HelpSupport from './screens/HelpSupport.jsx';
 import ResponsibleGaming from './screens/ResponsibleGaming.jsx';
 
@@ -113,6 +114,7 @@ export default function App() {
       <Route path="/admin/competitions" element={<RequireAuth><AdminLeagues /></RequireAuth>} />
       <Route path="/admin/support" element={<RequireAuth><AdminSupport /></RequireAuth>} />
       <Route path="/admin/accueil" element={<RequireAuth><AdminHome /></RequireAuth>} />
+      <Route path="/admin/logo" element={<RequireAuth><AdminBranding /></RequireAuth>} />
       <Route path="/admin/paiements" element={<RequireAuth><AdminPayments /></RequireAuth>} />
       <Route path="/admin/jeux" element={<RequireAuth><AdminGames /></RequireAuth>} />
       <Route path="/admin/journal" element={<RequireAuth><AdminAudit /></RequireAuth>} />

@@ -1,9 +1,11 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
-import { heroSlidesFor, targetPath, textColorFor, useHomeContent } from '../lib/homeContent.js';
+import { GAME_PAGES, heroSlidesFor, targetPath, textColorFor, useHomeContent } from '../lib/homeContent.js';
 import GuestLayout from '../components/GuestLayout.jsx';
 import GameCard from '../components/GameCard.jsx';
+import { usePlayCounts } from '../lib/gameStats.js';
+import { useGameFavorites } from '../lib/gameFavorites.js';
 import { kickoffLabel, usePublicMatches } from '../lib/sportEvents.js';
 import '../styles/guest-home.css';
 import '../styles/home-matches.css';
@@ -99,6 +101,9 @@ export default function Welcome() {
   const gamesRef = useRef(null);
   const matches = usePublicMatches();
   const matchesRef = useRef(null);
+  const playCounts = usePlayCounts();
+  const { favorites, enabled, toggle: toggleFavorite } = useGameFavorites();
+  const slugOf = (game) => (GAME_PAGES[game.key] ? GAME_PAGES[game.key].replace('/jeux/', '') : game.key);
 
   // Fait défiler la rangée de jeux d'une page (flèches, ordinateur).
   function scrollGames(direction) {
@@ -146,8 +151,11 @@ export default function Welcome() {
             <li key={game.key} className="guest-games-item">
               <GameCard
                 name={game.name}
-                meta={game.desc}
-                to={targetPath(game.target, user)}
+                infoTo="/univers/jeux"
+                favorite={favorites.includes(slugOf(game))}
+                onToggleFavorite={enabled ? (saved) => toggleFavorite(slugOf(game), saved) : undefined}
+                to={user && GAME_PAGES[game.key] ? GAME_PAGES[game.key] : targetPath(game.target, user)}
+                plays={playCounts ? playCounts[slugOf(game)] : undefined}
                 imageUrl={game.imageUrl}
                 color={game.color}
                 badge={game.badge}
