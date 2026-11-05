@@ -39,11 +39,25 @@ const DEFAULTS = {
     ],
   },
   'lucky-number': { minStake: 100, maxStake: 1000, jackpotAmount: 1000000, multipliers: { 2: 2, 3: 10, 4: 100 } },
-  jackpot: { ticketPrice: 1000, potShare: 0.8 },
+  jackpot: { ticketPrice: 1000, potShare: 0.8, winnerCount: 1 },
   crash: { enabled: true, minStake: 100, maxStake: 10000, bettingSeconds: 10, growthRate: 0.06, houseRtp: 0.9, maxMultiplier: 100, maxExposurePerRound: 5000000 },
 };
 
 const num = (value) => Number(value);
+
+// Fusionne le réglage enregistré avec les valeurs par défaut. Une valeur mal formée (liste attendue, autre valeur reçue)
+// est remplacée par la valeur par défaut, pour que l'écran ne plante pas.
+function mergeSettings(game, values) {
+  const base = DEFAULTS[game];
+  const merged = { ...base };
+  for (const [key, value] of Object.entries(values || {})) {
+    if (value === null || value === undefined) continue;
+    if (Array.isArray(base[key]) && !Array.isArray(value)) continue;
+    merged[key] = value;
+  }
+  // Le formulaire garde le jeu auquel il appartient : on ne l'affiche que pour cet onglet.
+  return { ...merged, loadedGame: game };
+}
 
 // Pour chaque jeu : champs éditables et conversion vers le format attendu par le serveur.
 function FieldInput({ label, value, onChange, step }) {
@@ -63,13 +77,22 @@ export default function AdminGames() {
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
+    // Ignore la réponse d'un jeu précédent si l'utilisateur a changé d'onglet entre-temps.
+    let current = true;
     setForm(null);
     setMessage('');
     setError('');
     functions
       .httpsCallable('adminGetSettings')({ name: game })
-      .then(({ data }) => setForm({ ...DEFAULTS[game], ...data.values }))
-      .catch((err) => setError(err?.message || 'Lecture impossible.'));
+      .then(({ data }) => {
+        if (current) setForm(mergeSettings(game, data.values));
+      })
+      .catch((err) => {
+        if (current) setError(err?.message || 'Lecture impossible.');
+      });
+    return () => {
+      current = false;
+    };
   }, [game]);
 
   const set = (field, value) => setForm((current) => ({ ...current, [field]: value }));
@@ -111,7 +134,7 @@ export default function AdminGames() {
       };
     }
     if (game === 'jackpot') {
-      return { ticketPrice: num(form.ticketPrice), potShare: num(form.potShare) };
+      return { ticketPrice: num(form.ticketPrice), potShare: num(form.potShare), winnerCount: num(form.winnerCount) };
     }
     return {
       enabled: Boolean(form.enabled),
@@ -162,7 +185,7 @@ export default function AdminGames() {
 
       <section className="admin-card">
         {!form && !error && <p className="admin-hint">Chargement…</p>}
-        {form && (
+        {form && form.loadedGame === game && (
           <form className="admin-form" onSubmit={save}>
             {(game === 'lucky-spin' || game === 'mystery-box' || game === 'lucky-number' || game === 'crash') && (
               <div className="admin-row">
@@ -241,6 +264,10 @@ export default function AdminGames() {
               <div className="admin-row">
                 <FieldInput label="Prix du ticket (FCFA)" value={form.ticketPrice} onChange={(v) => set('ticketPrice', v)} step="1" />
                 <FieldInput label="Part vers la cagnotte (0 à 1)" value={form.potShare} onChange={(v) => set('potShare', v)} step="0.01" />
+                <FieldInput label="Nombre de gagnants (1 à 10)" value={form.winnerCount} onChange={(v) => set('winnerCount', v)} step="1" />
+                <p className="admin-help">
+                  Si plusieurs gagnants, la cagnotte est répartie entre eux au prorata de leurs tickets. Un joueur qui a plusieurs tickets tirés ne gagne qu'une fois.
+                </p>
               </div>
             )}
 

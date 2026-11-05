@@ -13,25 +13,27 @@ import {
   IoWalletOutline,
   IoPerson,
   IoPersonOutline,
-  IoMenuOutline,
   IoTimeOutline,
   IoGiftOutline,
   IoShieldCheckmarkOutline,
   IoHelpCircleOutline,
   IoDocumentTextOutline,
   IoLogOutOutline,
-  IoChevronForward,
   IoChevronDown,
+  IoMenuOutline,
 } from 'react-icons/io5';
 import { formatFcfa } from '../lib/format.js';
 import { useAuth } from '../context/AuthContext.jsx';
+import { useHelpInfo } from '../lib/helpInfo.js';
 import { walletFromProfile } from '../lib/wallet.js';
-import BottomSheet from './BottomSheet.jsx';
+import GuestMenu from './GuestMenu.jsx';
+import '../styles/guest-home.css';
+import '../styles/connected-theme.css';
 
 // Icônes Ionicons : version contour au repos, version pleine quand l'onglet est actif.
-// `inBottomBar` : onglet affiché dans la barre du bas sur téléphone (les autres vont dans le menu).
+// Barre du bas (téléphone) : même disposition que la page d'accueil visiteur, avec Menu en première case.
 const TABS = [
-  { to: '/home', label: 'Accueil', Icon: IoHomeOutline, ActiveIcon: IoHome, inBottomBar: true },
+  { to: '/home', label: 'Dashboard', Icon: IoHomeOutline, ActiveIcon: IoHome, inBottomBar: true },
   { to: '/jeux', label: 'Jeux', Icon: IoGameControllerOutline, ActiveIcon: IoGameController, inBottomBar: true },
   { to: '/sport', label: 'Sport', Icon: IoFootballOutline, ActiveIcon: IoFootball, inBottomBar: true },
   { to: '/mes-paris', label: 'Mes Paris', Icon: IoReceiptOutline, ActiveIcon: IoReceipt, inBottomBar: false },
@@ -39,8 +41,9 @@ const TABS = [
   { to: '/profil', label: 'Profil', Icon: IoPersonOutline, ActiveIcon: IoPerson, inBottomBar: false },
 ];
 
-// Pages secondaires : menu « Plus... » sur bureau, rangées dans le menu hamburger sur téléphone.
+// Pages secondaires : menu « Plus... » sur bureau.
 const MORE_ITEMS = [
+  { to: '/', label: 'Accueil du site', Icon: IoHomeOutline },
   { to: '/historique', label: 'Historique', Icon: IoTimeOutline },
   { to: '/bonus', label: 'Bonus et promotions', Icon: IoGiftOutline },
   { to: '/jeu-responsable', label: 'Jeu responsable', Icon: IoShieldCheckmarkOutline },
@@ -48,15 +51,7 @@ const MORE_ITEMS = [
   { to: '/conditions', label: "Conditions d'utilisation", Icon: IoDocumentTextOutline },
 ];
 
-// Éléments du menu hamburger (téléphone) : Mes Paris et Profil, puis les pages secondaires.
-const MENU_ITEMS = [
-  { to: '/mes-paris', label: 'Mes Paris', Icon: IoReceiptOutline },
-  { to: '/profil', label: 'Profil', Icon: IoPersonOutline },
-  ...MORE_ITEMS,
-];
-
-// Liens de navigation. La barre du haut (bureau) affiche tous les onglets ;
-// la barre du bas (téléphone) n'affiche que ceux marqués `inBottomBar`.
+// Liens de navigation de la barre du haut (bureau) : tous les onglets.
 function NavTabs({ className, tabs }) {
   return (
     <nav
@@ -80,37 +75,26 @@ function NavTabs({ className, tabs }) {
   );
 }
 
-// Menu hamburger (téléphone) : éléments secondaires et déconnexion.
-function MainMenu({ open, onClose }) {
-  const navigate = useNavigate();
-  const { signOut } = useAuth();
-
-  async function handleSignOut() {
-    onClose();
-    await signOut();
-    navigate('/', { replace: true });
-  }
-
+// Barre du bas (téléphone) : Menu, puis les quatre onglets principaux, avec les mêmes icônes que l'accueil visiteur.
+function BottomBar({ menuOpen, onToggleMenu }) {
+  const tabs = TABS.filter((tab) => tab.inBottomBar);
   return (
-    <BottomSheet open={open} title="Menu" onClose={onClose}>
-      <ul className="menu-list">
-        {MENU_ITEMS.map(({ to, label, Icon }) => (
-          <li key={to}>
-            <NavLink to={to} className="menu-item" onClick={onClose}>
-              <span className="menu-item-icon" aria-hidden="true"><Icon size={20} /></span>
-              <span className="menu-item-label">{label}</span>
-              <span className="menu-item-arrow" aria-hidden="true"><IoChevronForward size={16} /></span>
-            </NavLink>
-          </li>
-        ))}
-        <li>
-          <button type="button" className="menu-item menu-item--danger" onClick={handleSignOut}>
-            <span className="menu-item-icon" aria-hidden="true"><IoLogOutOutline size={20} /></span>
-            <span className="menu-item-label">Se déconnecter</span>
-          </button>
-        </li>
-      </ul>
-    </BottomSheet>
+    <nav className="guest-tabbar" aria-label="Navigation rapide">
+      <button type="button" className="guest-tab" onClick={onToggleMenu} aria-expanded={menuOpen}>
+        <span aria-hidden="true"><IoMenuOutline size={22} /></span>
+        <small>Menu</small>
+      </button>
+      {tabs.map(({ to, label, Icon, ActiveIcon }) => (
+        <NavLink key={to} to={to} className={({ isActive }) => `guest-tab${isActive ? ' is-active' : ''}`}>
+          {({ isActive }) => (
+            <>
+              <span aria-hidden="true">{isActive ? <ActiveIcon size={22} /> : <Icon size={22} />}</span>
+              <small>{label}</small>
+            </>
+          )}
+        </NavLink>
+      ))}
+    </nav>
   );
 }
 
@@ -173,31 +157,24 @@ function MoreMenu() {
   );
 }
 
-// Coque des pages connectées : en-tête (logo, navigation sur bureau, solde et menu sur téléphone), contenu, barre du bas (téléphone).
+// Coque des pages connectées : en-tête (logo, navigation et solde), contenu, barre du bas et tiroir de menu (téléphone).
 export default function ConnectedLayout({ children }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const { profile } = useAuth();
+  const { info } = useHelpInfo();
   const wallet = walletFromProfile(profile);
+  const support = info?.support;
 
   return (
-    <div className="connected-shell">
+    <div className={`connected-shell${menuOpen ? ' is-menu-open' : ''}`}>
       <header className="connected-header">
-        <Link to="/home" className="brand header-brand" style={{ fontSize: 24 }} aria-label="Retour à l'accueil">
+        <Link to="/" className="brand header-brand" style={{ fontSize: 24 }} aria-label="Retour à l'accueil du site">
           WYN<span>VEO</span>
         </Link>
         <NavTabs className="top-nav" tabs={TABS} />
         <MoreMenu />
         <div className="header-actions">
           <div className="balance-pill">Dépôts : {formatFcfa(wallet.deposit)}</div>
-          <button
-            type="button"
-            className="menu-button"
-            onClick={() => setMenuOpen(true)}
-            aria-label="Ouvrir le menu"
-            aria-expanded={menuOpen}
-          >
-            <IoMenuOutline size={24} />
-          </button>
         </div>
       </header>
 
@@ -205,9 +182,10 @@ export default function ConnectedLayout({ children }) {
         <div className="connected-body">{children}</div>
       </main>
 
-      <NavTabs className="bottom-nav" tabs={TABS.filter((tab) => tab.inBottomBar)} />
+      <BottomBar menuOpen={menuOpen} onToggleMenu={() => setMenuOpen((open) => !open)} />
 
-      <MainMenu open={menuOpen} onClose={() => setMenuOpen(false)} />
+      <div className="guest-overlay" onClick={() => setMenuOpen(false)} aria-hidden="true" />
+      <GuestMenu support={support} onClose={() => setMenuOpen(false)} />
     </div>
   );
 }

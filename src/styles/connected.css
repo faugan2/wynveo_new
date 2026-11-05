@@ -5,7 +5,7 @@
   position: sticky;
   top: 0;
   z-index: 35;
-  background: #0b0a1f;
+  background: #141415;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -238,7 +238,7 @@
 .balance-card,
 .wallet-card,
 .withdraw-card {
-  background: linear-gradient(160deg, #2a1f63 0%, #1d1748 100%);
+  background: linear-gradient(160deg, #1d1e20 0%, #141415 100%);
   border: 1px solid #4a3d9c;
   border-radius: 18px;
   padding: 16px;
@@ -345,11 +345,11 @@
 }
 
 .univers-tile--jeux {
-  background: linear-gradient(160deg, #8b5cf6 0%, var(--purple) 100%);
+  background: linear-gradient(160deg, #2a2b2e 0%, var(--surface) 100%);
 }
 
 .univers-tile--sport {
-  background: linear-gradient(160deg, #14b8a6 0%, var(--teal) 100%);
+  background: linear-gradient(160deg, #2a2b2e 0%, var(--surface) 100%);
 }
 
 .tile-art {
@@ -503,6 +503,144 @@
 
 .op-item b {
   font-size: 16px;
+}
+
+/* Espacements des pages joueur : titre, listes d'aide, lignes de résumé. */
+.connected-body .page-title {
+  margin-bottom: 14px;
+}
+
+.help-list {
+  display: grid;
+  gap: 8px;
+  margin: 0 0 8px;
+  padding-left: 18px;
+}
+
+.wallet-card .summary-row,
+.mybets-stack .summary-row {
+  padding: 6px 0;
+}
+
+/* Sport : titre « En direct » séparé de la bande, et cartes de match aérées. */
+.live-head {
+  margin-bottom: 10px;
+}
+
+.match-card .odds-row {
+  margin-top: 10px;
+}
+
+/* Mes paris : blocs espacés régulièrement (résumé, filtres, liste). */
+.mybets-stack {
+  display: grid;
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.mybets-stack .history-filters {
+  margin: 0;
+  padding: 0;
+}
+
+/* Carte de pari cliquable (mes paris sport) : le bouton garde l'apparence de la carte. */
+.bet-card-button {
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+/* Filtres de l'historique : une rangée de pastilles qui défile si l'écran est étroit. */
+.history-filters {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  padding: 0;
+  margin: 14px 0 16px;
+}
+
+.history-filters::-webkit-scrollbar {
+  display: none;
+}
+
+/* Pastilles de filtre : discrètes, une ligne qui défile sans barre visible. */
+.filter-pill {
+  flex: 0 0 auto;
+  padding: 6px 12px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--text-muted);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.2;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s, background 0.15s;
+}
+
+.filter-pill:hover {
+  color: var(--text);
+}
+
+.filter-pill.is-active {
+  border-color: transparent;
+  background: rgba(245, 197, 66, 0.14);
+  color: #f5c542;
+}
+
+/* Pagination de l'historique joueur : séparée de la liste, boutons confortables au pouce. */
+.history-pager {
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+}
+
+.history-pager .admin-pager {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: nowrap;
+  gap: 12px;
+  margin: 0;
+}
+
+.history-pager .admin-sub {
+  display: inline;
+  color: var(--text-muted);
+  font-size: 13px;
+}
+
+.history-pager .admin-pager-buttons {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.history-pager .admin-pager-buttons button {
+  min-height: 44px;
+  padding: 10px 18px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface);
+  color: inherit;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.history-pager .admin-pager-buttons button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
 }
 
 .method-badge {
@@ -819,11 +957,11 @@
 }
 
 .btn-jeux {
-  background: linear-gradient(180deg, #8b5cf6 0%, var(--purple) 100%);
+  background: linear-gradient(180deg, #2a2b2e 0%, var(--surface) 100%);
 }
 
 .btn-sport {
-  background: linear-gradient(180deg, #14b8a6 0%, var(--teal) 100%);
+  background: linear-gradient(180deg, #2a2b2e 0%, var(--surface) 100%);
 }
 
 .page-title {
@@ -836,7 +974,7 @@
   position: relative;
   overflow: hidden;
   padding: 22px 20px 20px;
-  background: linear-gradient(150deg, #3d2c96 0%, #1d1748 100%);
+  background: linear-gradient(150deg, #1d1e20 0%, #141415 100%);
   border: 1px solid #5b4bc4;
   border-radius: 20px;
   box-shadow: 0 14px 34px rgba(70, 50, 200, 0.35);
@@ -912,7 +1050,7 @@
   width: 58px;
   height: 58px;
   border-radius: 50%;
-  background: linear-gradient(150deg, #8b5cf6, var(--purple));
+  background: linear-gradient(150deg, #2a2b2e, var(--surface));
   display: grid;
   place-items: center;
   font-family: var(--font-title);
@@ -1530,7 +1668,7 @@
 
 .number-cell.is-picked {
   background: var(--purple);
-  border-color: #a78bfa;
+  border-color: #f5c542;
   color: #fff;
 }
 
@@ -2024,7 +2162,7 @@
 
 /* Carte du code parrain (page Profil). */
 .referral-card {
-  background: linear-gradient(160deg, #2a1f63 0%, #1d1748 100%);
+  background: linear-gradient(160deg, #1d1e20 0%, #141415 100%);
   border: 1px solid #4a3d9c;
   border-radius: 18px;
   padding: 18px;
@@ -2068,8 +2206,8 @@
   padding: 12px 18px;
   border-radius: 14px;
   border: 1px solid rgba(168, 85, 247, 0.45);
-  background: linear-gradient(135deg, #2a1f4d, #161230);
-  color: #f5f3ff;
+  background: linear-gradient(135deg, #1d1e20, #141415);
+  color: #ffffff;
   font-size: 14px;
   font-weight: 600;
   box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45);
@@ -2104,16 +2242,16 @@
   gap: 4px;
   padding: 16px;
   border-radius: 14px;
-  border: 1px solid #3b3352;
-  background: #15102a;
-  color: #f5f3ff;
+  border: 1px solid #2a2b2e;
+  background: #1d1e20;
+  color: #ffffff;
   font: inherit;
   text-align: left;
   cursor: pointer;
 }
 
 .method-card span {
-  color: #8b82a8;
+  color: #9aa1b1;
   font-size: 13px;
 }
 

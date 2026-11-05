@@ -26,14 +26,68 @@ export default function AdminUser() {
   const [error, setError] = useState('');
   const [typeFilter, setTypeFilter] = useState('');
 
-  useEffect(() => {
-    setProfile(null);
-    setError('');
-    functions
+  const [message, setMessage] = useState({ type: '', text: '' });
+  const [busy, setBusy] = useState(false);
+  const [suspendReason, setSuspendReason] = useState('');
+  const [adjust, setAdjust] = useState({ bucket: 'real', direction: 'credit', amount: '', reason: '' });
+  const [confirmAdjust, setConfirmAdjust] = useState(false);
+
+  function loadProfile() {
+    return functions
       .httpsCallable('adminGetUser')({ uid })
       .then(({ data }) => setProfile(data.user))
       .catch((err) => setError(err?.message || 'Lecture impossible.'));
+  }
+
+  useEffect(() => {
+    setProfile(null);
+    setError('');
+    setMessage({ type: '', text: '' });
+    setConfirmAdjust(false);
+    loadProfile();
   }, [uid]);
+
+  // Exécute une action d'administration côté serveur, puis recharge la fiche. Renvoie true si l'action a réussi.
+  async function runAction(name, payload, okText) {
+    setBusy(true);
+    setMessage({ type: '', text: '' });
+    try {
+      await functions.httpsCallable(name)({ uid, ...payload });
+      setMessage({ type: 'ok', text: okText });
+      await loadProfile();
+      return true;
+    } catch (err) {
+      setMessage({ type: 'error', text: err?.message || 'Action impossible.' });
+      return false;
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  function toggleSuspend(suspended) {
+    return runAction(
+      'adminSetSuspended',
+      { suspended, reason: suspendReason },
+      suspended ? 'Compte suspendu.' : 'Compte réactivé.'
+    ).then((ok) => {
+      if (ok) setSuspendReason('');
+    });
+  }
+
+  const adjustValue = Number(adjust.amount);
+  const validAdjust = Number.isInteger(adjustValue) && adjustValue > 0 && adjust.reason.trim().length >= 3;
+
+  function applyAdjust() {
+    const amount = adjust.direction === 'debit' ? -adjustValue : adjustValue;
+    runAction('adminAdjustBalance', { bucket: adjust.bucket, amount, reason: adjust.reason.trim() }, 'Solde ajusté.').then(
+      (ok) => {
+        if (ok) {
+          setAdjust({ ...adjust, amount: '', reason: '' });
+          setConfirmAdjust(false);
+        }
+      }
+    );
+  }
 
   const paging = useCursorPaging(
     (cursor) =>
@@ -74,6 +128,116 @@ export default function AdminUser() {
             <div className="admin-stat">
               <span>Bonus</span>
               <strong>{formatFcfa(profile.balanceBonus)}</strong>
+            </div>
+          </section>
+
+          {message.text && (
+            <p className={message.type === 'ok' ? 'admin-ok' : 'admin-error'} role="alert">{message.text}</p>
+          )}
+
+          <section className="admin-card">
+            <h3>Statut du compte</h3>
+            {profile.suspended ? (
+              <p className="admin-denied">Suspendu{profile.suspendedReason ? ` : ${profile.suspendedReason}` : ''}</p>
+            ) : (
+              <p className="admin-ok">Actif</p>
+            )}
+            <label className="admin-form">
+              Motif
+              <input
+                type="text"
+                maxLength={200}
+                value={suspendReason}
+                onChange={(e) => setSuspendReason(e.target.value)}
+                placeholder="Obligatoire pour suspendre ou réactiver"
+              />
+            </label>
+            <div className="admin-actions">
+              {profile.suspended ? (
+                <button
+                  type="button"
+                  className="admin-primary"
+                  disabled={busy || suspendReason.trim().length < 3}
+                  onClick={() => toggleSuspend(false)}
+                >
+                  Réactiver le compte
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  className="admin-danger"
+                  disabled={busy || suspendReason.trim().length < 3}
+                  onClick={() => toggleSuspend(true)}
+                >
+                  Suspendre le compte
+                </button>
+              )}
+            </div>
+          </section>
+
+          <section className="admin-card">
+            <h3>Ajuster le solde</h3>
+            <p className="admin-help">Chaque ajustement est enregistré dans le journal d'audit.</p>
+            <div className="admin-row">
+              <label className="admin-form">
+                Solde
+                <select value={adjust.bucket} onChange={(e) => setAdjust({ ...adjust, bucket: e.target.value })}>
+                  <option value="real">Réel</option>
+                  <option value="bonus">Bonus</option>
+                </select>
+              </label>
+              <label className="admin-form">
+                Sens
+                <select value={adjust.direction} onChange={(e) => setAdjust({ ...adjust, direction: e.target.value })}>
+                  <option value="credit">Crédit (ajouter)</option>
+                  <option value="debit">Débit (retirer)</option>
+                </select>
+              </label>
+              <label className="admin-form">
+                Montant (FCFA)
+                <input
+                  type="number"
+                  min="1"
+                  step="1"
+                  value={adjust.amount}
+                  onChange={(e) => setAdjust({ ...adjust, amount: e.target.value })}
+                />
+              </label>
+            </div>
+            <label className="admin-form">
+              Motif
+              <input
+                type="text"
+                maxLength={200}
+                value={adjust.reason}
+                onChange={(e) => setAdjust({ ...adjust, reason: e.target.value })}
+                placeholder="Ex. : geste commercial, erreur de dépôt"
+              />
+            </label>
+            <div className="admin-actions">
+              {!confirmAdjust ? (
+                <button
+                  type="button"
+                  className="admin-primary"
+                  disabled={busy || !validAdjust}
+                  onClick={() => setConfirmAdjust(true)}
+                >
+                  Continuer
+                </button>
+              ) : (
+                <div className="admin-confirm">
+                  <p className="admin-help">
+                    {adjust.direction === 'debit' ? 'Débit' : 'Crédit'} de {formatFcfa(adjustValue)} sur le solde{' '}
+                    {adjust.bucket === 'real' ? 'réel' : 'bonus'}. Confirmer ?
+                  </p>
+                  <button type="button" onClick={() => setConfirmAdjust(false)} disabled={busy}>
+                    Annuler
+                  </button>
+                  <button type="button" className="admin-primary" onClick={applyAdjust} disabled={busy}>
+                    Confirmer
+                  </button>
+                </div>
+              )}
             </div>
           </section>
 

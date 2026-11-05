@@ -75,9 +75,9 @@ async function importLeagueOdds(db, apiKey, league, now = Date.now()) {
 }
 
 // Import de toutes les compétitions suivies. Une compétition en erreur n'empêche pas les autres.
-async function runSportOddsImport(db, apiKey, now = Date.now()) {
+async function runSportOddsImport(db, apiKey, now = Date.now(), leagues = SPORT_CONFIG.leagues) {
   const results = [];
-  for (const league of SPORT_CONFIG.leagues) {
+  for (const league of leagues) {
     try {
       results.push(await importLeagueOdds(db, apiKey, league, now));
     } catch (error) {

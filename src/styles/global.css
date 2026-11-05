@@ -1,18 +1,18 @@
 :root {
-  --bg: #0b0a1f;
-  --bg-top: #1a1140;
-  --surface: #14122b;
-  --field: #0e0c24;
-  --border: #2d2a57;
-  --border-focus: #5b8cff;
+  --bg: #141415;
+  --bg-top: #141415;
+  --surface: #1d1e20;
+  --field: #141415;
+  --border: rgba(169, 172, 180, 0.16);
+  --border-focus: #f5c542;
   --text: #ffffff;
-  --text-muted: #a7a6c4;
-  --text-link: #6d9bff;
+  --text-muted: #9aa1b1;
+  --text-link: #f5c542;
   --purple: #7c3aed;
   --teal: #0f9e8a;
   --green: #22a55b;
   --green-dark: #178a4a;
-  --yellow: #f5c518;
+  --yellow: #f5c542;
   --danger: #ff5c6c;
   --warning-bg: #3a2b0a;
   --warning-text: #ffd26b;
@@ -104,8 +104,9 @@ input {
 }
 
 .btn-primary {
-  background: linear-gradient(180deg, var(--green) 0%, var(--green-dark) 100%);
-  box-shadow: 0 6px 18px rgba(34, 165, 91, 0.35);
+  background: linear-gradient(180deg, #f5c542 0%, #e0b030 100%);
+  box-shadow: 0 6px 18px rgba(245, 197, 66, 0.3);
+  color: #141415;
 }
 
 .btn-outline {

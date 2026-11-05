@@ -8,6 +8,18 @@ import { WALLETS } from '../config/wallets.js';
 import { functions } from '../lib/firebase.js';
 import { formatFcfa } from '../lib/format.js';
 
+// Message lisible pour un échec du paiement dans le portefeuille.
+function payErrorText(err) {
+  const text = String(err?.message || '');
+  if (/insufficient|balance|gas|solde/i.test(text)) {
+    return 'Solde insuffisant dans votre portefeuille (montant ou frais de réseau). Vérifiez votre solde puis réessayez.';
+  }
+  if (/reject|denied|cancel|refus|annul/i.test(text)) {
+    return 'Paiement annulé dans votre portefeuille. Vous pouvez réessayer.';
+  }
+  return 'Le paiement n’a pas abouti. Vérifiez votre portefeuille avant de réessayer.';
+}
+
 const TOKENS = [
   { symbol: 'USDT', label: 'USDT', network: 'bsc', networkLabel: 'BNB Smart Chain (BEP20)' },
   { symbol: 'USDC', label: 'USDC', network: 'arbitrum', networkLabel: 'Arbitrum One' },
@@ -60,7 +72,20 @@ export default function CryptoDeposit() {
   const [confirmations, setConfirmations] = useState(null);
   const [requiredConfirmations, setRequiredConfirmations] = useState(null);
   const [error, setError] = useState('');
+  const [errorKind, setErrorKind] = useState(''); // 'pay' | 'verify' | 'create' : détermine le bouton Réessayer
+  const [lastTxHash, setLastTxHash] = useState('');
+  const alertRef = useRef(null);
   const [busy, setBusy] = useState(false);
+
+  function failure(kind, message) {
+    setErrorKind(kind);
+    setError(message);
+  }
+
+  // Fait défiler jusqu'au message d'erreur, pour qu'il soit visible sur téléphone.
+  useEffect(() => {
+    if (error && alertRef.current) alertRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }, [error]);
   const [copied, setCopied] = useState('');
   const [now, setNow] = useState(Date.now());
   const pollRef = useRef(null);
@@ -118,7 +143,7 @@ export default function CryptoDeposit() {
       setStatus('');
       setNow(Date.now());
     } catch (err) {
-      setError(err?.message || 'Demande impossible. Réessayez.');
+      failure('create', err?.message || 'Demande impossible. Réessayez.');
     } finally {
       setBusy(false);
     }
@@ -131,7 +156,7 @@ export default function CryptoDeposit() {
       applyStatus(data);
       if (data.status !== 'credited') startPolling(txHash);
     } catch (err) {
-      setError(err?.message || 'Vérification impossible. Réessayez.');
+      failure('verify', 'Nous n’avons pas pu vérifier la transaction. Ne renvoyez pas le paiement : réessayez la vérification.');
     }
   }
 
@@ -139,13 +164,18 @@ export default function CryptoDeposit() {
   function payNow() {
     if (!transaction) return;
     setError('');
+    setErrorKind('');
     sendTransfer(transaction, {
       onSuccess: (receipt) => {
         const txHash = receipt?.transactionHash;
-        if (txHash) confirm(txHash);
-        else setError('Hash de transaction introuvable.');
+        if (txHash) {
+          setLastTxHash(txHash);
+          confirm(txHash);
+        } else {
+          failure('pay', 'Le portefeuille n’a pas renvoyé de référence de transaction. Vérifiez votre portefeuille avant de réessayer.');
+        }
       },
-      onError: (err) => setError(err?.message || 'Paiement annulé ou échoué.'),
+      onError: (err) => failure('pay', payErrorText(err)),
     });
   }
 
@@ -166,7 +196,7 @@ export default function CryptoDeposit() {
         const { data } = await functions.httpsCallable('confirmCryptoDeposit')({ depositId: request.depositId, txHash });
         applyStatus(data);
       } catch (err) {
-        setError(err?.message || 'Vérification interrompue. Réessayez.');
+        failure('verify', 'La vérification a été interrompue. Réessayez.');
         clearInterval(pollRef.current);
       }
     }, POLL_MS);
@@ -296,8 +326,24 @@ export default function CryptoDeposit() {
                 Votre portefeuille va demander de signer un transfert direct de <strong>{request.amount} {tokenSymbol}</strong> vers l'adresse de réception.
               </p>
               <button type="button" className="btn btn-sport crypto-primary" onClick={payNow} disabled={paying}>
-                {paying ? 'Confirmez dans votre portefeuille…' : `Payer ${request.amount} ${tokenSymbol}`}
+                {paying ? 'Ouverture du portefeuille…' : `Payer ${request.amount} ${tokenSymbol}`}
               </button>
+            </div>
+          )}
+
+          {error && errorKind !== 'create' && (
+            <div className="crypto-alert" role="alert" ref={alertRef}>
+              <p>{error}</p>
+              {(errorKind === 'pay' || errorKind === 'verify') && !expired && (
+                <button
+                  type="button"
+                  className="btn btn-sport crypto-primary"
+                  disabled={busy || paying}
+                  onClick={() => (errorKind === 'pay' ? payNow() : confirm(lastTxHash))}
+                >
+                  Réessayer
+                </button>
+              )}
             </div>
           )}
 
@@ -325,7 +371,9 @@ export default function CryptoDeposit() {
         </div>
       )}
 
-      {error && <p className="error crypto-error" role="alert">{error}</p>}
+      {error && errorKind === 'create' && (
+        <p className="error crypto-error" role="alert" ref={alertRef}>{error}</p>
+      )}
     </section>
   );
 }

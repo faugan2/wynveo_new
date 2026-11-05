@@ -1,0 +1,90 @@
+/* Liste des matchs à venir sur l'accueil visiteur : cartes sobres, cotes en lecture seule. */
+.guest-matches-note {
+  margin: 0;
+  color: var(--g-muted);
+  font-size: 14px;
+}
+
+/* Sur téléphone : défilement horizontal, une carte et demie visible à la fois. */
+.guest-match-list {
+  list-style: none;
+  margin: 0;
+  padding: 0 0 4px;
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+}
+
+.guest-match-list::-webkit-scrollbar {
+  display: none;
+}
+
+.guest-match-list > li {
+  flex: 0 0 78%;
+  min-width: 0;
+  scroll-snap-align: start;
+}
+
+.guest-match-list .guest-match-card {
+  height: 100%;
+}
+
+.guest-match-card {
+  display: grid;
+  gap: 10px;
+  padding: 14px;
+  border-radius: 12px;
+  background: var(--g-surface);
+  border: 1px solid var(--g-border);
+  color: var(--g-text);
+  text-decoration: none;
+}
+
+.guest-match-card:hover {
+  border-color: var(--g-gold);
+}
+
+.guest-match-meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  color: var(--g-muted);
+  font-size: 12px;
+}
+
+.guest-match-teams {
+  display: grid;
+  gap: 4px;
+  font-size: 15px;
+}
+
+.guest-match-odds {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.guest-match-odds > span {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: var(--g-surface-2);
+  color: var(--g-muted);
+  font-size: 12px;
+}
+
+.guest-match-odds b {
+  color: var(--g-gold);
+  font-size: 14px;
+}
+
+/* Ordinateur : même rangée défilante que les jeux, avec flèches, quatre cartes visibles. */
+@media (min-width: 900px) {
+  .guest-match-list > li {
+    flex: 0 0 calc((100% - 30px) / 4);
+  }
+}

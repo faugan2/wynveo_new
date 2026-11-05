@@ -1,12 +1,12 @@
-import { useNavigate, useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import ConnectedLayout from '../components/ConnectedLayout.jsx';
+import GameCard from '../components/GameCard.jsx';
 import { GAMES, GAMES_BY_SLUG } from '../content/games.js';
 import { formatFcfa } from '../lib/format.js';
 import { useJackpotSummary } from '../lib/jackpotSummary.js';
 
-// Page Jeux : liste des jeux, avec la mise et l'accès à chaque jeu.
+// Page Jeux : grille de cartes (même style que la rangée de l'accueil), avec la mise de chaque jeu.
 export default function Games() {
-  const navigate = useNavigate();
   const jackpot = useJackpotSummary();
 
   return (
@@ -14,33 +14,16 @@ export default function Games() {
       <h1 className="title-font page-title">Jeux</h1>
       <p className="note">Choisissez un jeu et misez avec le solde de vos dépôts.</p>
 
-      <ul className="game-list">
+      <ul className="game-tile-grid">
         {GAMES.map((game) => (
           <li key={game.slug}>
-            <article className={`game-card${game.soon ? ' is-soon' : ''}`}>
-              <div className="game-head">
-              <span className="game-icon" aria-hidden="true">{game.icon}</span>
-              <div className="game-body">
-                <strong className="title-font">{game.name}</strong>
-                <span>{game.text}</span>
-                {game.slug === 'jackpot' && (
-                  <small className="gold">Cagnotte : {jackpot ? formatFcfa(jackpot.pot) : '—'}</small>
-                )}
-                {game.stake && <small>{game.stake}</small>}
-              </div>
-              </div>
-              {game.soon ? (
-                <span className="game-badge">Bientôt</span>
-              ) : (
-                <button
-                  type="button"
-                  className="btn btn-primary btn-compact"
-                  onClick={() => navigate(`/jeux/${game.slug}`)}
-                >
-                  Jouer
-                </button>
-              )}
-            </article>
+            <GameCard
+              name={game.name}
+              meta={game.slug === 'jackpot' ? `Cagnotte : ${jackpot ? formatFcfa(jackpot.pot) : '—'}` : game.stake}
+              to={`/jeux/${game.slug}`}
+              icon={game.icon}
+              soon={Boolean(game.soon)}
+            />
           </li>
         ))}
       </ul>

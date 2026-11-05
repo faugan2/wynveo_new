@@ -1,0 +1,1058 @@
+/* Accueil des visiteurs. Palette sobre : fond sombre, surfaces grises, accents dorés, texte gris.
+   Les couleurs sont aussi définies sur la coque connectée, pour que le menu et la barre du bas y soient identiques. */
+.guest-home,
+.connected-shell {
+  --g-bg: #141415;
+  --g-surface: #1d1e20;
+  --g-surface-2: #2a2b2e;
+  --g-border: rgba(169, 172, 180, 0.16);
+  --g-text: #ffffff;
+  --g-muted: #9aa1b1;
+  --g-green: #f5c542;
+  --g-green-hover: #e0b030;
+  --g-gold: #f5c542;
+  --g-gold-hover: #e0b030;
+  --g-on-gold: #141415;
+}
+
+.guest-home {
+  min-height: 100vh;
+  background: var(--g-bg);
+  color: var(--g-text);
+  font-family: inherit;
+  overflow-x: hidden;
+}
+
+.guest-home a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* Bandeau supérieur */
+.guest-topbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--g-border);
+  position: sticky;
+  top: 0;
+  background: var(--g-bg);
+  z-index: 10;
+}
+
+/* Logo : même police et taille que la marque des pages connectées (police titre, 800). */
+.guest-brand {
+  font-family: var(--font-title);
+  font-weight: 800;
+  font-size: 24px;
+  letter-spacing: 0.5px;
+}
+
+.guest-brand span {
+  color: var(--g-green);
+}
+
+.guest-nav {
+  display: flex;
+  gap: 4px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.guest-nav::-webkit-scrollbar {
+  display: none;
+}
+
+.guest-nav a {
+  padding: 8px 12px;
+  border-radius: 8px;
+  color: var(--g-muted);
+  font-size: 14px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.guest-nav a.is-active,
+.guest-nav a:hover {
+  background: var(--g-surface-2);
+  color: var(--g-text);
+}
+
+.guest-actions {
+  display: flex;
+  gap: 8px;
+  margin-left: auto;
+}
+
+/* Boutons */
+.guest-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 40px;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  border: 1px solid transparent;
+}
+
+.guest-btn--primary {
+  background: var(--g-gold);
+  color: var(--g-on-gold);
+}
+
+.guest-btn--primary:hover {
+  background: var(--g-gold-hover);
+}
+
+/* Les liens de la page ont une couleur forcée : le texte des boutons dorés reste sombre. */
+.guest-home a.guest-btn--primary {
+  color: var(--g-on-gold);
+}
+
+.guest-btn--ghost {
+  background: var(--g-surface-2);
+  color: var(--g-text);
+}
+
+.guest-btn--large {
+  min-height: 48px;
+  padding: 12px 22px;
+  font-size: 15px;
+}
+
+/* Contenu */
+.guest-main {
+  padding: 16px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 28px;
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+/* Carrousel du bandeau principal : trois slides, flèches et points. */
+.guest-carousel {
+  position: relative;
+  min-width: 0;
+  overflow: hidden;
+  border-radius: 12px;
+  border: 1px solid var(--g-border);
+  background: var(--g-surface);
+}
+
+.guest-carousel-track {
+  display: flex;
+  transition: transform 0.45s ease;
+}
+
+.guest-slide {
+  flex: 0 0 100%;
+  min-width: 0;
+  min-height: 250px;
+  padding: 28px 22px 52px;
+  display: grid;
+  gap: 10px;
+  align-content: center;
+  background: linear-gradient(135deg, #2a2b2e 0%, var(--g-surface) 60%, var(--g-bg) 100%);
+}
+
+.guest-slide--sport {
+  background: linear-gradient(135deg, #2a2b2e 0%, var(--g-surface) 65%, var(--g-bg) 100%);
+}
+
+.guest-slide--bonus {
+  background: linear-gradient(135deg, #3a3d42 0%, var(--g-surface) 60%, var(--g-bg) 100%);
+}
+
+.guest-carousel .guest-hero-title {
+  font-size: 28px;
+}
+
+.guest-carousel-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 36px;
+  height: 36px;
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(20, 20, 21, 0.75);
+  color: var(--g-text);
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.guest-carousel-arrow.is-prev {
+  left: 10px;
+}
+
+.guest-carousel-arrow.is-next {
+  right: 10px;
+}
+
+.guest-carousel-arrow:hover {
+  background: var(--g-gold);
+  color: var(--g-on-gold);
+}
+
+.guest-carousel-dots {
+  position: absolute;
+  left: 50%;
+  bottom: 14px;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 6px;
+}
+
+.guest-carousel-dot {
+  width: 8px;
+  height: 8px;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.35);
+  cursor: pointer;
+  transition: width 0.2s ease, background 0.2s ease;
+}
+
+.guest-carousel-dot.is-active {
+  width: 22px;
+  background: var(--g-green);
+}
+
+/* Bandeau principal + promotions */
+.guest-top {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 12px;
+}
+
+/* Sur téléphone, les flèches recouvrent le texte : on garde le glissement au doigt et les points. */
+@media (max-width: 899px) {
+  .guest-carousel-arrow {
+    display: none;
+  }
+}
+
+.guest-hero {
+  padding: 28px 22px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #2a2b2e 0%, var(--g-surface) 60%, var(--g-bg) 100%);
+  border: 1px solid var(--g-border);
+  display: grid;
+  gap: 10px;
+}
+
+.guest-kicker {
+  margin: 0;
+  color: var(--g-green);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.guest-hero-title {
+  margin: 0;
+  font-size: 30px;
+  line-height: 1.15;
+  font-weight: 800;
+}
+
+.guest-hero-text {
+  margin: 0;
+  color: var(--g-muted);
+  font-size: 15px;
+  max-width: 460px;
+}
+
+.guest-hero-cta {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 6px;
+}
+
+.guest-side {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.guest-promo {
+  position: relative;
+  min-height: 120px;
+  padding: 16px;
+  border-radius: 12px;
+  display: grid;
+  gap: 4px;
+  align-content: start;
+  overflow: hidden;
+  background: var(--g-surface);
+  border: 1px solid var(--g-border);
+}
+
+.guest-promo--sport {
+  background: linear-gradient(135deg, #2a2b2e 0%, var(--g-surface) 100%);
+}
+
+.guest-promo--bonus {
+  background: linear-gradient(135deg, #2a2b2e 0%, var(--g-surface) 100%);
+}
+
+.guest-promo-title {
+  font-size: 16px;
+  font-weight: 800;
+}
+
+.guest-promo-text {
+  font-size: 13px;
+  color: var(--g-muted);
+}
+
+.guest-promo-icon {
+  position: absolute;
+  right: 12px;
+  bottom: 8px;
+  font-size: 40px;
+  opacity: 0.9;
+}
+
+/* Cartes à droite du héros : texte et image dans deux colonnes distinctes, pour que le texte ne passe jamais sous l'image. */
+.guest-promo:has(.guest-promo-image) {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 36%);
+  align-items: center;
+  column-gap: 10px;
+}
+
+.guest-promo-title,
+.guest-promo-text {
+  grid-column: 1;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.guest-promo-title {
+  grid-row: 1;
+}
+
+.guest-promo-text {
+  grid-row: 2;
+  color: inherit;
+  opacity: 0.8;
+}
+
+.guest-promo-image {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  justify-self: end;
+  width: 100%;
+  max-width: 96px;
+  max-height: 96px;
+  height: auto;
+  object-fit: contain;
+  pointer-events: none;
+}
+
+/* Sur téléphone, les cartes n'affichent que le texte, chaque ligne (titre et sous-titre) sur une seule ligne. */
+@media (max-width: 899px) {
+  .guest-promo-image {
+    display: none;
+  }
+
+  .guest-promo:has(.guest-promo-image) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .guest-side {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 8px;
+  }
+
+  .guest-promo {
+    min-height: 0;
+    padding: 12px;
+  }
+
+  .guest-promo-title {
+    font-size: 14px;
+  }
+
+  .guest-promo-text {
+    font-size: 12px;
+  }
+
+  .guest-promo-title,
+  .guest-promo-text {
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+}
+
+/* Sections */
+.guest-section-title {
+  margin: 0 0 12px;
+  font-size: 20px;
+  font-weight: 800;
+}
+
+/* Rangée de jeux : défilement horizontal, cartes en portrait, comme les grands sites de paris. */
+.guest-section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.guest-row-arrows {
+  display: flex;
+  gap: 8px;
+}
+
+.guest-row-arrows button {
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  border: 1px solid var(--g-border);
+  background: var(--g-surface-2);
+  color: var(--g-text);
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.guest-row-arrows button:hover {
+  border-color: var(--g-green);
+}
+
+.guest-games {
+  list-style: none;
+  padding: 0 0 4px;
+  margin: 0;
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+}
+
+.guest-games::-webkit-scrollbar {
+  display: none;
+}
+
+.guest-games-item {
+  flex: 0 0 40%;
+  min-width: 0;
+  scroll-snap-align: start;
+  display: flex;
+  flex-direction: column;
+}
+
+.guest-sport-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px;
+  border-radius: 12px;
+  background: var(--g-surface);
+  border: 1px solid var(--g-border);
+}
+
+.guest-sport-card strong {
+  display: block;
+  font-size: 16px;
+}
+
+.guest-sport-card small {
+  display: block;
+  color: var(--g-muted);
+  font-size: 13px;
+  margin-top: 2px;
+}
+
+.guest-sport-icon {
+  font-size: 32px;
+}
+
+/* Pied de page */
+.guest-footer {
+  display: grid;
+  gap: 22px;
+  padding: 22px 0 10px;
+  border-top: 1px solid var(--g-border);
+  color: var(--g-muted);
+  font-size: 13px;
+}
+
+.guest-footer-cards {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: 1fr;
+}
+
+.guest-footer-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 16px;
+  border-radius: 12px;
+  background: var(--g-surface);
+  color: var(--g-text);
+}
+
+.guest-footer-card strong {
+  display: block;
+  font-size: 15px;
+}
+
+.guest-footer-card small {
+  display: block;
+  color: var(--g-muted);
+  font-size: 12px;
+  margin-top: 4px;
+}
+
+.guest-footer-card-btn {
+  flex: 0 0 auto;
+  padding: 9px 14px;
+  border-radius: 8px;
+  background: var(--g-surface-2);
+  color: var(--g-text);
+  font-size: 13px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.guest-footer-cols {
+  display: grid;
+  gap: 22px;
+  grid-template-columns: 1fr 1fr;
+}
+
+/* Sur téléphone, la colonne Contact (3e colonne) occupe toute la largeur au lieu de rester seule sur sa ligne. */
+.guest-footer-cols > :nth-child(3) {
+  grid-column: 1 / -1;
+}
+
+.guest-footer-cols h3 {
+  margin: 0 0 10px;
+  color: var(--g-text);
+  font-size: 14px;
+}
+
+.guest-footer-cols a,
+.guest-footer-cols span {
+  display: block;
+  padding: 4px 0;
+  color: var(--g-muted);
+  font-size: 13px;
+}
+
+.guest-footer-legal {
+  margin: 0;
+  color: var(--g-muted);
+  font-size: 12px;
+}
+
+@media (min-width: 900px) {
+  .guest-footer-cards {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .guest-footer-cols {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+/* Mobile : menu en tiroir depuis la gauche, barre de navigation en bas, jeux en trois colonnes. */
+.guest-body {
+  display: block;
+}
+
+.guest-main {
+  padding-bottom: 84px;
+}
+
+.guest-sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  z-index: 50;
+  width: min(300px, 86vw);
+  display: grid;
+  align-content: start;
+  gap: 14px;
+  padding: 16px 12px;
+  overflow-y: auto;
+  background: var(--g-bg);
+  border-right: 1px solid var(--g-border);
+  transform: translateX(-105%);
+  transition: transform 0.22s ease;
+}
+
+/* Tiroir ouvert : la classe est posée sur la page d'accueil visiteur (.guest-home) comme sur la coque connectée. */
+.is-menu-open .guest-sidebar {
+  transform: none;
+}
+
+.guest-sidebar-close {
+  justify-self: end;
+  width: 36px;
+  height: 36px;
+  border: 0;
+  border-radius: 8px;
+  background: var(--g-surface-2);
+  color: var(--g-text);
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.guest-overlay {
+  display: none;
+}
+
+.is-menu-open .guest-overlay {
+  display: block;
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  background: rgba(0, 0, 0, 0.55);
+}
+
+/* Coque connectée : onglet actif en doré. */
+.guest-tab.is-active {
+  color: var(--g-gold);
+}
+
+/* Coque connectée sur ordinateur : pas de tiroir ni de barre du bas (la navigation est en haut). */
+@media (min-width: 1024px) {
+  .connected-shell .guest-sidebar,
+  .connected-shell .guest-overlay {
+    display: none;
+  }
+}
+
+.guest-tabbar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 30;
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  padding: 6px 4px calc(6px + env(safe-area-inset-bottom));
+  background: var(--g-bg);
+  border-top: 1px solid var(--g-border);
+}
+
+.guest-tab {
+  display: grid;
+  justify-items: center;
+  gap: 2px;
+  padding: 4px 0;
+  border: 0;
+  background: none;
+  color: var(--g-muted);
+  font: inherit;
+  cursor: pointer;
+}
+
+.guest-tab span {
+  font-size: 18px;
+  line-height: 1.1;
+}
+
+.guest-tab small {
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.guest-tab:hover {
+  color: var(--g-text);
+}
+
+/* Pendant l'affichage mobile, la barre de navigation du haut est remplacée par la barre du bas. */
+.guest-nav {
+  display: none;
+}
+
+
+/* Colonne de gauche (menu), visible à partir de 1024 px. */
+@media (min-width: 1024px) {
+  .guest-sidebar-close,
+  .guest-overlay,
+  .guest-tabbar {
+    display: none;
+  }
+
+  .guest-nav {
+    display: flex;
+  }
+
+  .guest-main {
+    padding-bottom: 24px;
+  }
+
+  .guest-body {
+    display: grid;
+    grid-template-columns: 240px minmax(0, 1fr);
+    align-items: start;
+  }
+
+  .guest-sidebar {
+    display: grid;
+    align-content: start;
+    gap: 14px;
+    position: sticky;
+    top: 62px;
+    height: calc(100vh - 62px);
+    overflow-y: auto;
+    padding: 16px 12px;
+    border-right: 1px solid var(--g-border);
+    background: var(--g-bg);
+  }
+
+  .guest-side-login {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    border-radius: 8px;
+    background: var(--g-surface-2);
+    font-weight: 700;
+    font-size: 14px;
+  }
+
+  .guest-side-avatar {
+    width: 32px;
+    height: 32px;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    background: var(--g-surface);
+  }
+
+  .guest-side-promo {
+    display: grid;
+    gap: 4px;
+    padding: 14px;
+    border-radius: 12px;
+    background: var(--g-surface);
+    border: 1px solid var(--g-border);
+  }
+
+  .guest-side-promo-title {
+    font-weight: 800;
+    font-size: 14px;
+  }
+
+  .guest-side-promo-text {
+    font-size: 12px;
+    color: var(--g-muted);
+  }
+
+  .guest-side-menu {
+    display: grid;
+    gap: 2px;
+    padding-top: 8px;
+    border-top: 1px solid var(--g-border);
+  }
+
+  .guest-side-menu a {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 10px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--g-muted);
+  }
+
+  .guest-side-menu a:hover {
+    background: var(--g-surface-2);
+    color: var(--g-text);
+  }
+}
+
+/* Grand écran : deux colonnes pour le bandeau et les jeux sur cinq colonnes. */
+@media (min-width: 900px) {
+  .guest-main {
+    padding: 24px;
+  }
+
+  .guest-top {
+    grid-template-columns: 1.6fr 1fr;
+  }
+
+  .guest-side {
+    grid-template-columns: 1fr;
+  }
+
+  .guest-hero {
+    min-height: 300px;
+    align-content: center;
+    padding: 40px;
+  }
+
+  .guest-hero-title {
+    font-size: 44px;
+  }
+
+  .guest-games-item {
+    flex: 0 0 calc((100% - 40px) / 5);
+  }
+
+  .guest-row-arrows {
+    display: flex;
+  }
+}
+
+/* Sur téléphone, on fait défiler la rangée du doigt : pas de flèches. */
+@media (max-width: 899px) {
+  .guest-row-arrows {
+    display: none;
+  }
+}
+
+/* Menu des visiteurs (tiroir mobile, colonne ordinateur) : style de la référence. */
+.guest-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  background: var(--g-bg);
+}
+
+/* Ordinateur : le menu reste dans la colonne de gauche, sans l'effet de tiroir mobile. */
+@media (min-width: 1024px) {
+  /* Menu fixe sous le bandeau : il ne défile pas avec la page. Le contenu occupe la colonne de droite. */
+  /* Le menu part du haut de la page ; la barre du haut ne couvre que la colonne de contenu. */
+  .guest-topbar {
+    margin-left: 240px;
+  }
+
+  .guest-sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 240px;
+    height: 100vh;
+    z-index: 20;
+    transform: none;
+    transition: none;
+    overflow: hidden;
+    padding: 16px 12px;
+    border-right: 1px solid var(--g-border);
+  }
+
+  .guest-body .guest-main {
+    grid-column: 2;
+  }
+}
+
+.guest-menu-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.guest-menu-login {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  border-radius: 10px;
+  background: var(--g-surface-2);
+  font-weight: 700;
+  font-size: 15px;
+}
+
+.guest-menu-avatar {
+  font-size: 30px;
+  color: var(--g-muted);
+}
+
+.guest-menu-arrow {
+  margin-left: auto;
+  color: var(--g-muted);
+}
+
+.guest-menu-promo {
+  position: relative;
+  min-height: 96px;
+  display: grid;
+  gap: 4px;
+  align-content: center;
+  padding: 14px;
+  border-radius: 12px;
+  overflow: hidden;
+  background: linear-gradient(135deg, #2a2b2e 0%, var(--g-surface) 100%);
+  border: 1px solid var(--g-border);
+}
+
+.guest-menu-promo-title {
+  font-size: 15px;
+  font-weight: 800;
+}
+
+.guest-menu-promo-text {
+  font-size: 12px;
+  color: var(--g-muted);
+  max-width: 65%;
+}
+
+.guest-menu-promo-icon {
+  position: absolute;
+  right: 12px;
+  bottom: 10px;
+  font-size: 44px;
+  color: var(--g-green);
+  opacity: 0.9;
+}
+
+.guest-menu-list {
+  display: grid;
+}
+
+.guest-menu-group {
+  border-bottom: 1px solid var(--g-border);
+}
+
+.guest-menu-item {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 4px;
+  border: 0;
+  background: none;
+  color: var(--g-text);
+  font: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+}
+
+.guest-menu-item:hover {
+  color: var(--g-green);
+}
+
+.guest-menu-item.is-separated {
+  margin-top: 10px;
+  border-top: 1px solid var(--g-border);
+}
+
+.guest-menu-group > .guest-menu-item {
+  border-bottom: 0;
+}
+
+.guest-menu-icon {
+  font-size: 20px;
+  color: var(--g-muted);
+}
+
+.guest-menu-chevron {
+  margin-left: auto;
+  font-size: 16px;
+  color: var(--g-muted);
+  transition: transform 0.18s ease;
+}
+
+.guest-menu-chevron.is-open {
+  transform: rotate(180deg);
+}
+
+.guest-menu-item > .guest-menu-chevron:last-child {
+  margin-left: auto;
+}
+
+.guest-menu-sub {
+  list-style: none;
+  margin: 0;
+  padding: 0 0 10px 36px;
+  display: grid;
+  gap: 2px;
+}
+
+.guest-menu-sub a {
+  display: block;
+  padding: 8px 0;
+  font-size: 14px;
+  color: var(--g-muted);
+}
+
+.guest-menu-sub a:hover {
+  color: var(--g-green);
+}
+
+/* Le haut du menu défile ; le bas (bonus et contacts) reste fixe. */
+.guest-menu-scroll {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  display: grid;
+  align-content: start;
+  gap: 14px;
+  padding-right: 4px;
+}
+
+.guest-menu-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.guest-menu-foot {
+  flex-shrink: 0;
+  display: grid;
+  gap: 12px;
+  padding-top: 14px;
+  border-top: 1px solid var(--g-border);
+}
+
+.guest-menu-social {
+  display: flex;
+  gap: 10px;
+}
+
+.guest-menu-social a {
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--g-surface-2);
+  color: var(--g-text);
+  font-size: 20px;
+}
+
+.guest-menu-support {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  background: var(--g-surface-2);
+  color: var(--g-text);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.guest-menu-support svg {
+  font-size: 20px;
+  color: var(--g-green);
+}

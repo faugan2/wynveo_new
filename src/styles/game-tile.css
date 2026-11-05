@@ -1,0 +1,142 @@
+/* Carte de jeu façon vitrine (GameCard) : illustration en portrait, bouton « Jouer » en bas, titre sous la carte. */
+
+.game-tile {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+  color: #fff;
+}
+
+.game-tile-art {
+  position: relative;
+  aspect-ratio: 3 / 4;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #1d1e20;
+  border: 1px solid rgba(169, 172, 180, 0.16);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: border-color 0.15s ease;
+}
+
+.game-tile:hover .game-tile-art {
+  border-color: #f5c542;
+}
+
+/* Illustration pleine carte. */
+.game-tile-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Icône centrée quand il n'y a pas d'illustration (page Jeux). */
+.game-tile-icon {
+  color: #f5c542;
+  opacity: 0.9;
+}
+
+/* Dégradé sombre en bas, pour lire le bouton sur l'illustration. */
+.game-tile-shade {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0) 60%, rgba(0, 0, 0, 0.65) 100%);
+  pointer-events: none;
+}
+
+/* Âge, en haut à gauche, comme les classifications des vitrines. */
+.game-tile-age {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  z-index: 1;
+  font-size: 10px;
+  font-weight: 800;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.6);
+  color: #fff;
+}
+
+/* Badge optionnel (Nouveau, Populaire), en haut à droite. */
+.game-tile-badge {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 1;
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 3px 7px;
+  border-radius: 4px;
+  background: #f5c542;
+  color: #141415;
+}
+
+/* Bouton « Jouer » : pleine largeur, en bas de l'illustration. */
+.game-tile-play {
+  position: absolute;
+  left: 10px;
+  right: 10px;
+  bottom: 10px;
+  z-index: 1;
+  display: block;
+  text-align: center;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: linear-gradient(180deg, #f5c542 0%, #e0b030 100%);
+  color: #141415;
+  font-size: 14px;
+  font-weight: 800;
+  text-decoration: none;
+  box-shadow: 0 6px 18px rgba(245, 197, 66, 0.25);
+}
+
+.game-tile-play.is-disabled {
+  background: #2a2b2e;
+  color: #9aa1b1;
+  box-shadow: none;
+}
+
+/* Nom : une seule ligne, tronquée avec « … » si trop long. */
+.game-tile-name {
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.25;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.game-tile-meta {
+  font-size: 12px;
+  color: #9aa1b1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.game-tile.is-soon {
+  opacity: 0.6;
+}
+
+/* Page Jeux : grille de cartes, 2 colonnes sur téléphone, 4 sur ordinateur. */
+.game-tile-grid {
+  list-style: none;
+  padding: 0;
+  margin: 12px 0 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px 12px;
+}
+
+@media (min-width: 900px) {
+  .game-tile-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}

@@ -4,13 +4,7 @@ import ConnectedLayout from '../components/ConnectedLayout.jsx';
 import CouponBar from '../components/CouponBar.jsx';
 import OddsButton from '../components/OddsButton.jsx';
 import { useCoupon } from '../context/CouponContext.jsx';
-import { isBettable, selectionFor, timeLabel, useUpcomingEvents } from '../lib/sportEvents.js';
-
-// Jours proposés : aujourd'hui et demain. Les matchs plus loin apparaîtront quand l'import les couvrira.
-const DAYS = [
-  { key: 'today', label: "Aujourd'hui", offset: 0 },
-  { key: 'tomorrow', label: 'Demain', offset: 1 },
-];
+import { isBettable, selectionFor, timeLabel, usePagedUpcomingEvents, useVisibleLeagues, visibleEvents } from '../lib/sportEvents.js';
 
 // Drapeau de la compétition, comme sur la maquette. Une compétition sans drapeau affiche seulement son nom.
 const LEAGUE_FLAGS = { 'Ligue 1': '🇫🇷' };
@@ -19,10 +13,12 @@ function leagueLabel(league) {
   return flag ? `${flag} ${league}` : league;
 }
 
-// Vrai si le match a lieu le jour décalé de « offset » jours par rapport à aujourd'hui.
-function onDay(commenceMs, offset) {
-  const day = new Date(Date.now() + offset * 24 * 3600 * 1000);
-  return new Date(commenceMs).toDateString() === day.toDateString();
+// Titre d'un groupe de matchs : « Aujourd'hui », « Demain », ou la date complète pour les autres jours.
+function dayTitle(commenceMs) {
+  const date = new Date(commenceMs);
+  if (date.toDateString() === new Date().toDateString()) return "Aujourd'hui";
+  if (date.toDateString() === new Date(Date.now() + 24 * 3600 * 1000).toDateString()) return 'Demain';
+  return date.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' });
 }
 
 // Regroupe les matchs par jour, dans l'ordre des dates : [{ key, label, matches }].
@@ -34,7 +30,7 @@ function groupByDate(matches) {
     if (!group) {
       group = {
         key,
-        label: new Date(match.commenceMs).toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' }),
+        label: dayTitle(match.commenceMs),
         matches: [],
       };
       groups.push(group);
@@ -47,30 +43,38 @@ function groupByDate(matches) {
 // Écran Sport : matchs en direct, puis matchs à venir d'aujourd'hui ou de demain, avec les cotes 1 N 2 (maquette 15).
 export default function SportHome() {
   const navigate = useNavigate();
-  const { events, error } = useUpcomingEvents();
+  // Matchs à venir par pages de 10 : « Suivant » / « Précédent ».
+  const paging = usePagedUpcomingEvents(10);
+  const { events: allEvents, error } = paging;
+  const leagueKeys = useVisibleLeagues();
+  const [leagueFilter, setLeagueFilter] = useState('all');
+  const leagueList = leagueKeys ? [...leagueKeys.entries()].sort((a, b) => a[1].localeCompare(b[1], 'fr')) : [];
+  const visible = visibleEvents(allEvents, leagueKeys);
+  const events = leagueFilter === 'all' || !visible ? visible : visible.filter((event) => event.sportKey === leagueFilter);
   const { selections, toggle } = useCoupon();
-  const [dayKey, setDayKey] = useState('today');
   const isPicked = (eventId, pick) => selections.some((item) => item.eventId === eventId && item.pick === pick);
 
   const live = (events || []).filter((event) => event.status === 'live');
-  const day = DAYS.find((item) => item.key === dayKey);
+  // Tous les matchs à venir, groupés par date (Aujourd'hui, Demain, puis la date).
   const allUpcoming = (events || []).filter((event) => event.status === 'upcoming');
-  const upcoming = allUpcoming.filter((event) => onDay(event.commenceMs, day.offset));
-  // Si le jour choisi n'a aucun match, on montre les prochains matchs, groupés par date.
-  // Aujourd'hui et demain n'ont aucun match : on masque l'en-tête des jours et on affiche les matchs à venir par date.
-  const hasDayMatches = (events || []).some((event) => event.status === 'upcoming' && (onDay(event.commenceMs, 0) || onDay(event.commenceMs, 1)));
-  const showAll = hasDayMatches && Boolean(events) && upcoming.length === 0 && allUpcoming.length > 0;
-  const groups = groupByDate(!hasDayMatches || showAll ? allUpcoming : upcoming);
-  const dayName = day.key === 'today' ? "aujourd'hui" : 'demain';
+  const groups = groupByDate(allUpcoming);
 
   return (
     <ConnectedLayout>
-      <div className="sport-filters" role="group" aria-label="Sport">
-        <button type="button" className="sport-chip is-active" aria-pressed="true">⚽ Football</button>
-        {/* Sports à venir : affichés désactivés tant que leurs matchs ne sont pas importés. */}
-        {['🏀 Basket', '🎾 Tennis', '🥊 MMA'].map((label) => (
-          <button key={label} type="button" className="sport-chip" disabled aria-disabled="true" title="Bientôt disponible">
-            {label}
+      {/* Filtre par compétition : seules les compétitions activées et visibles par l'admin sont proposées. */}
+      <div className="sport-filters" role="group" aria-label="Compétitions">
+        <button type="button" className={`sport-chip${leagueFilter === 'all' ? ' is-active' : ''}`} aria-pressed={leagueFilter === 'all'} onClick={() => setLeagueFilter('all')}>
+          Tous
+        </button>
+        {leagueList.map(([key, title]) => (
+          <button
+            key={key}
+            type="button"
+            className={`sport-chip${leagueFilter === key ? ' is-active' : ''}`}
+            aria-pressed={leagueFilter === key}
+            onClick={() => setLeagueFilter(key)}
+          >
+            {leagueLabel(title)}
           </button>
         ))}
       </div>
@@ -116,20 +120,6 @@ export default function SportHome() {
         </section>
       )}
 
-      {hasDayMatches && (
-        <div className="day-header">
-          <h2 className="day-title">{day.label}</h2>
-          <button
-            type="button"
-            className="day-switch"
-            onClick={() => setDayKey(dayKey === 'today' ? 'tomorrow' : 'today')}
-          >
-            {dayKey === 'today' ? 'Demain ›' : "‹ Aujourd'hui"}
-          </button>
-        </div>
-      )}
-
-      {hasDayMatches && showAll && <p className="note">Aucun match {dayName}. Prochains matchs :</p>}
       {events && allUpcoming.length === 0 && <p className="note">Aucun match à venir pour le moment.</p>}
 
       {groups.map((group) => (
@@ -166,6 +156,18 @@ export default function SportHome() {
           </ul>
         </section>
       ))}
+
+      {events && (paging.hasPrev || paging.hasNext) && (
+        <nav className="sport-pager" aria-label="Pages de matchs">
+          <button type="button" className="sport-pager-btn" onClick={paging.goPrev} disabled={!paging.hasPrev}>
+            ‹ Précédent
+          </button>
+          <span className="sport-pager-page">Page {paging.page + 1}</span>
+          <button type="button" className="sport-pager-btn" onClick={paging.goNext} disabled={!paging.hasNext}>
+            Suivant ›
+          </button>
+        </nav>
+      )}
 
       <CouponBar />
     </ConnectedLayout>

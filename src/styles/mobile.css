@@ -58,11 +58,11 @@
 }
 
 .universe-card--jeux {
-  background: linear-gradient(160deg, #8b5cf6 0%, var(--purple) 100%);
+  background: linear-gradient(160deg, #2a2b2e 0%, var(--purple) 100%);
 }
 
 .universe-card--sport {
-  background: linear-gradient(160deg, #14b8a6 0%, var(--teal) 100%);
+  background: linear-gradient(160deg, #2a2b2e 0%, var(--teal) 100%);
 }
 
 .universe-card .icon {

@@ -21,7 +21,7 @@
   justify-items: center;
   gap: 6px;
   font-size: 12px;
-  color: #8b82a8;
+  color: #9aa1b1;
 }
 
 .crypto-step-dot {
@@ -30,23 +30,23 @@
   width: 28px;
   height: 28px;
   border-radius: 50%;
-  border: 1px solid #3b3352;
-  background: #15102a;
+  border: 1px solid #2a2b2e;
+  background: #1d1e20;
   font-weight: 700;
 }
 
 .crypto-step.is-active {
-  color: #f5f3ff;
+  color: #ffffff;
 }
 
 .crypto-step.is-active .crypto-step-dot {
-  border-color: #2dd4bf;
-  color: #2dd4bf;
+  border-color: #f5c542;
+  color: #f5c542;
 }
 
 .crypto-step.is-done .crypto-step-dot {
-  background: #0f9b8e;
-  border-color: #0f9b8e;
+  background: #2a2b2e;
+  border-color: #2a2b2e;
   color: #ffffff;
 }
 
@@ -56,9 +56,9 @@
   gap: 16px;
   padding: 18px;
   border-radius: 18px;
-  background: #15102a;
-  border: 1px solid #2a2140;
-  color: #f5f3ff;
+  background: #1d1e20;
+  border: 1px solid #2a2b2e;
+  color: #ffffff;
 }
 
 .crypto-title {
@@ -68,13 +68,13 @@
 
 .crypto-subtitle {
   margin: 0;
-  color: #8b82a8;
+  color: #9aa1b1;
   font-size: 13px;
 }
 
 .crypto-label {
   font-size: 12px;
-  color: #8b82a8;
+  color: #9aa1b1;
   text-transform: uppercase;
   letter-spacing: 0.04em;
 }
@@ -87,7 +87,7 @@
 
 .crypto-field > span {
   font-size: 12px;
-  color: #8b82a8;
+  color: #9aa1b1;
   text-transform: uppercase;
   letter-spacing: 0.04em;
 }
@@ -98,8 +98,8 @@
   gap: 8px;
   padding: 10px 14px;
   border-radius: 12px;
-  border: 1px solid #3b3352;
-  background: #0b0a1f;
+  border: 1px solid #2a2b2e;
+  background: #141415;
 }
 
 .crypto-amount input {
@@ -107,7 +107,7 @@
   min-width: 0;
   border: 0;
   background: transparent;
-  color: #f5f3ff;
+  color: #ffffff;
   font: inherit;
   font-size: 22px;
   font-weight: 700;
@@ -115,18 +115,18 @@
 }
 
 .crypto-amount span {
-  color: #8b82a8;
+  color: #9aa1b1;
   font-size: 13px;
 }
 
 .crypto-amount:focus-within {
-  border-color: #2dd4bf;
+  border-color: #f5c542;
 }
 
 .crypto-hint {
   margin: 0;
   font-size: 12px;
-  color: #8b82a8;
+  color: #9aa1b1;
 }
 
 .crypto-hint.is-warning,
@@ -147,22 +147,22 @@
   justify-items: start;
   padding: 12px;
   border-radius: 12px;
-  border: 1px solid #3b3352;
-  background: #0b0a1f;
-  color: #f5f3ff;
+  border: 1px solid #2a2b2e;
+  background: #141415;
+  color: #ffffff;
   font: inherit;
   text-align: left;
   cursor: pointer;
 }
 
 .crypto-token small {
-  color: #8b82a8;
+  color: #9aa1b1;
   font-size: 11px;
 }
 
 .crypto-token.is-selected {
-  border-color: #2dd4bf;
-  background: #0f2f2f;
+  border-color: #f5c542;
+  background: #1d1e20;
 }
 
 /* Bouton principal. */
@@ -177,42 +177,42 @@
   justify-items: center;
   padding: 16px;
   border-radius: 14px;
-  background: linear-gradient(135deg, #0f2f2f, #0b0a1f);
-  border: 1px solid #0f9b8e;
+  background: linear-gradient(135deg, #1d1e20, #141415);
+  border: 1px solid #2a2b2e;
   text-align: center;
 }
 
 .crypto-amount-due span {
   font-size: 12px;
-  color: #8b82a8;
+  color: #9aa1b1;
   text-transform: uppercase;
   letter-spacing: 0.04em;
 }
 
 .crypto-amount-due strong {
   font-size: 30px;
-  color: #2dd4bf;
+  color: #f5c542;
 }
 
 .crypto-amount-due strong small {
   font-size: 16px;
-  color: #5eead4;
+  color: #f5c542;
 }
 
 .crypto-copy {
   padding: 6px 12px;
   border-radius: 999px;
-  border: 1px solid #3b3352;
+  border: 1px solid #2a2b2e;
   background: transparent;
-  color: #c4b5fd;
+  color: #9aa1b1;
   font: inherit;
   font-size: 12px;
   cursor: pointer;
 }
 
 .crypto-copy:hover {
-  border-color: #2dd4bf;
-  color: #2dd4bf;
+  border-color: #f5c542;
+  color: #f5c542;
 }
 
 /* Coordonnées du paiement. */
@@ -228,11 +228,11 @@
   align-items: center;
   gap: 12px;
   padding-bottom: 10px;
-  border-bottom: 1px solid #2a2140;
+  border-bottom: 1px solid #2a2b2e;
 }
 
 .crypto-details dt {
-  color: #8b82a8;
+  color: #9aa1b1;
   font-size: 13px;
 }
 
@@ -277,7 +277,7 @@
 
 .crypto-connect p {
   margin: 0;
-  color: #8b82a8;
+  color: #9aa1b1;
   font-size: 13px;
 }
 
@@ -288,8 +288,8 @@
   gap: 12px;
   padding: 14px;
   border-radius: 12px;
-  background: #0b0a1f;
-  border: 1px solid #2a2140;
+  background: #141415;
+  border: 1px solid #2a2b2e;
 }
 
 .crypto-progress div {
@@ -298,15 +298,15 @@
 }
 
 .crypto-progress small {
-  color: #8b82a8;
+  color: #9aa1b1;
 }
 
 .crypto-spinner {
   width: 20px;
   height: 20px;
   border-radius: 50%;
-  border: 2px solid #2a2140;
-  border-top-color: #2dd4bf;
+  border: 2px solid #2a2b2e;
+  border-top-color: #f5c542;
   animation: crypto-spin 0.9s linear infinite;
   flex: 0 0 auto;
 }
@@ -333,16 +333,16 @@
   gap: 4px;
   padding: 16px;
   border-radius: 14px;
-  border: 1px solid #3b3352;
-  background: #15102a;
-  color: #f5f3ff;
+  border: 1px solid #2a2b2e;
+  background: #1d1e20;
+  color: #ffffff;
   font: inherit;
   text-align: left;
   cursor: pointer;
 }
 
 .method-card span {
-  color: #8b82a8;
+  color: #9aa1b1;
   font-size: 13px;
 }
 
@@ -405,6 +405,24 @@
   .crypto-amount-due strong {
     font-size: 26px;
   }
+}
+
+/* Message d'erreur dans la carte du dépôt, juste sous le bouton de paiement. */
+.crypto-alert {
+  display: grid;
+  gap: 10px;
+  padding: 12px 14px;
+  border: 1px solid #ef4444;
+  border-radius: 12px;
+  background: rgba(239, 68, 68, 0.12);
+  color: #fecaca;
+  font-size: 14px;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.crypto-alert p {
+  margin: 0;
 }
 
 /* Champ du montant : reste dans la carte, sans dépasser la marge intérieure. */
@@ -597,14 +615,14 @@ main.screen-page:has(.crypto-deposit) {
   position: absolute;
   left: 0;
   top: 0;
-  color: #60a5fa;
+  color: #f5c542;
   white-space: nowrap;
 }
 
 /* Note avant le paiement direct depuis le portefeuille. */
 .crypto-pay-note {
   margin: 0;
-  color: #c4b5fd;
+  color: #9aa1b1;
   font-size: 13px;
   line-height: 1.5;
 }

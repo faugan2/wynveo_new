@@ -114,6 +114,7 @@ function luckyNumberPayout(stake, matches, multipliers = LUCKY_NUMBER.multiplier
 const JACKPOT = {
   ticketPrice: 1000,
   potShare: 0.8,
+  winnerCount: 1,
   maxTicketsPerOrder: 10,
   drawHourUtc: 20,
   recentWinnersKept: 5,
@@ -165,7 +166,25 @@ function crashSecondsFor(growthRate, crashPoint) {
   return Math.log(crashPoint) / growthRate;
 }
 
+// Répartition de la cagnotte entre les gagnants, au prorata de leurs tickets dans le tirage.
+// winners : [{ uid, name, tickets }]. Renvoie la même liste avec prize (entier). La somme des parts vaut exactement pot ;
+// le reste de l'arrondi va au gagnant qui a le plus de tickets.
+function splitJackpot(pot, winners) {
+  const total = winners.reduce((sum, w) => sum + w.tickets, 0);
+  if (total <= 0 || winners.length === 0) return winners.map((w) => ({ ...w, prize: 0 }));
+  let distributed = 0;
+  const shares = winners.map((w) => {
+    const prize = Math.floor((pot * w.tickets) / total);
+    distributed += prize;
+    return { ...w, prize };
+  });
+  const top = shares.reduce((best, s, i) => (s.tickets > shares[best].tickets ? i : best), 0);
+  shares[top].prize += pot - distributed;
+  return shares;
+}
+
 module.exports = {
+  splitJackpot,
   JACKPOT,
   nextJackpotDraw,
   LUCKY_NUMBER,

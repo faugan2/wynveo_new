@@ -72,7 +72,8 @@ async function runSportSettlement(db, apiKey, now = Date.now()) {
     .where('commenceTime', '>=', Timestamp.fromMillis(now - SCORE_WINDOW_MS))
     .where('commenceTime', '<=', Timestamp.fromMillis(now))
     .get();
-  const pending = started.docs.filter((doc) => !['finished', 'cancelled'].includes(doc.get('status')));
+  // Les matchs ajoutés à la main ne viennent pas de l'API : leur résultat est saisi par l'admin.
+  const pending = started.docs.filter((doc) => !['finished', 'cancelled'].includes(doc.get('status')) && doc.get('manual') !== true);
   const report = { finished: [], unexpectedFormat: [], settledBets: 0, errors: [] };
 
   const sportKeys = [...new Set(pending.map((doc) => doc.get('sportKey')))];

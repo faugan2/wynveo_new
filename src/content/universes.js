@@ -1,5 +1,18 @@
+import {
+  IoBasketballOutline,
+  IoFootballOutline,
+  IoGiftOutline,
+  IoKeypadOutline,
+  IoListOutline,
+  IoRocketOutline,
+  IoSyncCircleOutline,
+  IoTennisballOutline,
+  IoTrophyOutline,
+} from 'react-icons/io5';
+
 // Contenu des pages d'univers (Jeux, Sport), affiché avant connexion.
 // Les montants et règles doivent rester alignés sur packages/core/src/games/config.js.
+// `icon` est un composant d'icône monochrome, sobre et de même famille que le reste de l'application.
 export const UNIVERSES = {
   jeux: {
     title: 'Jeux',
@@ -7,27 +20,27 @@ export const UNIVERSES = {
     games: [
       {
         name: 'Lucky Spin',
-        icon: '🎡',
+        icon: IoSyncCircleOutline,
         text: 'Faites tourner la roue. Mise de 100 à 10 000 FCFA, résultat immédiat.',
       },
       {
         name: 'Mystery Box',
-        icon: '🎁',
+        icon: IoGiftOutline,
         text: 'Choisissez un coffre parmi neuf. Le contenu est révélé à l\'ouverture.',
       },
       {
         name: 'Lucky Number',
-        icon: '🔢',
+        icon: IoKeypadOutline,
         text: 'Choisissez cinq numéros sur cinquante. Un tirage a lieu toutes les 15 minutes.',
       },
       {
         name: 'Jackpot quotidien',
-        icon: '💰',
+        icon: IoTrophyOutline,
         text: 'Achetez des tickets à 1 000 FCFA. Un gagnant est tiré chaque jour à 20 h.',
       },
       {
         name: 'Crash game',
-        icon: '🚀',
+        icon: IoRocketOutline,
         text: 'Le multiplicateur monte. Retirez avant le crash !',
       },
     ],
@@ -44,22 +57,22 @@ export const UNIVERSES = {
     games: [
       {
         name: 'Football',
-        icon: '⚽',
+        icon: IoFootballOutline,
         text: 'Pariez sur le résultat (1 N 2) ou sur le nombre de buts (plus ou moins).',
       },
       {
         name: 'Basket',
-        icon: '🏀',
+        icon: IoBasketballOutline,
         text: 'Pariez sur le vainqueur du match ou sur le total de points (plus ou moins).',
       },
       {
         name: 'Tennis',
-        icon: '🎾',
+        icon: IoTennisballOutline,
         text: 'Pariez sur le vainqueur du match, avant le coup d\'envoi.',
       },
       {
         name: 'Coupon combiné',
-        icon: '🧩',
+        icon: IoListOutline,
         text: 'Regroupez de 2 à 10 choix sur des matchs différents. Les cotes se multiplient.',
       },
     ],
