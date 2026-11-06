@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useAuth } from '../context/AuthContext.jsx';
-import { functions } from './firebase.js';
+import { db, functions } from './firebase.js';
 
 // Jeux favoris du membre connecté, lus et écrits sur le serveur (compte, tous appareils).
 // Visiteur : liste vide et aucune écriture.
@@ -14,10 +14,12 @@ export function useGameFavorites() {
       return undefined;
     }
     let active = true;
-    functions
-      .httpsCallable('getGameFavorites')({})
-      .then(({ data }) => {
-        if (active) setFavorites(Array.isArray(data.slugs) ? data.slugs : []);
+    db.collection('wy_game_favorites')
+      .doc(user.uid)
+      .get()
+      .then((snapshot) => {
+        const slugs = snapshot.exists ? snapshot.get('slugs') : [];
+        if (active) setFavorites(Array.isArray(slugs) ? slugs : []);
       })
       .catch(() => {});
     return () => {

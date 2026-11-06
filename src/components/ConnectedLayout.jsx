@@ -21,10 +21,13 @@ import {
   IoLogOutOutline,
   IoChevronDown,
   IoMenuOutline,
+  IoSettings,
+  IoSettingsOutline,
 } from 'react-icons/io5';
+import { useMyAdminRole } from '../lib/adminRole.js';
 import { formatFcfa } from '../lib/format.js';
 import { useAuth } from '../context/AuthContext.jsx';
-import { useHelpInfo } from '../lib/helpInfo.js';
+import { useSupportContacts } from '../lib/helpInfo.js';
 import { useLogoUrl } from '../lib/branding.js';
 import { walletFromProfile } from '../lib/wallet.js';
 import GuestMenu from './GuestMenu.jsx';
@@ -41,6 +44,10 @@ const TABS = [
   { to: '/portefeuille', label: 'Portefeuille', Icon: IoWalletOutline, ActiveIcon: IoWallet, inBottomBar: true },
   { to: '/profil', label: 'Profil', Icon: IoPersonOutline, ActiveIcon: IoPerson, inBottomBar: false },
 ];
+
+// Lien Admin, réservé au super_admin : barre du haut (bureau), menu « Plus » et tiroir (téléphone).
+const ADMIN_TAB = { to: '/admin', label: 'Admin', Icon: IoSettingsOutline, ActiveIcon: IoSettings };
+const ADMIN_ITEM = { to: '/admin', label: 'Administration', Icon: IoSettingsOutline };
 
 // Pages secondaires : menu « Plus... » sur bureau.
 const MORE_ITEMS = [
@@ -105,6 +112,7 @@ function MoreMenu() {
   const menuRef = useRef(null);
   const navigate = useNavigate();
   const { signOut } = useAuth();
+  const role = useMyAdminRole();
 
   // Ferme le menu au clic en dehors, et avec la touche Échap.
   useEffect(() => {
@@ -137,7 +145,7 @@ function MoreMenu() {
       {open && (
         <>
           <ul className="more-panel">
-            {MORE_ITEMS.map(({ to, label, Icon }) => (
+            {(role === 'super_admin' ? [...MORE_ITEMS, ADMIN_ITEM] : MORE_ITEMS).map(({ to, label, Icon }) => (
               <li key={to}>
                 <NavLink to={to} className="more-item" onClick={() => setOpen(false)}>
                   <Icon size={18} aria-hidden="true" />
@@ -162,10 +170,10 @@ function MoreMenu() {
 export default function ConnectedLayout({ children }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const { profile } = useAuth();
-  const { info } = useHelpInfo();
+  const support = useSupportContacts();
   const logoUrl = useLogoUrl();
   const wallet = walletFromProfile(profile);
-  const support = info?.support;
+  const role = useMyAdminRole();
 
   return (
     <div className={`connected-shell${menuOpen ? ' is-menu-open' : ''}`}>
@@ -173,7 +181,7 @@ export default function ConnectedLayout({ children }) {
         <Link to="/" className="brand header-brand" style={{ fontSize: 24 }} aria-label="Retour à l'accueil du site">
           {logoUrl ? <img className="brand-logo" src={logoUrl} alt="Wynveo" /> : <>WYN<span>VEO</span></>}
         </Link>
-        <NavTabs className="top-nav" tabs={TABS} />
+        <NavTabs className="top-nav" tabs={role === 'super_admin' ? [...TABS, ADMIN_TAB] : TABS} />
         <MoreMenu />
         <div className="header-actions">
           <div className="balance-pill">Dépôts : {formatFcfa(wallet.deposit)}</div>

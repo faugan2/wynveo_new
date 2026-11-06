@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
 import { FaTelegramPlane } from 'react-icons/fa';
+import { IoSettingsOutline } from 'react-icons/io5';
+import { useMyAdminRole } from '../lib/adminRole.js';
 import { telegramLink } from '../lib/helpInfo.js';
 import {
   IoChatbubbleEllipsesOutline,
@@ -51,6 +53,9 @@ const VISITOR_ITEMS = [
   { to: '/login', label: 'Jeu responsable', Icon: IoShieldCheckmarkOutline },
 ];
 
+// Lien Admin, réservé au super_admin (ajouté en tête du tiroir).
+const ADMIN_ITEM = { to: '/admin', label: 'Administration', Icon: IoSettingsOutline };
+
 const MEMBER_ITEMS = [
   { to: '/bonus', label: 'Bonus et promotions', Icon: IoGiftOutline },
   { to: '/historique', label: 'Historique', Icon: IoTimeOutline },
@@ -70,7 +75,8 @@ export default function GuestMenu({ support, onClose }) {
 
   const gameLinks = user ? MEMBER_GAMES : VISITOR_GAMES;
   const sportLinks = user ? MEMBER_SPORT : VISITOR_SPORT;
-  const items = user ? MEMBER_ITEMS : VISITOR_ITEMS;
+  const role = useMyAdminRole();
+  const items = user ? (role === 'super_admin' ? [ADMIN_ITEM, ...MEMBER_ITEMS] : MEMBER_ITEMS) : VISITOR_ITEMS;
   const bonusTo = user ? '/bonus' : '/register';
 
   async function handleSignOut() {

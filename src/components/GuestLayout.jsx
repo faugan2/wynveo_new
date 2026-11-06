@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
-import { telegramLink, useHelpInfo } from '../lib/helpInfo.js';
+import { telegramLink, useSupportContacts } from '../lib/helpInfo.js';
 import { useLogoUrl } from '../lib/branding.js';
 import { FaTelegramPlane } from 'react-icons/fa';
 import GuestMenu from './GuestMenu.jsx';
@@ -26,9 +26,8 @@ import '../styles/guest-home.css';
 // `active` indique la rubrique en cours : 'home' | 'jeux' | 'sport' (ou null).
 export default function GuestLayout({ active = null, children }) {
   const { user } = useAuth();
-  const { info } = useHelpInfo();
+  const support = useSupportContacts();
   const logoUrl = useLogoUrl();
-  const support = info?.support;
   const [menuOpen, setMenuOpen] = useState(false);
   // Pour un visiteur, les liens d'aide passent par la connexion ; pour un compte connecté, ils vont directement à la page.
   const authTo = (path) => (user ? path : '/login');

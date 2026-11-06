@@ -1,15 +1,20 @@
 import { useEffect, useState } from 'react';
-import { functions } from './firebase.js';
+import { db } from './firebase.js';
 
-// Logo de l'application (réglé dans l'admin). Une seule lecture par chargement, gardée en mémoire.
+// Logo de l'application (réglé dans l'admin), lu directement dans wy_settings/branding. Une seule lecture par chargement.
 // Renvoie une chaîne vide tant que le logo n'est pas connu ou s'il n'y en a pas : l'en-tête affiche alors le texte.
 let logoPromise = null;
 
 function loadLogo() {
   if (!logoPromise) {
-    logoPromise = functions
-      .httpsCallable('getBranding')({})
-      .then(({ data }) => (typeof data.logoUrl === 'string' ? data.logoUrl : ''))
+    logoPromise = db
+      .collection('wy_settings')
+      .doc('branding')
+      .get()
+      .then((snapshot) => {
+        const url = snapshot.exists ? snapshot.get('logoUrl') : '';
+        return typeof url === 'string' ? url : '';
+      })
       .catch(() => {
         logoPromise = null; // on réessaiera à la prochaine ouverture
         return '';

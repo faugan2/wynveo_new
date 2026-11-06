@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { functions } from './firebase.js';
+import { db } from './firebase.js';
 
 // Valeurs de départ, affichées tant que le contenu n'est pas chargé ou si la lecture échoue.
 export const DEFAULT_HERO = [
@@ -82,16 +82,18 @@ export const DEFAULT_GAMES = [
   { key: 'crash', name: 'Crash', desc: 'Encaissez avant la chute', color: '#d12b4f', imageUrl: '', badge: '', target: 'register' },
 ];
 
-// Contenu de l'accueil visiteur, lu depuis l'admin (fonction getHomeContent, sans connexion).
+// Contenu de l'accueil visiteur, lu depuis l'admin : document wy_settings/home, lisible par tous.
 export function useHomeContent() {
   const [content, setContent] = useState({ slides: DEFAULT_HERO, sideCards: DEFAULT_SIDE_CARDS, games: DEFAULT_GAMES });
 
   useEffect(() => {
     let active = true;
-    functions
-      .httpsCallable('getHomeContent')({})
-      .then(({ data }) => {
+    db.collection('wy_settings')
+      .doc('home')
+      .get()
+      .then((snapshot) => {
         if (!active) return;
+        const data = snapshot.exists ? snapshot.data() : {};
         setContent({
           slides: Array.isArray(data.slides) && data.slides.length > 0 ? data.slides : DEFAULT_HERO,
           sideCards: Array.isArray(data.sideCards) && data.sideCards.length === 2 ? data.sideCards : DEFAULT_SIDE_CARDS,

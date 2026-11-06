@@ -7,7 +7,9 @@ import { useAuth } from '../context/AuthContext.jsx';
 import { db, functions } from '../lib/firebase.js';
 import { formatFcfa } from '../lib/format.js';
 import { walletFromProfile } from '../lib/wallet.js';
+import { useStakeLimits } from '../lib/stakeLimits.js';
 
+// Mise minimum et maximum : lues dans l'admin (valeurs de départ en attendant).
 const STAKE = { min: 100, max: 1000, default: 100, step: 100, chips: [100, 500, 1000] };
 const LUCKY_PICK = 5;
 const PAYOUT_TABLE = [
@@ -87,7 +89,17 @@ export default function LuckyNumber() {
   }, [now, state, loadState]);
 
   const remaining = state ? state.drawAt - now : 0;
-  const canPlay = !submitting && picked.length === 5 && stake >= STAKE.min && stake <= Math.min(available, STAKE.max);
+  const limits = useStakeLimits('lucky-number', { minStake: STAKE.min, maxStake: STAKE.max });
+  const MIN = limits.minStake;
+  const MAX = limits.maxStake;
+  const chips = STAKE.chips.filter((value) => value >= MIN && value <= MAX);
+
+  // Si l'admin change les limites, la mise affichée se recale dans la nouvelle plage.
+  useEffect(() => {
+    setStake((current) => Math.min(MAX, Math.max(MIN, current)));
+  }, [MIN, MAX]);
+
+  const canPlay = !submitting && picked.length === 5 && stake >= MIN && stake <= Math.min(available, MAX);
   // Une participation par tirage : une fois engagé, on n'affiche plus les choix de jeu.
   const alreadyPlayed = state ? state.myBets.length > 0 : false;
 
@@ -166,10 +178,10 @@ export default function LuckyNumber() {
             stake={stake}
             onChange={setStake}
             available={available}
-            min={STAKE.min}
-            max={STAKE.max}
+            min={MIN}
+            max={MAX}
             step={STAKE.step}
-            chips={STAKE.chips}
+            chips={chips}
             disabled={submitting}
           />}
 

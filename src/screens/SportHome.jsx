@@ -157,7 +157,8 @@ export default function SportHome() {
         </section>
       ))}
 
-      {events && (paging.hasPrev || paging.hasNext) && (
+      {/* Pagination : « Suivant » seulement s'il reste des matchs à afficher ; « Précédent » reste toujours accessible. */}
+      {events && (paging.hasPrev || (paging.hasNext && allUpcoming.length > 0)) && (
         <nav className="sport-pager" aria-label="Pages de matchs">
           <button type="button" className="sport-pager-btn" onClick={paging.goPrev} disabled={!paging.hasPrev}>
             ‹ Précédent

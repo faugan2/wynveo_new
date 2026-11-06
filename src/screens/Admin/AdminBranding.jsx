@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import AdminShell from './AdminShell.jsx';
-import { functions } from '../../lib/firebase.js';
+import { db, functions } from '../../lib/firebase.js';
 
 const MAX_IMAGE_BYTES = 2 * 1024 * 1024;
 
@@ -12,9 +12,10 @@ export default function AdminBranding() {
   const [error, setError] = useState('');
 
   useEffect(() => {
-    functions
-      .httpsCallable('getBranding')({})
-      .then(({ data }) => setLogoUrl(data.logoUrl || ''))
+    db.collection('wy_settings')
+      .doc('branding')
+      .get()
+      .then((snapshot) => setLogoUrl((snapshot.exists && snapshot.get('logoUrl')) || ''))
       .catch((err) => setError(err?.message || 'Lecture impossible.'));
   }, []);
 

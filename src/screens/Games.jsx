@@ -6,16 +6,26 @@ import { formatFcfa } from '../lib/format.js';
 import { useJackpotSummary } from '../lib/jackpotSummary.js';
 import { usePlayCounts } from '../lib/gameStats.js';
 import { useGameFavorites } from '../lib/gameFavorites.js';
+import { GAME_PAGES, useHomeContent } from '../lib/homeContent.js';
 
 // Page Jeux : favoris du membre en haut, puis tous les jeux, en cartes (même style que la rangée de l'accueil).
 export default function Games() {
   const jackpot = useJackpotSummary();
   const playCounts = usePlayCounts();
   const { favorites, toggle } = useGameFavorites();
+  const { games: homeGames } = useHomeContent();
   const favoriteGames = GAMES.filter((game) => favorites.includes(game.slug));
+
+  // Visuels, badges et couleurs réglés dans l'admin (accueil), rattachés à la page du jeu.
+  const homeBySlug = Object.fromEntries(
+    homeGames
+      .filter((game) => GAME_PAGES[game.key])
+      .map((game) => [GAME_PAGES[game.key].replace('/jeux/', ''), game])
+  );
 
   // Une carte de jeu, avec le menu ⋮ (favoris, partage, infos).
   function renderCard(game) {
+    const home = homeBySlug[game.slug];
     return (
       <GameCard
         name={game.name}
@@ -23,6 +33,9 @@ export default function Games() {
         meta={game.slug === 'jackpot' ? `Cagnotte : ${jackpot ? formatFcfa(jackpot.pot) : '—'}` : game.stake}
         to={`/jeux/${game.slug}`}
         plays={playCounts ? playCounts[game.slug] : undefined}
+        imageUrl={home?.imageUrl || ''}
+        color={home?.color}
+        badge={home?.badge}
         icon={game.icon}
         soon={Boolean(game.soon)}
         favorite={favorites.includes(game.slug)}

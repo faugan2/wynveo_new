@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ConnectedLayout from '../components/ConnectedLayout.jsx';
 import { useAuth } from '../context/AuthContext.jsx';
@@ -6,6 +6,7 @@ import { functions } from '../lib/firebase.js';
 import { formatFcfa } from '../lib/format.js';
 import { walletFromProfile } from '../lib/wallet.js';
 import { LUCKY_SPIN_SEGMENTS, LUCKY_SPIN_STAKE } from '../content/luckySpin.js';
+import { multiplierLabel, useLuckySpinConfig } from '../lib/luckySpinConfig.js';
 
 const SEGMENT_ANGLE = 360 / LUCKY_SPIN_SEGMENTS.length;
 const RADIUS = 140;
@@ -47,10 +48,26 @@ export default function LuckySpin() {
   const [result, setResult] = useState(null);
   const [error, setError] = useState('');
 
-  const canSpin = !spinning && stake >= LUCKY_SPIN_STAKE.min && stake <= Math.min(available, LUCKY_SPIN_STAKE.max);
+  // Mise minimum et maximum, multiplicateurs : lus dans l'admin (valeurs de départ en attendant).
+  const config = useLuckySpinConfig();
+  const MIN = config.minStake;
+  const MAX = config.maxStake;
+  const segments = LUCKY_SPIN_SEGMENTS.map((segment, index) => ({
+    ...segment,
+    multiplier: config.multipliers[index],
+    label: multiplierLabel(config.multipliers[index]),
+  }));
+  const chips = LUCKY_SPIN_STAKE.chips.filter((value) => value >= MIN && value <= MAX);
+
+  // Si l'admin change les limites, la mise affichée se recale dans la nouvelle plage.
+  useEffect(() => {
+    setStake((current) => Math.min(MAX, Math.max(MIN, current)));
+  }, [MIN, MAX]);
+
+  const canSpin = !spinning && stake >= MIN && stake <= Math.min(available, MAX);
 
   function changeStake(value) {
-    setStake(Math.min(LUCKY_SPIN_STAKE.max, Math.max(LUCKY_SPIN_STAKE.min, value)));
+    setStake(Math.min(MAX, Math.max(MIN, value)));
   }
 
   async function spin() {
@@ -95,7 +112,7 @@ export default function LuckySpin() {
               transition: spinning ? `transform ${SPIN_MS}ms cubic-bezier(0.17, 0.67, 0.12, 1)` : 'none',
             }}
           >
-            {LUCKY_SPIN_SEGMENTS.map((segment, index) => {
+            {segments.map((segment, index) => {
               const [lx, ly] = point(index * SEGMENT_ANGLE + SEGMENT_ANGLE / 2, RADIUS * 0.66);
               return (
                 <g key={index}>
@@ -134,7 +151,7 @@ export default function LuckySpin() {
         </div>
 
         <div className="chips">
-          {LUCKY_SPIN_STAKE.chips.map((value) => (
+          {chips.map((value) => (
             <button
               type="button"
               key={value}
@@ -162,7 +179,7 @@ export default function LuckySpin() {
             <h2 className="title-font">{result.multiplier >= 1 ? 'Félicitations !' : 'Pas cette fois'}</h2>
             <p className="result-sub">La roue s'est arrêtée sur</p>
             <div className="result-multiplier">
-              {LUCKY_SPIN_SEGMENTS[result.segmentIndex].label}
+              {segments[result.segmentIndex].label}
             </div>
 
             <div className="summary">
@@ -184,7 +201,7 @@ export default function LuckySpin() {
                 setResult(null);
                 spin();
               }}
-              disabled={result.balance.real + result.balance.bonus < LUCKY_SPIN_STAKE.min}
+              disabled={result.balance.real + result.balance.bonus < MIN}
             >
               Rejouer · {formatFcfa(stake)}
             </button>

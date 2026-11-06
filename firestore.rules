@@ -8,6 +8,33 @@ service cloud.firestore {
       allow write: if false;
     }
 
+    // Administrateurs : chacun peut lire seulement son propre document (pour savoir s'il est admin). Aucune écriture côté client.
+    match /wy_admins/{uid} {
+      allow read: if request.auth != null && request.auth.uid == uid;
+      allow write: if false;
+    }
+
+    // Favoris de jeux : chacun lit seulement sa liste. Écriture par la fonction setGameFavorite.
+    match /wy_game_favorites/{uid} {
+      allow read: if request.auth != null && request.auth.uid == uid;
+      allow write: if false;
+    }
+
+    // Réglages publics affichés sur le site (logo, contenu de l'accueil, coordonnées du support) : lisibles par tous.
+    // Aucun réglage sensible ici (probabilités, mises et tirages restent dans les fonctions).
+    match /wy_settings/branding {
+      allow read: if true;
+      allow write: if false;
+    }
+    match /wy_settings/home {
+      allow read: if true;
+      allow write: if false;
+    }
+    match /wy_settings/support {
+      allow read: if true;
+      allow write: if false;
+    }
+
     // Index numéro -> compte : réservé aux Cloud Functions.
     match /wy_phones/{phoneKey} {
       allow read, write: if false;

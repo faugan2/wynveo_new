@@ -56,7 +56,7 @@
 }
 
 .connected-shell .match-day .section-label-sport {
-  color: var(--text);
+  color: var(--yellow);
   text-transform: capitalize;
 }
 

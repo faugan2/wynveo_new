@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ConnectedLayout from '../components/ConnectedLayout.jsx';
 import StakeSelector from '../components/StakeSelector.jsx';
@@ -6,7 +6,9 @@ import { useAuth } from '../context/AuthContext.jsx';
 import { functions } from '../lib/firebase.js';
 import { formatFcfa } from '../lib/format.js';
 import { walletFromProfile } from '../lib/wallet.js';
+import { useStakeLimits } from '../lib/stakeLimits.js';
 
+// Mise minimum et maximum : lues dans l'admin (valeurs de départ en attendant).
 const STAKE = { min: 100, max: 10000, default: 1000, step: 100, chips: [1000, 2000, 5000, 10000] };
 const BOX_COUNT = 9;
 
@@ -29,7 +31,17 @@ export default function MysteryBox() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  const canPlay = !loading && stake >= STAKE.min && stake <= Math.min(available, STAKE.max);
+  const limits = useStakeLimits('mystery-box', { minStake: STAKE.min, maxStake: STAKE.max });
+  const MIN = limits.minStake;
+  const MAX = limits.maxStake;
+  const chips = STAKE.chips.filter((value) => value >= MIN && value <= MAX);
+
+  // Si l'admin change les limites, la mise affichée se recale dans la nouvelle plage.
+  useEffect(() => {
+    setStake((current) => Math.min(MAX, Math.max(MIN, current)));
+  }, [MIN, MAX]);
+
+  const canPlay = !loading && stake >= MIN && stake <= Math.min(available, MAX);
 
   async function open(index) {
     if (!canPlay || opened) return;
@@ -101,10 +113,10 @@ export default function MysteryBox() {
           stake={stake}
           onChange={setStake}
           available={available}
-          min={STAKE.min}
-          max={STAKE.max}
+          min={MIN}
+          max={MAX}
           step={STAKE.step}
-          chips={STAKE.chips}
+          chips={chips}
           disabled={loading}
         />
       )}
@@ -131,7 +143,7 @@ export default function MysteryBox() {
             type="button"
             className="btn btn-jeux"
             onClick={reset}
-            disabled={opened.balance.real + opened.balance.bonus < STAKE.min}
+            disabled={opened.balance.real + opened.balance.bonus < MIN}
           >
             Rejouer · {formatFcfa(stake)}
           </button>

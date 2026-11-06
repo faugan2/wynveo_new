@@ -604,19 +604,6 @@ const DEFAULT_HOME_GAMES = [
   { key: 'crash', name: 'Crash', desc: 'Encaissez avant la chute', color: '#d12b4f', imageUrl: '', badge: '', target: 'register' },
 ];
 
-// Public (sans connexion) : slides du héros, cartes à droite et jeux de l'accueil.
-exports.getHomeContent = onCall({ region: REGION }, async () => {
-  const snapshot = await db.collection('wy_settings').doc('home').get();
-  const saved = snapshot.exists ? snapshot.get('slides') : null;
-  const savedCards = snapshot.exists ? snapshot.get('sideCards') : null;
-  const savedGames = snapshot.exists ? snapshot.get('games') : null;
-  return {
-    slides: Array.isArray(saved) && saved.length > 0 ? saved : DEFAULT_HOME_SLIDES,
-    sideCards: Array.isArray(savedCards) && savedCards.length === 2 ? savedCards : DEFAULT_SIDE_CARDS,
-    games: Array.isArray(savedGames) && savedGames.length > 0 ? savedGames : DEFAULT_HOME_GAMES,
-  };
-});
-
 // Matchs visibles par les visiteurs (sans connexion) : données publiques seulement, sans cotes détaillées au-delà du 1 N 2 et du plus/moins.
 // Les règles Firestore interdisent la lecture directe de wy_sport_events aux visiteurs.
 function publicMatch(doc) {
@@ -659,15 +646,6 @@ exports.getGamePlayCounts = onCall({ region: REGION }, async () => {
 });
 
 // Jeux favoris du membre connecté : un document par membre dans wy_game_favorites (lecture et écriture par ces fonctions seulement).
-exports.getGameFavorites = onCall({ region: REGION }, async (request) => {
-  if (!request.auth) {
-    throw new HttpsError('unauthenticated', 'Connexion requise.');
-  }
-  const snapshot = await db.collection('wy_game_favorites').doc(request.auth.uid).get();
-  const slugs = snapshot.exists ? snapshot.get('slugs') : [];
-  return { slugs: Array.isArray(slugs) ? slugs.filter(isGameSlug) : [] };
-});
-
 exports.setGameFavorite = onCall({ region: REGION }, async (request) => {
   if (!request.auth) {
     throw new HttpsError('unauthenticated', 'Connexion requise.');
@@ -748,12 +726,6 @@ exports.adminUploadHomeImage = onCall({ region: REGION }, async (request) => {
   };
 });
 
-// Logo de l'application (réglé dans l'admin). Public : affiché dans l'en-tête de tous les écrans.
-exports.getBranding = onCall({ region: REGION }, async () => {
-  const branding = await gameSettings('branding', { logoUrl: '' });
-  return { logoUrl: typeof branding.logoUrl === 'string' ? branding.logoUrl : '' };
-});
-
 // Informations d'aide, lues dans les réglages : contacts (wy_settings/support), dépôt (payments), bonus et parrainage.
 // Rien n'est écrit en dur dans l'application : tout ce qui est réglable dans l'admin vient d'ici.
 // Accessible sans connexion : seules des informations publiques sont renvoyées (contacts, minimums, bonus publics).
@@ -781,6 +753,28 @@ exports.getHelpInfo = onCall({ region: REGION }, async () => {
 
 // Lucky Spin : débite la mise, tire une case, crédite le gain et enregistre le pari.
 // La mise est prise sur le solde des dépôts, puis sur le bonus. Le gain suit la même répartition.
+// Réglages publics de la roue : mise minimum et maximum, multiplicateurs des cases (dans l'ordre de la roue).
+// Les poids ne sont pas renvoyés : ils donneraient les probabilités.
+exports.getLuckySpinConfig = onCall({ region: REGION }, async () => {
+  const { minStake, maxStake, segments } = await gameSettings('lucky-spin', LUCKY_SPIN);
+  return {
+    minStake,
+    maxStake,
+    multipliers: Array.isArray(segments) ? segments.map((segment) => segment.multiplier) : [],
+  };
+});
+
+// Mise minimum et maximum d'un jeu, pour l'écran du jeu (Mystery Box, Lucky Number). Public, sans les probabilités.
+const STAKE_LIMIT_GAMES = { 'mystery-box': MYSTERY_BOX, 'lucky-number': LUCKY_NUMBER };
+exports.getStakeLimits = onCall({ region: REGION }, async (request) => {
+  const game = request.data?.game;
+  if (typeof game !== 'string' || !Object.prototype.hasOwnProperty.call(STAKE_LIMIT_GAMES, game)) {
+    throw new HttpsError('invalid-argument', 'Jeu inconnu.');
+  }
+  const { minStake, maxStake } = await gameSettings(game, STAKE_LIMIT_GAMES[game]);
+  return { minStake, maxStake };
+});
+
 exports.playLuckySpin = onCall({ region: REGION }, async (request) => {
   await assertNotSuspended(request);
   if (!request.auth) {
@@ -1827,26 +1821,33 @@ exports.getMySportBets = onCall({ region: REGION }, async (request) => {
     return `${selection.pick === 'over' ? 'Plus' : 'Moins'} de ${MAIN_TOTAL_LINE} buts`;
   };
 
-  const bets = snapshot.docs.map((doc) => {
+  // Un pari incomplet (ancien format, champ absent) ne doit pas faire échouer toute la liste : il est signalé dans le journal.
+  const millisOf = (value) => (value && typeof value.toMillis === 'function' ? value.toMillis() : 0);
+  const bets = [];
+  for (const doc of snapshot.docs) {
     const data = doc.data();
-    return {
-      id: doc.id,
-      mode: data.mode,
-      stake: data.stake,
-      status: data.status,
-      totalPrice: data.totalPrice,
-      potentialPayout: data.potentialPayout,
-      payout: typeof data.payout === 'number' ? data.payout : null,
-      selections: data.selections.map((selection) => ({
-        label: labelFor(selection),
-        price: selection.price,
-        homeTeam: selection.homeTeam,
-        awayTeam: selection.awayTeam,
-        commenceMs: selection.commenceTime ? selection.commenceTime.toMillis() : 0,
-      })),
-      createdAt: data.createdAt ? data.createdAt.toMillis() : 0,
-    };
-  });
+    try {
+      bets.push({
+        id: doc.id,
+        mode: data.mode,
+        stake: data.stake,
+        status: data.status,
+        totalPrice: data.totalPrice,
+        potentialPayout: data.potentialPayout,
+        payout: typeof data.payout === 'number' ? data.payout : null,
+        selections: (Array.isArray(data.selections) ? data.selections : []).map((selection) => ({
+          label: labelFor(selection),
+          price: selection.price,
+          homeTeam: selection.homeTeam,
+          awayTeam: selection.awayTeam,
+          commenceMs: millisOf(selection.commenceTime),
+        })),
+        createdAt: millisOf(data.createdAt),
+      });
+    } catch (err) {
+      console.error('[mes paris sport] pari ignoré', { betId: doc.id, message: err?.message });
+    }
+  }
   return { bets: bets.sort((a, b) => b.createdAt - a.createdAt).slice(0, 50) };
 });
 
