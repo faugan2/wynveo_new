@@ -4,6 +4,7 @@ import AdminShell from './AdminShell.jsx';
 import TablePager from '../../components/Admin/TablePager.jsx';
 import { useCursorPaging } from '../../lib/adminPaging.js';
 import { functions } from '../../lib/firebase.js';
+import { readAdminSettings } from '../../lib/adminSettings.js';
 import { formatFcfa } from '../../lib/format.js';
 
 const DEFAULT_RATES = [10, 5, 3, 2, 1];
@@ -23,8 +24,7 @@ export default function AdminPromotions() {
   const [welcomeError, setWelcomeError] = useState('');
 
   function loadWelcome() {
-    functions
-      .httpsCallable('adminGetSettings')({ name: 'welcome-bonus' })
+    readAdminSettings('welcome-bonus')
       .then(({ data }) => setWelcome({ enabled: false, amountXof: 0, ...data.values }))
       .catch((err) => setWelcomeError(err?.message || 'Lecture impossible.'));
     functions
@@ -60,8 +60,7 @@ export default function AdminPromotions() {
   }
 
   useEffect(() => {
-    functions
-      .httpsCallable('adminGetSettings')({ name: 'referral' })
+    readAdminSettings('referral')
       .then(({ data }) => setRates((data.values?.rates || DEFAULT_RATES).map(String)))
       .catch((err) => setError(err?.message || 'Lecture impossible.'));
   }, []);

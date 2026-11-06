@@ -15,6 +15,7 @@ import AdminShell from './AdminShell.jsx';
 import TablePager from '../../components/Admin/TablePager.jsx';
 import { useCursorPaging } from '../../lib/adminPaging.js';
 import { functions } from '../../lib/firebase.js';
+import { loadAdminSportEvents } from '../../lib/adminSportEvents.js';
 
 const STATUS_LABELS = {
   upcoming: 'À venir',
@@ -54,10 +55,7 @@ export default function AdminSport() {
   const [resulting, setResulting] = useState(null); // match manuel dont on saisit le résultat
 
   const paging = useCursorPaging(
-    (cursor) =>
-      functions
-        .httpsCallable('adminListSportEvents')({ status, cursor, pageSize: 20 })
-        .then(({ data }) => ({ items: data.events, next: data.next })),
+    (cursor) => loadAdminSportEvents({ status, cursor, pageSize: 20 }).then(({ events, next }) => ({ items: events, next })),
     `${status}|${version}`
   );
   const { items: events, error: listError } = paging;

@@ -1196,32 +1196,6 @@ exports.runJackpotDrawNow = onCall({ region: REGION }, async () => {
 });
 
 // État du jackpot : cagnotte, tickets du joueur, compte à rebours et derniers gagnants.
-exports.getJackpotState = onCall({ region: REGION }, async (request) => {
-  if (!request.auth) {
-    throw new HttpsError('unauthenticated', 'Connexion requise.');
-  }
-  const uid = request.auth.uid;
-  const current = await ensureOpenJackpotRound();
-  const round = (await db.collection('wy_jackpot_rounds').doc(current.id).get()).data();
-  const myTickets = await db
-    .collection('wy_jackpot_tickets')
-    .where('roundId', '==', current.id)
-    .where('uid', '==', uid)
-    .get();
-  const settings = await db.collection('wy_settings').doc('jackpot').get();
-  const { ticketPrice, potShare } = parseJackpotConfig(settings.data());
-
-  return {
-    roundId: current.id,
-    drawAt: current.drawAt,
-    pot: round.pot,
-    ticketsCount: round.ticketsCount,
-    myTickets: myTickets.size,
-    recentWinners: settings.exists ? settings.get('recentWinners') || [] : [],
-    ticketPrice,
-    potShare,
-  };
-});
 
 // Achat de tickets : le prix et la part vers la cagnotte viennent de wy_settings/jackpot.
 exports.playJackpot = onCall({ region: REGION }, async (request) => {

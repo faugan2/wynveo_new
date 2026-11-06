@@ -78,6 +78,7 @@ export default function MysteryBox() {
         <p>{opened ? 'Votre boîte est ouverte !' : 'Choisissez un coffre pour le tester.'}</p>
       </div>
 
+      <div className="game-split">
       <section className="boxes-card">
         <div className="boxes-grid">
           {Array.from({ length: BOX_COUNT }, (_, index) => {
@@ -120,6 +121,7 @@ export default function MysteryBox() {
           disabled={loading}
         />
       )}
+      </div>
 
       {error && <p className="error" role="alert">{error}</p>}
       {loading && <p className="hint">Ouverture…</p>}

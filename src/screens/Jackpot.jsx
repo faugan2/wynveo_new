@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import ConnectedLayout from '../components/ConnectedLayout.jsx';
 import { useAuth } from '../context/AuthContext.jsx';
 import { db, functions } from '../lib/firebase.js';
+import { loadJackpotState } from '../lib/jackpotState.js';
 import { formatFcfa } from '../lib/format.js';
 import { walletFromProfile } from '../lib/wallet.js';
 
@@ -35,7 +36,7 @@ function drawLabel(drawAt) {
 // Écran Jackpot quotidien : cagnotte, vos tickets, compte à rebours, derniers gagnants (maquette 14).
 export default function Jackpot() {
   const navigate = useNavigate();
-  const { profile } = useAuth();
+  const { user, profile } = useAuth();
   const wallet = walletFromProfile(profile);
   const available = wallet.deposit + wallet.bonus;
 
@@ -45,12 +46,19 @@ export default function Jackpot() {
   const [error, setError] = useState('');
   const [now, setNow] = useState(Date.now());
 
+  const uid = user?.uid || null;
   const loadState = useCallback(() => {
-    functions
-      .httpsCallable('getJackpotState')({})
-      .then(({ data }) => setState(data))
-      .catch((err) => setLoadError(err?.message || 'Jackpot indisponible.'));
-  }, []);
+    loadJackpotState(uid)
+      .then((data) => {
+        if (data) {
+          setState(data);
+          setLoadError('');
+        } else {
+          setLoadError('Aucun tour de jackpot n’est ouvert pour le moment.');
+        }
+      })
+      .catch(() => setLoadError('Jackpot indisponible.'));
+  }, [uid]);
 
   useEffect(() => {
     loadState();
@@ -120,6 +128,8 @@ export default function Jackpot() {
 
       {state && (
         <>
+          <div className="game-split">
+          <div className="game-col">
           <section className="pot-card">
             <small>Cagnotte actuelle</small>
             <div className="pot-amount">{formatFcfa(state.pot)}</div>
@@ -140,6 +150,8 @@ export default function Jackpot() {
             </div>
           </section>
 
+          </div>
+          <div className="game-col">
           <section className="countdown-card">
             <small>Tirage dans</small>
             <div className="countdown">
@@ -160,6 +172,9 @@ export default function Jackpot() {
             {submitting ? 'Achat…' : 'Ajouter un ticket'}
             <small>{formatFcfa(state.ticketPrice)} · {Math.round(state.potShare * 100)} % vont à la cagnotte</small>
           </button>
+
+          </div>
+          </div>
 
           <h2 className="section-title">Derniers gagnants</h2>
           {state.recentWinners.length === 0 ? (

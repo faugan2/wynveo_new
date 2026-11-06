@@ -99,6 +99,7 @@ export default function LuckySpin() {
         <p>Gagnez jusqu'à <b className="gold">50x</b> votre mise !</p>
       </div>
 
+      <div className="spin-layout">
       <section className="wheel-card">
         <div className="wheel-wrap">
           <span className="wheel-pointer" aria-hidden="true" />
@@ -171,6 +172,7 @@ export default function LuckySpin() {
           <small>Appuyez pour faire tourner</small>
         </button>
       </section>
+      </div>
 
       {result && (
         <div className="result-overlay" role="dialog" aria-modal="true" aria-label="Résultat">

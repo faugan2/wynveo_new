@@ -20,6 +20,12 @@ service cloud.firestore {
       allow write: if false;
     }
 
+    // Tickets de jackpot : chacun lit seulement ses propres tickets. Écriture par la fonction playJackpot.
+    match /wy_jackpot_tickets/{ticketId} {
+      allow read: if request.auth != null && resource.data.uid == request.auth.uid;
+      allow write: if false;
+    }
+
     // Réglages publics affichés sur le site (logo, contenu de l'accueil, coordonnées du support) : lisibles par tous.
     // Aucun réglage sensible ici (probabilités, mises et tirages restent dans les fonctions).
     match /wy_settings/branding {
@@ -72,6 +78,38 @@ service cloud.firestore {
     // Compétitions de football : lisibles par tout utilisateur connecté (filtre d'affichage). Écriture par les fonctions.
     match /wy_sport_leagues/{leagueKey} {
       allow read: if request.auth != null;
+      allow write: if false;
+    }
+
+    // Réglages de l'administration : lecture réservée aux rôles qui les gèrent (mêmes rôles que la fonction adminGetSettings).
+    // Écriture toujours par la fonction adminSaveSettings (contrôle des valeurs et journal d'audit).
+    function isAdminIn(roles) {
+      return request.auth != null
+        && exists(/databases/$(database)/documents/wy_admins/$(request.auth.uid))
+        && get(/databases/$(database)/documents/wy_admins/$(request.auth.uid)).data.role in roles;
+    }
+    match /wy_settings/payments {
+      allow read: if isAdminIn(['super_admin', 'finance', 'support']);
+      allow write: if false;
+    }
+    match /wy_settings/referral {
+      allow read: if isAdminIn(['super_admin', 'finance', 'support']);
+      allow write: if false;
+    }
+    match /wy_settings/welcome-bonus {
+      allow read: if isAdminIn(['super_admin', 'finance', 'support']);
+      allow write: if false;
+    }
+    match /wy_settings/crash {
+      allow read: if isAdminIn(['super_admin', 'support']);
+      allow write: if false;
+    }
+    match /wy_settings/mystery-box {
+      allow read: if isAdminIn(['super_admin', 'support']);
+      allow write: if false;
+    }
+    match /wy_settings/lucky-spin {
+      allow read: if isAdminIn(['super_admin', 'support']);
       allow write: if false;
     }
 

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import AdminShell from './AdminShell.jsx';
 import { functions } from '../../lib/firebase.js';
+import { readAdminSettings } from '../../lib/adminSettings.js';
 
 const EMPTY = { email: '', whatsapp: '', telegram: '', hours: '', helpline: '' };
 
@@ -12,8 +13,7 @@ export default function AdminSupport() {
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
-    functions
-      .httpsCallable('adminGetSettings')({ name: 'support' })
+    readAdminSettings('support')
       .then(({ data }) => setForm({ ...EMPTY, ...data.values }))
       .catch((err) => setError(err?.message || 'Lecture impossible.'));
   }, []);

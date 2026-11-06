@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
-import { db, functions } from './firebase.js';
+import { db } from './firebase.js';
+import { loadJackpotState } from './jackpotState.js';
 
 // Cagnotte et heure du prochain tirage, mises à jour en direct. Utilisé par l'accueil et la liste des jeux.
 // Renvoie null tant que les données ne sont pas arrivées.
@@ -7,9 +8,10 @@ export function useJackpotSummary() {
   const [summary, setSummary] = useState(null);
 
   const load = useCallback(() => {
-    functions
-      .httpsCallable('getJackpotState')({})
-      .then(({ data }) => setSummary({ pot: data.pot, drawAt: data.drawAt }))
+    loadJackpotState()
+      .then((state) => {
+        if (state) setSummary({ pot: state.pot, drawAt: state.drawAt });
+      })
       .catch(() => {});
   }, []);
 

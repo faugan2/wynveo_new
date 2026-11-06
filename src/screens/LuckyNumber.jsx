@@ -145,6 +145,7 @@ export default function LuckyNumber() {
 
       {state && (
         <>
+          <div className="game-split">
           {!alreadyPlayed && (
           <section className="lucky-card">
             <div className="stake-head">
@@ -184,6 +185,7 @@ export default function LuckyNumber() {
             chips={chips}
             disabled={submitting}
           />}
+          </div>
 
           {alreadyPlayed && (
             <section className="participation-card" aria-label="Votre participation">

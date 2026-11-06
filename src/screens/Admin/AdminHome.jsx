@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import AdminShell from './AdminShell.jsx';
 import { functions } from '../../lib/firebase.js';
+import { readAdminSettings } from '../../lib/adminSettings.js';
 import { DEFAULT_GAMES, DEFAULT_HERO, DEFAULT_SIDE_CARDS } from '../../lib/homeContent.js';
 
 const TARGET_LABELS = {
@@ -61,8 +62,7 @@ export default function AdminHome() {
   const [uploading, setUploading] = useState(null);
 
   useEffect(() => {
-    functions
-      .httpsCallable('adminGetSettings')({ name: 'home' })
+    readAdminSettings('home')
       .then(({ data }) => {
         setSlides(Array.isArray(data.values?.slides) && data.values.slides.length ? data.values.slides : DEFAULT_HERO);
         setSideCards(Array.isArray(data.values?.sideCards) && data.values.sideCards.length === 2 ? data.values.sideCards : DEFAULT_SIDE_CARDS);

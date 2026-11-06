@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import AdminShell from './AdminShell.jsx';
 import { functions } from '../../lib/firebase.js';
+import { readAdminSettings } from '../../lib/adminSettings.js';
 
 // Réglages des dépôts crypto (wy_settings/payments).
 export default function AdminPayments() {
@@ -10,8 +11,7 @@ export default function AdminPayments() {
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
-    functions
-      .httpsCallable('adminGetSettings')({ name: 'payments' })
+    readAdminSettings('payments')
       .then(({ data }) => setForm({ adminAddress: '', rateXofPerUsd: 600, minDepositXof: 1000, expiryMinutes: 30, ...data.values }))
       .catch((err) => setError(err?.message || 'Lecture impossible.'));
   }, []);

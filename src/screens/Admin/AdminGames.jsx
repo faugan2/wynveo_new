@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import AdminShell from './AdminShell.jsx';
 import { functions } from '../../lib/firebase.js';
+import { readAdminSettings } from '../../lib/adminSettings.js';
 
 const GAMES = [
   { key: 'lucky-spin', label: 'Lucky Spin' },
@@ -82,8 +83,7 @@ export default function AdminGames() {
     setForm(null);
     setMessage('');
     setError('');
-    functions
-      .httpsCallable('adminGetSettings')({ name: game })
+    readAdminSettings(game)
       .then(({ data }) => {
         if (current) setForm(mergeSettings(game, data.values));
       })

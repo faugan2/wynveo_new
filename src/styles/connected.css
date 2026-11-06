@@ -1328,7 +1328,7 @@
 /* Lucky Spin : roue, mise et résultat. */
 .game-title {
   text-align: center;
-  margin-top: 4px;
+  margin-top: 12px;
 }
 
 .game-title h1 {
@@ -1380,6 +1380,72 @@
   border-top: 22px solid #f5c518;
   z-index: 2;
   filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.5));
+}
+
+/* Jeux : deux colonnes sur ordinateur (jeu à gauche, mise à droite), une seule colonne sur téléphone. */
+.game-split,
+.game-col {
+  display: block;
+}
+
+.game-col {
+  display: grid;
+  gap: 16px;
+  align-content: start;
+}
+
+@media (min-width: 900px) {
+  .game-split {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 32px;
+    align-items: stretch;
+  }
+
+  /* Les cartes ont la même hauteur : pas de marge haute qui les décale. Le contenu de la mise est centré. */
+  .game-split > .boxes-card,
+  .game-split > .lucky-card,
+  .game-split > .stake-box {
+    margin-top: 0;
+  }
+
+  .game-split > .stake-box {
+    margin-top: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+}
+
+/* Lucky Spin : roue à gauche et mise à droite sur ordinateur, une seule colonne sur téléphone. */
+.spin-layout {
+  display: block;
+  margin-top: 24px;
+}
+
+@media (min-width: 900px) {
+  .spin-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 32px;
+    align-items: stretch;
+  }
+
+  .spin-layout .wheel-card {
+    margin-top: 0;
+  }
+
+  /* Les deux cartes ont la même hauteur ; le contenu de la mise est centré dans la sienne. */
+  .spin-layout .stake-box {
+    margin-top: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .spin-layout .wheel-wrap {
+    max-width: 380px;
+  }
 }
 
 .stake-box {
